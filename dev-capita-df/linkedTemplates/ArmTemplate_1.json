@@ -311,41 +311,11 @@
 										},
 										"ifFalseActivities": [
 											{
-												"name": "usp_update_status_To_Process_In_Cosmos",
-												"type": "SqlServerStoredProcedure",
-												"dependsOn": [],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"storedProcedureName": "[[USP_Update_Status_Of_Execution]",
-													"storedProcedureParameters": {
-														"id": {
-															"value": "@item().id",
-															"type": "Guid"
-														},
-														"status": {
-															"value": "MoveToCosmos",
-															"type": "String"
-														}
-													}
-												},
-												"linkedServiceName": {
-													"referenceName": "capita_hcpdata_db",
-													"type": "LinkedServiceReference"
-												}
-											},
-											{
 												"name": "usp_update_error_save_status",
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [
 													{
-														"activity": "usp_update_status_To_Process_In_Cosmos",
+														"activity": "update_metadata_for_false_condition",
 														"dependencyConditions": [
 															"Failed"
 														]
@@ -364,7 +334,7 @@
 													"storedProcedureParameters": {
 														"error": {
 															"value": {
-																"value": "@activity('usp_update_status_To_Process_In_Cosmos').error.message",
+																"value": "@activity('update_metadata_for_false_condition').error.message",
 																"type": "Expression"
 															},
 															"type": "String"
@@ -379,6 +349,96 @@
 																"type": "Expression"
 															},
 															"type": "Guid"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "capita_hcpdata_db",
+													"type": "LinkedServiceReference"
+												}
+											},
+											{
+												"name": "fill_metadata_information_for_false_condition",
+												"type": "AzureFunctionActivity",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"functionName": "ProcessMetadataForPipeline",
+													"method": "POST",
+													"headers": {},
+													"body": {
+														"value": "@concat('{','\"filepath\": ',item().ObjectPath,'}')",
+														"type": "Expression"
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "azure_pipeline_metadata_update_ls",
+													"type": "LinkedServiceReference"
+												}
+											},
+											{
+												"name": "update_metadata_for_false_condition",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "fill_metadata_information_for_false_condition",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[[dbo].[USP_Update_Metadata]",
+													"storedProcedureParameters": {
+														"azureHash": {
+															"value": {
+																"value": "@activity('fill_metadata_information_for_false_condition').output.shA256",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"customMetadata": {
+															"value": {
+																"value": "@activity('fill_metadata_information_for_false_condition').output.customMetadata",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"eTag": {
+															"value": {
+																"value": "@activity('fill_metadata_information_for_false_condition').output.eTag",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"id": {
+															"value": {
+																"value": "@item().id",
+																"type": "Expression"
+															},
+															"type": "Guid"
+														},
+														"MD5": {
+															"value": {
+																"value": "@activity('fill_metadata_information_for_false_condition').output.contentMD5",
+																"type": "Expression"
+															},
+															"type": "String"
 														}
 													}
 												},
@@ -462,6 +522,103 @@
 																"type": "Expression"
 															},
 															"type": "Guid"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "capita_hcpdata_db",
+													"type": "LinkedServiceReference"
+												}
+											},
+											{
+												"name": "fill_metadata_information",
+												"type": "AzureFunctionActivity",
+												"dependsOn": [
+													{
+														"activity": "hcp_metadata_download",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"functionName": "ProcessMetadataForPipeline",
+													"method": "POST",
+													"headers": {},
+													"body": {
+														"value": "@concat('{','\"filepath\": ',item().ObjectPath,'\n\"customMetadataXml\": ',activity('hcp_metadata_download').output,'}')",
+														"type": "Expression"
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "azure_pipeline_metadata_update_ls",
+													"type": "LinkedServiceReference"
+												}
+											},
+											{
+												"name": "update_metadata",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "fill_metadata_information",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[[dbo].[USP_Update_Metadata]",
+													"storedProcedureParameters": {
+														"azureHash": {
+															"value": {
+																"value": "@activity('fill_metadata_information').output.shA256",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"customMetadata": {
+															"value": {
+																"value": "@activity('fill_metadata_information').output.customMetadata",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"eTag": {
+															"value": {
+																"value": "@activity('fill_metadata_information').output.eTag",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"id": {
+															"value": {
+																"value": "@item().id",
+																"type": "Expression"
+															},
+															"type": "Guid"
+														},
+														"MD5": {
+															"value": {
+																"value": "@activity('fill_metadata_information').output.contentMD5",
+																"type": "Expression"
+															},
+															"type": "String"
 														}
 													}
 												},
@@ -716,103 +873,6 @@
 											},
 											"status": {
 												"value": "ObjectInStageIsDeleted",
-												"type": "String"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "capita_hcpdata_db",
-										"type": "LinkedServiceReference"
-									}
-								},
-								{
-									"name": "fill_metadata_information",
-									"type": "AzureFunctionActivity",
-									"dependsOn": [
-										{
-											"activity": "check_if_custommetada_exists",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"functionName": "ProcessMetadataForPipeline",
-										"method": "POST",
-										"headers": {},
-										"body": {
-											"value": "@concat('{','\"filepath\": ',item().ObjectPath,'\n\"customMetadataXml\": ',activity('hcp_metadata_download').output,'}')",
-											"type": "Expression"
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "azure_pipeline_metadata_update_ls",
-										"type": "LinkedServiceReference"
-									}
-								},
-								{
-									"name": "update_metadata",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [
-										{
-											"activity": "fill_metadata_information",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[dbo].[USP_Update_Metadata]",
-										"storedProcedureParameters": {
-											"azureHash": {
-												"value": {
-													"value": "@activity('fill_metadata_information').output.shA256",
-													"type": "Expression"
-												},
-												"type": "String"
-											},
-											"customMetadata": {
-												"value": {
-													"value": "@activity('fill_metadata_information').output.customMetadata",
-													"type": "Expression"
-												},
-												"type": "String"
-											},
-											"eTag": {
-												"value": {
-													"value": "@activity('fill_metadata_information').output.eTag",
-													"type": "Expression"
-												},
-												"type": "String"
-											},
-											"id": {
-												"value": {
-													"value": "@item().id",
-													"type": "Expression"
-												},
-												"type": "Guid"
-											},
-											"MD5": {
-												"value": {
-													"value": "@activity('fill_metadata_information').output.contentMD5",
-													"type": "Expression"
-												},
 												"type": "String"
 											}
 										}
