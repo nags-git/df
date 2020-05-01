@@ -1,0 +1,209 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dev-capita-df"
+		},
+		"AzureBatch1_accessKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessKey' of 'AzureBatch1'"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
+		},
+		"AzureBlobStorage2_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage2'"
+		},
+		"azure_data_upload_avro_dl_ls_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'azure_data_upload_avro_dl_ls'"
+		},
+		"azure_data_upload_avro_stage_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_avro_stage_ls'"
+		},
+		"azure_data_upload_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_ls'"
+		},
+		"blob_connect_link_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'blob_connect_link'"
+		},
+		"capita_hcpcosmos_db_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'capita_hcpcosmos_db'"
+		},
+		"capita_hcpdata_db_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'capita_hcpdata_db'"
+		},
+		"capita_pgs_connect_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'capita_pgs_connect'"
+		},
+		"file_connect_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'file_connect'"
+		},
+		"azure_pipeline_metadata_update_ls_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
+		},
+		"AzureBatch1_properties_typeProperties_accountName": {
+			"type": "string",
+			"defaultValue": "processhcpobject"
+		},
+		"AzureBatch1_properties_typeProperties_batchUri": {
+			"type": "string",
+			"defaultValue": "https://uksouth.batch.azure.com"
+		},
+		"AzureBatch1_properties_typeProperties_poolName": {
+			"type": "string",
+			"defaultValue": "processhcpobject"
+		},
+		"HttpServer1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/bop4.png"
+		},
+		"azure_data_upload_avro_dl_ls_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://devcapitaevidentialst.dfs.core.windows.net"
+		},
+		"hcp_data_download_http_ls_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
+		},
+		"hcp_data_upload_ls_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
+		},
+		"hcp_object_ds_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest"
+		},
+		"hcpapiconnect_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://tenant01.coe-hcp01.hitachivantara.com/query"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureBlobStorage1_connectionString": {
+						"value": "[parameters('AzureBlobStorage1_connectionString')]"
+					},
+					"AzureBlobStorage2_connectionString": {
+						"value": "[parameters('AzureBlobStorage2_connectionString')]"
+					},
+					"azure_data_upload_avro_dl_ls_accountKey": {
+						"value": "[parameters('azure_data_upload_avro_dl_ls_accountKey')]"
+					},
+					"azure_data_upload_avro_stage_ls_connectionString": {
+						"value": "[parameters('azure_data_upload_avro_stage_ls_connectionString')]"
+					},
+					"azure_data_upload_ls_connectionString": {
+						"value": "[parameters('azure_data_upload_ls_connectionString')]"
+					},
+					"blob_connect_link_connectionString": {
+						"value": "[parameters('blob_connect_link_connectionString')]"
+					},
+					"capita_hcpcosmos_db_connectionString": {
+						"value": "[parameters('capita_hcpcosmos_db_connectionString')]"
+					},
+					"capita_hcpdata_db_connectionString": {
+						"value": "[parameters('capita_hcpdata_db_connectionString')]"
+					},
+					"capita_pgs_connect_connectionString": {
+						"value": "[parameters('capita_pgs_connect_connectionString')]"
+					},
+					"file_connect_connectionString": {
+						"value": "[parameters('file_connect_connectionString')]"
+					},
+					"azure_pipeline_metadata_update_ls_functionKey": {
+						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
+					},
+					"AzureBatch1_accessKey": {
+						"value": "[parameters('AzureBatch1_accessKey')]"
+					},
+					"HttpServer1_properties_typeProperties_url": {
+						"value": "[parameters('HttpServer1_properties_typeProperties_url')]"
+					},
+					"azure_data_upload_avro_dl_ls_properties_typeProperties_url": {
+						"value": "[parameters('azure_data_upload_avro_dl_ls_properties_typeProperties_url')]"
+					},
+					"hcp_data_upload_ls_properties_typeProperties_url": {
+						"value": "[parameters('hcp_data_upload_ls_properties_typeProperties_url')]"
+					},
+					"hcp_object_ds_properties_typeProperties_url": {
+						"value": "[parameters('hcp_object_ds_properties_typeProperties_url')]"
+					},
+					"AzureBatch1_properties_typeProperties_accountName": {
+						"value": "[parameters('AzureBatch1_properties_typeProperties_accountName')]"
+					},
+					"AzureBatch1_properties_typeProperties_batchUri": {
+						"value": "[parameters('AzureBatch1_properties_typeProperties_batchUri')]"
+					},
+					"AzureBatch1_properties_typeProperties_poolName": {
+						"value": "[parameters('AzureBatch1_properties_typeProperties_poolName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"hcp_data_download_http_ls_properties_typeProperties_url": {
+						"value": "[parameters('hcp_data_download_http_ls_properties_typeProperties_url')]"
+					},
+					"hcpapiconnect_properties_typeProperties_url": {
+						"value": "[parameters('hcpapiconnect_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ArmTemplate_0')]"
+			]
+		}
+	]
+}
