@@ -372,7 +372,9 @@
 												"typeProperties": {
 													"functionName": "ProcessMetadataForPipeline",
 													"method": "POST",
-													"headers": {},
+													"headers": {
+														"Content-Type": "application/json"
+													},
 													"body": {
 														"value": "@concat('{','\"filepath\": ',item().ObjectPath,'}')",
 														"type": "Expression"
@@ -523,11 +525,10 @@
 													},
 													"linkedServices": [
 														{
-															"referenceName": "hcp_data_download_http_ls",
+															"referenceName": "hcpapiconnect",
 															"type": "LinkedServiceReference"
 														}
-													],
-													"datasets": []
+													]
 												}
 											},
 											{
@@ -1227,7 +1228,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/hcp_data_download_avro_ds')]",
-				"[concat(variables('factoryId'), '/linkedServices/hcp_data_download_http_ls')]"
+				"[concat(variables('factoryId'), '/linkedServices/hcpapiconnect')]"
 			]
 		},
 		{
