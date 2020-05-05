@@ -506,7 +506,7 @@
 														"Content-Type": "application/json"
 													},
 													"body": {
-														"value": "@concat('{','\"filepath\": ',item().ObjectPath,'}')",
+														"value": "@concat('{','\"filepath\": ','\"item().ObjectPath\"','}')",
 														"type": "Expression"
 													}
 												},
@@ -1667,7 +1667,7 @@
 												"count": {
 													"type": "Int32",
 													"value": {
-														"value": "@activity('Get_Query_to_Process').output.firstRow.count",
+														"value": "@activity('Get_Query_to_Process').output.firstRow.recordsCount",
 														"type": "Expression"
 													}
 												}
