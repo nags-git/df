@@ -31,6 +31,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_ls'"
 		},
+		"azure_pipeline_metadata_update_ls_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
+		},
 		"blob_connect_link_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'blob_connect_link'"
@@ -50,10 +54,6 @@
 		"file_connect_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'file_connect'"
-		},
-		"azure_pipeline_metadata_update_ls_functionKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
 		},
 		"AzureBatch1_properties_typeProperties_accountName": {
 			"type": "string",
@@ -133,6 +133,9 @@
 					"azure_data_upload_ls_connectionString": {
 						"value": "[parameters('azure_data_upload_ls_connectionString')]"
 					},
+					"azure_pipeline_metadata_update_ls_functionKey": {
+						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
+					},
 					"blob_connect_link_connectionString": {
 						"value": "[parameters('blob_connect_link_connectionString')]"
 					},
@@ -147,9 +150,6 @@
 					},
 					"file_connect_connectionString": {
 						"value": "[parameters('file_connect_connectionString')]"
-					},
-					"azure_pipeline_metadata_update_ls_functionKey": {
-						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
 					},
 					"AzureBatch1_accessKey": {
 						"value": "[parameters('AzureBatch1_accessKey')]"

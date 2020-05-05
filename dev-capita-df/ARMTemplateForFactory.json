@@ -31,6 +31,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_ls'"
 		},
+		"azure_pipeline_metadata_update_ls_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
+		},
 		"blob_connect_link_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'blob_connect_link'"
@@ -50,10 +54,6 @@
 		"file_connect_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'file_connect'"
-		},
-		"azure_pipeline_metadata_update_ls_functionKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
 		},
 		"AzureBatch1_properties_typeProperties_accountName": {
 			"type": "string",
@@ -872,13 +872,7 @@
 													"method": "GET",
 													"headers": {
 														"Authorization": "HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492"
-													},
-													"linkedServices": [
-														{
-															"referenceName": "hcpapiconnect",
-															"type": "LinkedServiceReference"
-														}
-													]
+													}
 												}
 											},
 											{
@@ -1192,7 +1186,10 @@
 										"storedProcedureName": "[[USP_Update_Status_Of_Execution]",
 										"storedProcedureParameters": {
 											"id": {
-												"value": "@item().Id",
+												"value": {
+													"value": "@item().Id",
+													"type": "Expression"
+												},
 												"type": "Guid"
 											},
 											"status": {
@@ -1229,7 +1226,10 @@
 										"storedProcedureName": "[[USP_Update_Status_Of_Execution]",
 										"storedProcedureParameters": {
 											"id": {
-												"value": "@item().Id",
+												"value": {
+													"value": "@item().Id",
+													"type": "Expression"
+												},
 												"type": "Guid"
 											},
 											"status": {
@@ -1266,7 +1266,10 @@
 										"storedProcedureName": "[[USP_Update_Status_Of_Execution]",
 										"storedProcedureParameters": {
 											"id": {
-												"value": "@item().Id",
+												"value": {
+													"value": "@item().Id",
+													"type": "Expression"
+												},
 												"type": "Guid"
 											},
 											"status": {
@@ -1584,7 +1587,6 @@
 				"[concat(variables('factoryId'), '/datasets/azure_data_upload_avro_stage_ds')]",
 				"[concat(variables('factoryId'), '/datasets/azure_data_upload_avro_ds')]",
 				"[concat(variables('factoryId'), '/linkedServices/azure_pipeline_metadata_update_ls')]",
-				"[concat(variables('factoryId'), '/linkedServices/hcpapiconnect')]",
 				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-ir')]"
 			]
 		},
@@ -1873,6 +1875,23 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/azure_pipeline_metadata_update_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureFunction",
+				"typeProperties": {
+					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-function.azurewebsites.net",
+					"functionKey": {
+						"type": "SecureString",
+						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/blob_connect_link')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -2016,23 +2035,6 @@
 			"properties": {
 				"type": "SelfHosted",
 				"typeProperties": {}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/azure_pipeline_metadata_update_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureFunction",
-				"typeProperties": {
-					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-function.azurewebsites.net",
-					"functionKey": {
-						"type": "SecureString",
-						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
-					}
-				}
 			},
 			"dependsOn": []
 		}

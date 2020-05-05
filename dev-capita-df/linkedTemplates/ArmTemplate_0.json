@@ -27,6 +27,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_ls'"
 		},
+		"azure_pipeline_metadata_update_ls_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
+		},
 		"blob_connect_link_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'blob_connect_link'"
@@ -46,10 +50,6 @@
 		"file_connect_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'file_connect'"
-		},
-		"azure_pipeline_metadata_update_ls_functionKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
 		},
 		"AzureBatch1_accessKey": {
 			"type": "secureString",
@@ -173,6 +173,23 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/azure_pipeline_metadata_update_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureFunction",
+				"typeProperties": {
+					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-function.azurewebsites.net",
+					"functionKey": {
+						"type": "SecureString",
+						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/blob_connect_link')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -274,23 +291,6 @@
 			"properties": {
 				"type": "SelfHosted",
 				"typeProperties": {}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/azure_pipeline_metadata_update_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureFunction",
-				"typeProperties": {
-					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-function.azurewebsites.net",
-					"functionKey": {
-						"type": "SecureString",
-						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
-					}
-				}
 			},
 			"dependsOn": []
 		},

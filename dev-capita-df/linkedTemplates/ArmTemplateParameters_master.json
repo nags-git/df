@@ -23,6 +23,9 @@
 		"azure_data_upload_ls_connectionString": {
 			"value": ""
 		},
+		"azure_pipeline_metadata_update_ls_functionKey": {
+			"value": ""
+		},
 		"blob_connect_link_connectionString": {
 			"value": ""
 		},
@@ -36,9 +39,6 @@
 			"value": ""
 		},
 		"file_connect_connectionString": {
-			"value": ""
-		},
-		"azure_pipeline_metadata_update_ls_functionKey": {
 			"value": ""
 		},
 		"AzureBatch1_properties_typeProperties_accountName": {
