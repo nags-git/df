@@ -133,7 +133,10 @@
 								"additionalColumns": [
 									{
 										"name": "BatchID",
-										"value": "123"
+										"value": {
+											"value": "@activity('Get_Query_to_Process').output.Id",
+											"type": "Expression"
+										}
 									},
 									{
 										"name": "Status",
@@ -148,7 +151,7 @@
 								"requestInterval": "00.00:00:00.010",
 								"requestMethod": "POST",
 								"requestBody": {
-									"value": "<queryRequest>\n<object>\n<query>namespace:ns01.tenant01 ingestTimeString:[2020-04-21T00:00:00 TO 2020-04-22T23:59:59]</query>\n<verbose>true</verbose>\n</object>\n</queryRequest>",
+									"value": "@{concat('<queryRequest><object><query>namespace:',activity('Get_Query_to_Process').output.namespace,' ingestTimeString:',activity('Get_Query_to_Process').output.ingestStartDateTime,' TO ',activity('Get_Query_to_Process').output.ingestEndDateTime,']</query>\n<verbose>true</verbose></object></queryRequest>')}",
 									"type": "Expression"
 								},
 								"additionalHeaders": {
@@ -1861,6 +1864,46 @@
 											},
 											"status": {
 												"value": "processed",
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "capita_hcpdata_db",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "update_query_status_failed",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "hcpapi_sql_pipe",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_Update_QueryData_Status]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": {
+													"value": "@item().Id",
+													"type": "Expression"
+												},
+												"type": "Guid"
+											},
+											"status": {
+												"value": "failed",
 												"type": "String"
 											}
 										}
