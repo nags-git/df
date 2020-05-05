@@ -767,7 +767,7 @@
 														"x-functions-key": "bzgNLYhDBES3GoahFrcB8uF1PkBPZaasYDGXV9qbYZIBTUnt6VRtMw=="
 													},
 													"body": {
-														"value": "@json('{\"filepath\": item().ObjectPath}')",
+														"value": "{\n\"filepath\": \"evidential/2020/feb/bops-5.png\",\n\"customMetadataXml\": \"<?xml version='1.0' encoding='utf-8' ?><root><DocumentOutbound>  <CorrespondenceID>S9999111</CorrespondenceID>  <Version>1.0</Version>  <Contract>DocumentOutbound</Contract>  <RepositoryID>bops</RepositoryID>  <SourceSystemID>acc</SourceSystemID>  <FileName>AP020899999_1.pdf</FileName>  <Submitter></Submitter>  <Comment>Added by dataload tool.</Comment>  <CategoryID>247</CategoryID>  <SubCategoryID>258</SubCategoryID>  <AccountNumber>999999998</AccountNumber>  <PCNNumber></PCNNumber>  <SelfID>5415D621038A0A40E10080000A82A5A6</SelfID>  <Batched>635464224000000000</Batched>  <Posted>635464224000000000</Posted>  <BatchType>STMT_020877682503453</BatchType>  <BatchNumber></BatchNumber>  <RelatedDocumentID></RelatedDocumentID>  <Created>636046051130000000</Created>  <Modified>636046051130000000</Modified> <Modified1>636046051130000000</Modified1></DocumentOutbound></root>\"\n}",
 														"type": "Expression"
 													}
 												},
