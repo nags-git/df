@@ -760,7 +760,7 @@
 												},
 												"userProperties": [],
 												"typeProperties": {
-													"functionName": "ProcessMetadataForPipeline",
+													"functionName": "hcpmetadataupdate",
 													"method": "POST",
 													"headers": {
 														"Content-Type": "application/json"
