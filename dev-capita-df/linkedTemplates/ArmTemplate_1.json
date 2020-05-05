@@ -1906,9 +1906,10 @@
 						"userProperties": [],
 						"typeProperties": {
 							"items": {
-								"value": "@activity('Get_Query_Info').output",
+								"value": "@activity('Get_Query_Info').output.value",
 								"type": "Expression"
 							},
+							"isSequential": false,
 							"activities": [
 								{
 									"name": "hcpapi_sql_pipe",
