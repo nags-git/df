@@ -760,13 +760,14 @@
 												},
 												"userProperties": [],
 												"typeProperties": {
-													"functionName": "hcpmetadataupdate",
+													"functionName": "ProcessMetadataForPipeline",
 													"method": "POST",
 													"headers": {
-														"Content-Type": "application/json"
+														"Content-Type": "application/json",
+														"x-functions-key": "bzgNLYhDBES3GoahFrcB8uF1PkBPZaasYDGXV9qbYZIBTUnt6VRtMw=="
 													},
 													"body": {
-														"value": "@concat('{\"filepath\": ',item().ObjectPath,'}')",
+														"value": "@json('{\"filepath\": item().ObjectPath}')",
 														"type": "Expression"
 													}
 												},
