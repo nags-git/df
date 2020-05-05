@@ -766,7 +766,7 @@
 														"Content-Type": "application/json"
 													},
 													"body": {
-														"value": "@concat('{','\"filepath\": ','\"item().ObjectPath\"','}')",
+														"value": "@concat('{\"filepath\": ',item().ObjectPath,'}')",
 														"type": "Expression"
 													}
 												},
@@ -2324,7 +2324,7 @@
 				"annotations": [],
 				"type": "AzureFunction",
 				"typeProperties": {
-					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-function.azurewebsites.net/api/hcpmetadataupdate",
+					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-function.azurewebsites.net",
 					"functionKey": {
 						"type": "SecureString",
 						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
