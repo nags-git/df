@@ -2324,7 +2324,7 @@
 				"annotations": [],
 				"type": "AzureFunction",
 				"typeProperties": {
-					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-function.azurewebsites.net",
+					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-function.azurewebsites.net/api/hcpmetadataupdate",
 					"functionKey": {
 						"type": "SecureString",
 						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
