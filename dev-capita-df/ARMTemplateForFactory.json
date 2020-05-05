@@ -912,7 +912,14 @@
 													"method": "GET",
 													"headers": {
 														"Authorization": "HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492"
-													}
+													},
+													"linkedServices": [
+														{
+															"referenceName": "HttpServer1",
+															"type": "LinkedServiceReference"
+														}
+													],
+													"datasets": []
 												}
 											},
 											{
@@ -963,7 +970,7 @@
 												}
 											},
 											{
-												"name": "fill_metadata_information",
+												"name": "fill_metadata_for_true_condition",
 												"type": "AzureFunctionActivity",
 												"dependsOn": [
 													{
@@ -1000,7 +1007,7 @@
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [
 													{
-														"activity": "fill_metadata_information",
+														"activity": "fill_metadata_for_true_condition",
 														"dependencyConditions": [
 															"Succeeded"
 														]
@@ -1019,21 +1026,21 @@
 													"storedProcedureParameters": {
 														"azureHash": {
 															"value": {
-																"value": "@activity('fill_metadata_information').output.shA256",
+																"value": "@activity('fill_metadata_for_true_condition').output.shA256",
 																"type": "Expression"
 															},
 															"type": "String"
 														},
 														"customMetadata": {
 															"value": {
-																"value": "@activity('fill_metadata_information').output.customMetadata",
+																"value": "@activity('fill_metadata_for_true_condition').output.customMetadata",
 																"type": "Expression"
 															},
 															"type": "String"
 														},
 														"eTag": {
 															"value": {
-																"value": "@activity('fill_metadata_information').output.eTag",
+																"value": "@activity('fill_metadata_for_true_condition').output.output.eTag",
 																"type": "Expression"
 															},
 															"type": "String"
@@ -1047,7 +1054,7 @@
 														},
 														"MD5": {
 															"value": {
-																"value": "@activity('fill_metadata_information').output.contentMD5",
+																"value": "@activity('fill_metadata_for_true_condition').output.contentMD5",
 																"type": "Expression"
 															},
 															"type": "String"
@@ -1627,6 +1634,7 @@
 				"[concat(variables('factoryId'), '/datasets/azure_data_upload_avro_stage_ds')]",
 				"[concat(variables('factoryId'), '/datasets/azure_data_upload_avro_ds')]",
 				"[concat(variables('factoryId'), '/linkedServices/azure_pipeline_metadata_update_ls')]",
+				"[concat(variables('factoryId'), '/linkedServices/HttpServer1')]",
 				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-ir')]"
 			]
 		},
