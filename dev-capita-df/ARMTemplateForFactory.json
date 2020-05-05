@@ -151,7 +151,7 @@
 								"requestInterval": "00.00:00:00.010",
 								"requestMethod": "POST",
 								"requestBody": {
-									"value": "@{concat('<queryRequest><object><query>namespace:',activity('Get_Query_to_Process').output.firstRow.namespace,' ingestTimeString:',activity('Get_Query_to_Process').output.firstRow.ingestStartDateTime,' TO ',activity('Get_Query_to_Process').output.firstRow.ingestEndDateTime,']</query>\n<verbose>true</verbose></object></queryRequest>')}",
+									"value": "@{concat('<queryRequest><object><query>namespace:',activity('Get_Query_to_Process').output.firstRow.namespace,' ingestTimeString:[',activity('Get_Query_to_Process').output.firstRow.ingestStartDateTime,' TO ',activity('Get_Query_to_Process').output.firstRow.ingestEndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
 									"type": "Expression"
 								},
 								"additionalHeaders": {
@@ -402,7 +402,10 @@
 											"storedProcedureParameters": {
 												"count": {
 													"type": "Int32",
-													"value": "10"
+													"value": {
+														"value": "@activity('Get_Query_to_Process').output.firstRow.count",
+														"type": "Expression"
+													}
 												}
 											},
 											"queryTimeout": "02:00:00"
