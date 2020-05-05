@@ -1,0 +1,614 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dev-capita-df"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/hcpapi-sql-pipe')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "copy the data from api to sql",
+				"activities": [
+					{
+						"name": "copy from CSV to DB",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"additionalColumns": [
+									{
+										"name": "Batch_ID",
+										"value": {
+											"value": "@pipeline().RunId",
+											"type": "Expression"
+										}
+									}
+								],
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Batch_ID",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ID"
+										}
+									},
+									{
+										"source": {
+											"name": "IngestStartDateTime",
+											"type": "String"
+										},
+										"sink": {
+											"name": "IngestStartDateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "IngestEndDateTime",
+											"type": "String"
+										},
+										"sink": {
+											"name": "IngestEndDateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "NameSpace",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Namespace"
+										}
+									},
+									{
+										"source": {
+											"name": "CountOfRecordsToBeProcessedAtOnce",
+											"type": "String"
+										},
+										"sink": {
+											"name": "RecordsCount"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "csvforquery",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "hcp_query_param_data",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "Get_Query_Info",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "copy from CSV to DB",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_QueryData_ToProcess]",
+								"queryTimeout": "02:00:00"
+							},
+							"dataset": {
+								"referenceName": "hcp_query_param_data",
+								"type": "DatasetReference"
+							}
+						}
+					},
+					{
+						"name": "ForEachQuery",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get_Query_Info",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get_Query_Info').output",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "copy_hcpapidata_to_sql",
+									"description": "copies the data from api to sql.",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "RestSource",
+											"additionalColumns": [
+												{
+													"name": "BatchID",
+													"value": {
+														"value": "@pipeline().RunId",
+														"type": "Expression"
+													}
+												},
+												{
+													"name": "Status",
+													"value": "Initial"
+												},
+												{
+													"name": "RetryCount",
+													"value": "0"
+												}
+											],
+											"httpRequestTimeout": "00:01:40",
+											"requestInterval": "00.00:00:00.010",
+											"requestMethod": "POST",
+											"requestBody": {
+												"value": "<queryRequest>\n<object>\n<query>namespace:ns01.tenant01 ingestTimeString:[2020-04-21T00:00:00 TO 2020-04-22T23:59:59]</query>\n<verbose>true</verbose>\n</object>\n</queryRequest>",
+												"type": "Expression"
+											},
+											"additionalHeaders": {
+												"Authorization": "HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492",
+												"Content-Type": "application/xml"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink"
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"path": "[['urlName']"
+													},
+													"sink": {
+														"name": "UrlName",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['operation']"
+													},
+													"sink": {
+														"name": "Operation",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['version']"
+													},
+													"sink": {
+														"name": "Version",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['objectPath']"
+													},
+													"sink": {
+														"name": "ObjectPath"
+													}
+												},
+												{
+													"source": {
+														"path": "[['type']"
+													},
+													"sink": {
+														"name": "Type",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['size']"
+													},
+													"sink": {
+														"name": "Size",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "[['retention']"
+													},
+													"sink": {
+														"name": "Retention",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['hold']"
+													},
+													"sink": {
+														"name": "Hold",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['shred']"
+													},
+													"sink": {
+														"name": "Shred",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['owner']"
+													},
+													"sink": {
+														"name": "Owner",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ingestTime']"
+													},
+													"sink": {
+														"name": "IngestTime",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['customMetadata']"
+													},
+													"sink": {
+														"name": "CustomMetadataExists",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['index']"
+													},
+													"sink": {
+														"name": "Index",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['hash']"
+													},
+													"sink": {
+														"name": "Hash",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['updateTime']"
+													},
+													"sink": {
+														"name": "UpdateTime",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['namespace']"
+													},
+													"sink": {
+														"name": "Namespace",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['customMetadataAnnotation']"
+													},
+													"sink": {
+														"name": "CustomMetadataAnnotation",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['BatchID']"
+													},
+													"sink": {
+														"name": "BatchID",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['Status']"
+													},
+													"sink": {
+														"name": "Status",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['RetryCount']"
+													},
+													"sink": {
+														"name": "RetryCount",
+														"type": "String"
+													}
+												}
+											],
+											"collectionReference": "$['queryResult']['resultSet']",
+											"mapComplexValuesToString": true
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "hcp_api_ds",
+											"type": "DatasetReference"
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "hcp_data_sql_ds",
+											"type": "DatasetReference"
+										}
+									]
+								},
+								{
+									"name": "ProcessRecords",
+									"type": "Until",
+									"dependsOn": [
+										{
+											"activity": "copy_hcpapidata_to_sql",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@lessOrEquals(activity('update_status_and_get_recordscount').output.firstRow.recordsCount,1)",
+											"type": "Expression"
+										},
+										"activities": [
+											{
+												"name": "update_status_and_get_recordscount",
+												"type": "Lookup",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "AzureSqlSource",
+														"sqlReaderStoredProcedureName": "[[dbo].[USP_Update_StatusToReady]",
+														"storedProcedureParameters": {
+															"count": {
+																"type": "Int32",
+																"value": "10"
+															}
+														},
+														"queryTimeout": "02:00:00"
+													},
+													"dataset": {
+														"referenceName": "hcp_data_sql_ds",
+														"type": "DatasetReference"
+													},
+													"firstRowOnly": true
+												}
+											},
+											{
+												"name": "check_if_rowsExists_to_process",
+												"type": "IfCondition",
+												"dependsOn": [
+													{
+														"activity": "update_status_and_get_recordscount",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"userProperties": [],
+												"typeProperties": {
+													"expression": {
+														"value": "@equals(activity('update_status_and_get_recordscount').output.firstRow.recordsCount,0)",
+														"type": "Expression"
+													},
+													"ifFalseActivities": [
+														{
+															"name": "process_data_pipe",
+															"type": "ExecutePipeline",
+															"dependsOn": [],
+															"userProperties": [],
+															"typeProperties": {
+																"pipeline": {
+																	"referenceName": "process_data_pipe",
+																	"type": "PipelineReference"
+																},
+																"waitOnCompletion": true
+															}
+														}
+													]
+												}
+											}
+										],
+										"timeout": "7.00:00:00"
+									}
+								}
+							]
+						}
+					}
+				],
+				"parameters": {
+					"query": {
+						"type": "string"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/csvforquery')]",
+				"[concat(variables('factoryId'), '/datasets/hcp_query_param_data')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/csvforquery')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "azure_blob_csv_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "samplequerydata.csv",
+						"container": "inputquery"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hcp_query_param_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "capita_hcpdata_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "IngestStartDateTime",
+						"type": "nvarchar"
+					},
+					{
+						"name": "IngestEndDateTime",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Namespace",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RecordsCount",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Status",
+						"type": "nvarchar"
+					},
+					{
+						"name": "CreatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "tblhcp_queries_to_process"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

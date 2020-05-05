@@ -14,6 +14,9 @@
 		"AzureBlobStorage2_connectionString": {
 			"value": ""
 		},
+		"azure_blob_csv_ls_connectionString": {
+			"value": ""
+		},
 		"azure_data_upload_avro_dl_ls_accountKey": {
 			"value": ""
 		},

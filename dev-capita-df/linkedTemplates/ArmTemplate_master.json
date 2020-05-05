@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage2'"
 		},
+		"azure_blob_csv_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'azure_blob_csv_ls'"
+		},
 		"azure_data_upload_avro_dl_ls_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'azure_data_upload_avro_dl_ls'"
@@ -124,6 +128,9 @@
 					"AzureBlobStorage2_connectionString": {
 						"value": "[parameters('AzureBlobStorage2_connectionString')]"
 					},
+					"azure_blob_csv_ls_connectionString": {
+						"value": "[parameters('azure_blob_csv_ls_connectionString')]"
+					},
 					"azure_data_upload_avro_dl_ls_accountKey": {
 						"value": "[parameters('azure_data_upload_avro_dl_ls_accountKey')]"
 					},
@@ -151,9 +158,6 @@
 					"file_connect_connectionString": {
 						"value": "[parameters('file_connect_connectionString')]"
 					},
-					"AzureBatch1_accessKey": {
-						"value": "[parameters('AzureBatch1_accessKey')]"
-					},
 					"HttpServer1_properties_typeProperties_url": {
 						"value": "[parameters('HttpServer1_properties_typeProperties_url')]"
 					},
@@ -165,15 +169,6 @@
 					},
 					"hcp_object_ds_properties_typeProperties_url": {
 						"value": "[parameters('hcp_object_ds_properties_typeProperties_url')]"
-					},
-					"AzureBatch1_properties_typeProperties_accountName": {
-						"value": "[parameters('AzureBatch1_properties_typeProperties_accountName')]"
-					},
-					"AzureBatch1_properties_typeProperties_batchUri": {
-						"value": "[parameters('AzureBatch1_properties_typeProperties_batchUri')]"
-					},
-					"AzureBatch1_properties_typeProperties_poolName": {
-						"value": "[parameters('AzureBatch1_properties_typeProperties_poolName')]"
 					}
 				}
 			},
@@ -192,6 +187,18 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"AzureBatch1_accessKey": {
+						"value": "[parameters('AzureBatch1_accessKey')]"
+					},
+					"AzureBatch1_properties_typeProperties_accountName": {
+						"value": "[parameters('AzureBatch1_properties_typeProperties_accountName')]"
+					},
+					"AzureBatch1_properties_typeProperties_batchUri": {
+						"value": "[parameters('AzureBatch1_properties_typeProperties_batchUri')]"
+					},
+					"AzureBatch1_properties_typeProperties_poolName": {
+						"value": "[parameters('AzureBatch1_properties_typeProperties_poolName')]"
 					},
 					"hcp_data_download_http_ls_properties_typeProperties_url": {
 						"value": "[parameters('hcp_data_download_http_ls_properties_typeProperties_url')]"
