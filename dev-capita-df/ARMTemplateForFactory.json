@@ -87,6 +87,10 @@
 			"type": "string",
 			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
 		},
+		"hcp_http_ls_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com"
+		},
 		"hcp_object_ds_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest"
@@ -94,10 +98,6 @@
 		"hcpapiconnect_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://tenant01.coe-hcp01.hitachivantara.com/query"
-		},
-		"hcp_http_ls_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com"
 		}
 	},
 	"variables": {
@@ -784,7 +784,7 @@
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [
 													{
-														"activity": "fill_metadata_information_for_false_condition",
+														"activity": "fill_metadata_for_false_condition",
 														"dependencyConditions": [
 															"Succeeded"
 														]
@@ -803,21 +803,21 @@
 													"storedProcedureParameters": {
 														"azureHash": {
 															"value": {
-																"value": "@activity('fill_metadata_information_for_false_condition').output.shA256",
+																"value": "@activity('fill_metadata_for_false_condition').output.value.shA256",
 																"type": "Expression"
 															},
 															"type": "String"
 														},
 														"customMetadata": {
 															"value": {
-																"value": "@activity('fill_metadata_information_for_false_condition').output.customMetadata",
+																"value": "@activity('fill_metadata_for_false_condition').output.value.customMetadata",
 																"type": "Expression"
 															},
 															"type": "String"
 														},
 														"eTag": {
 															"value": {
-																"value": "@activity('fill_metadata_information_for_false_condition').output.eTag",
+																"value": "@activity('fill_metadata_for_false_condition').output.value.eTag",
 																"type": "Expression"
 															},
 															"type": "String"
@@ -831,7 +831,7 @@
 														},
 														"MD5": {
 															"value": {
-																"value": "@activity('fill_metadata_information_for_false_condition').output.contentMD5",
+																"value": "@activity('fill_metadata_for_false_condition').output.value.contentMD5",
 																"type": "Expression"
 															},
 															"type": "String"
@@ -848,7 +848,7 @@
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [
 													{
-														"activity": "fill_metadata_information_for_false_condition",
+														"activity": "fill_metadata_for_false_condition",
 														"dependencyConditions": [
 															"Failed"
 														]
@@ -867,7 +867,7 @@
 													"storedProcedureParameters": {
 														"error": {
 															"value": {
-																"value": "@activity('fill_metadata_information_for_false_condition').error.message",
+																"value": "@activity('fill_metadata_for_false_condition').error.message",
 																"type": "Expression"
 															},
 															"type": "String"
@@ -888,6 +888,33 @@
 												"linkedServiceName": {
 													"referenceName": "capita_hcpdata_db",
 													"type": "LinkedServiceReference"
+												}
+											},
+											{
+												"name": "fill_metadata_for_false_condition",
+												"type": "WebActivity",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"url": "https://dev-capita-pipelinemetadataupdate-function.azurewebsites.net/api/hcpmetadataupdate",
+													"method": "POST",
+													"headers": {
+														"content-type": "application/json",
+														"x-functions-key": "bzgNLYhDBES3GoahFrcB8uF1PkBPZaasYDGXV9qbYZIBTUnt6VRtMw=="
+													},
+													"body": {
+														"value": "@concat('{','\"filepath\": ',item().ObjectPath,'}')",
+														"type": "Expression"
+													},
+													"linkedServices": [],
+													"datasets": []
 												}
 											}
 										],
@@ -2447,6 +2474,27 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/hcp_http_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('hcp_http_ls_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": false,
+					"authenticationType": "Anonymous"
+				},
+				"connectVia": {
+					"referenceName": "hcp-ir",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-ir')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/hcp_object_ds')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -2491,27 +2539,6 @@
 				"typeProperties": {}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/hcp_http_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "HttpServer",
-				"typeProperties": {
-					"url": "[parameters('hcp_http_ls_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Anonymous"
-				},
-				"connectVia": {
-					"referenceName": "hcp-ir",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-ir')]"
-			]
 		}
 	]
 }

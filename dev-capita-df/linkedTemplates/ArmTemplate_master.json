@@ -87,6 +87,10 @@
 			"type": "string",
 			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
 		},
+		"hcp_http_ls_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com"
+		},
 		"hcp_object_ds_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest"
@@ -94,10 +98,6 @@
 		"hcpapiconnect_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://tenant01.coe-hcp01.hitachivantara.com/query"
-		},
-		"hcp_http_ls_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com"
 		},
 		"containerUri": {
 			"type": "string",
@@ -207,11 +207,11 @@
 					"hcp_data_download_http_ls_properties_typeProperties_url": {
 						"value": "[parameters('hcp_data_download_http_ls_properties_typeProperties_url')]"
 					},
-					"hcpapiconnect_properties_typeProperties_url": {
-						"value": "[parameters('hcpapiconnect_properties_typeProperties_url')]"
-					},
 					"hcp_http_ls_properties_typeProperties_url": {
 						"value": "[parameters('hcp_http_ls_properties_typeProperties_url')]"
+					},
+					"hcpapiconnect_properties_typeProperties_url": {
+						"value": "[parameters('hcpapiconnect_properties_typeProperties_url')]"
 					}
 				}
 			},
