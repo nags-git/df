@@ -803,21 +803,21 @@
 													"storedProcedureParameters": {
 														"azureHash": {
 															"value": {
-																"value": "@activity('fill_metadata_for_false_condition').output.value.shA256",
+																"value": "@activity('fill_metadata_for_false_condition').output.shA256",
 																"type": "Expression"
 															},
 															"type": "String"
 														},
 														"customMetadata": {
 															"value": {
-																"value": "@activity('fill_metadata_for_false_condition').output.value.customMetadata",
+																"value": "@activity('fill_metadata_for_false_condition').output.customMetadata",
 																"type": "Expression"
 															},
 															"type": "String"
 														},
 														"eTag": {
 															"value": {
-																"value": "@activity('fill_metadata_for_false_condition').output.value.eTag",
+																"value": "@activity('fill_metadata_for_false_condition').output.eTag",
 																"type": "Expression"
 															},
 															"type": "String"
@@ -831,7 +831,7 @@
 														},
 														"MD5": {
 															"value": {
-																"value": "@activity('fill_metadata_for_false_condition').output.value.contentMD5",
+																"value": "@activity('fill_metadata_for_false_condition').output.contentMD5",
 																"type": "Expression"
 															},
 															"type": "String"
@@ -910,9 +910,11 @@
 														"x-functions-key": "bzgNLYhDBES3GoahFrcB8uF1PkBPZaasYDGXV9qbYZIBTUnt6VRtMw=="
 													},
 													"body": {
-														"value": "{\n\"filepath\": \"evidential/2020/feb/bops-5.png\"\n}",
+														"value": "{\n\"filepath\": \"evidential\"@item().objectpath\n}",
 														"type": "Expression"
-													}
+													},
+													"linkedServices": [],
+													"datasets": []
 												}
 											}
 										],
