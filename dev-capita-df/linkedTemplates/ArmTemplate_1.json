@@ -543,31 +543,6 @@
 												}
 											},
 											{
-												"name": "fill_metadata_for_false_condition1",
-												"type": "WebActivity",
-												"dependsOn": [],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"url": "https://dev-capita-pipelinemetadataupdate-function.azurewebsites.net/api/hcpmetadataupdate",
-													"method": "POST",
-													"headers": {
-														"content-type": "application/json",
-														"x-functions-key": "bzgNLYhDBES3GoahFrcB8uF1PkBPZaasYDGXV9qbYZIBTUnt6VRtMw=="
-													},
-													"body": {
-														"value": "@concat('{\n\"filepath\": \"evidential/',item().objectpath,'\"}')",
-														"type": "Expression"
-													}
-												}
-											},
-											{
 												"name": "fill_metadata_for_false_condition",
 												"type": "AzureFunctionActivity",
 												"dependsOn": [],
@@ -598,39 +573,6 @@
 										],
 										"ifTrueActivities": [
 											{
-												"name": "hcp_metadata_download",
-												"type": "WebActivity",
-												"dependsOn": [],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"url": {
-														"value": "@concat(item().UrlName,'?type=custom-metadata&annotation=',item().CustomMetadataAnnotation)",
-														"type": "Expression"
-													},
-													"connectVia": {
-														"referenceName": "hcp-ir",
-														"type": "IntegrationRuntimeReference"
-													},
-													"method": "GET",
-													"headers": {
-														"Authorization": "HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492"
-													},
-													"linkedServices": [
-														{
-															"referenceName": "hcp_http_ls",
-															"type": "LinkedServiceReference"
-														}
-													]
-												}
-											},
-											{
 												"name": "usp_update_error_hcp_metadata",
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [
@@ -660,7 +602,7 @@
 															"type": "String"
 														},
 														"errorAtStage": {
-															"value": "Download Hcp Metadata",
+															"value": "upload metadata to hcp error",
 															"type": "String"
 														},
 														"id": {
@@ -1394,8 +1336,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/hcp_data_download_avro_ds')]",
-				"[concat(variables('factoryId'), '/linkedServices/hcp_http_ls')]"
+				"[concat(variables('factoryId'), '/datasets/hcp_data_download_avro_ds')]"
 			]
 		},
 		{
@@ -1736,20 +1677,6 @@
 										"ifFalseActivities": [
 											{
 												"name": "process_data_pipe",
-												"type": "ExecutePipeline",
-												"dependsOn": [],
-												"userProperties": [],
-												"typeProperties": {
-													"pipeline": {
-														"referenceName": "process_data_pipe",
-														"type": "PipelineReference"
-													},
-													"waitOnCompletion": true,
-													"parameters": {}
-												}
-											},
-											{
-												"name": "process_data_pipe_copy1",
 												"type": "ExecutePipeline",
 												"dependsOn": [],
 												"userProperties": [],
