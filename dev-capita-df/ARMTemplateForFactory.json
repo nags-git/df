@@ -910,11 +910,9 @@
 														"x-functions-key": "bzgNLYhDBES3GoahFrcB8uF1PkBPZaasYDGXV9qbYZIBTUnt6VRtMw=="
 													},
 													"body": {
-														"value": "{\n\"filepath\": \"evidential\"@item().objectpath\n}",
+														"value": "@concat('{\n\"filepath\": \"evidential/',item().objectpath,'\"}')",
 														"type": "Expression"
-													},
-													"linkedServices": [],
-													"datasets": []
+													}
 												}
 											}
 										],
