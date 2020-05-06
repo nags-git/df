@@ -910,11 +910,9 @@
 														"x-functions-key": "bzgNLYhDBES3GoahFrcB8uF1PkBPZaasYDGXV9qbYZIBTUnt6VRtMw=="
 													},
 													"body": {
-														"value": "@concat('{','\"filepath\": ',item().ObjectPath,'}')",
+														"value": "{\n\"filepath\": \"evidential/2020/feb/bops-5.png\"\n}",
 														"type": "Expression"
-													},
-													"linkedServices": [],
-													"datasets": []
+													}
 												}
 											}
 										],
@@ -949,8 +947,7 @@
 															"referenceName": "hcp_http_ls",
 															"type": "LinkedServiceReference"
 														}
-													],
-													"datasets": []
+													]
 												}
 											},
 											{
