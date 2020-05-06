@@ -7,10 +7,6 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dev-capita-df"
 		},
-		"AzureBatch1_accessKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accessKey' of 'AzureBatch1'"
-		},
 		"AzureBlobStorage1_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
@@ -59,22 +55,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'file_connect'"
 		},
-		"AzureBatch1_properties_typeProperties_accountName": {
-			"type": "string",
-			"defaultValue": "processhcpobject"
-		},
-		"AzureBatch1_properties_typeProperties_batchUri": {
-			"type": "string",
-			"defaultValue": "https://uksouth.batch.azure.com"
-		},
-		"AzureBatch1_properties_typeProperties_poolName": {
-			"type": "string",
-			"defaultValue": "processhcpobject"
-		},
-		"HttpServer1_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/bop4.png"
-		},
 		"azure_data_upload_avro_dl_ls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://devcapitaevidentialst.dfs.core.windows.net"
@@ -89,7 +69,7 @@
 		},
 		"hcp_http_ls_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com"
+			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/"
 		},
 		"hcp_object_ds_properties_typeProperties_url": {
 			"type": "string",
@@ -766,34 +746,6 @@
 												}
 											},
 											{
-												"name": "fill_metadata_information_for_false_condition",
-												"type": "AzureFunctionActivity",
-												"dependsOn": [],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"functionName": "ProcessMetadataForPipeline",
-													"method": "POST",
-													"headers": {
-														"Content-Type": "application/json"
-													},
-													"body": {
-														"value": "{\n\"filepath\": \"evidential/2020/feb/bops-5.png\",\n\"customMetadataXml\": \"<?xml version='1.0' encoding='utf-8' ?><root><DocumentOutbound>  <CorrespondenceID>S9999111</CorrespondenceID>  <Version>1.0</Version>  <Contract>DocumentOutbound</Contract>  <RepositoryID>bops</RepositoryID>  <SourceSystemID>acc</SourceSystemID>  <FileName>AP020899999_1.pdf</FileName>  <Submitter></Submitter>  <Comment>Added by dataload tool.</Comment>  <CategoryID>247</CategoryID>  <SubCategoryID>258</SubCategoryID>  <AccountNumber>999999998</AccountNumber>  <PCNNumber></PCNNumber>  <SelfID>5415D621038A0A40E10080000A82A5A6</SelfID>  <Batched>635464224000000000</Batched>  <Posted>635464224000000000</Posted>  <BatchType>STMT_020877682503453</BatchType>  <BatchNumber></BatchNumber>  <RelatedDocumentID></RelatedDocumentID>  <Created>636046051130000000</Created>  <Modified>636046051130000000</Modified> <Modified1>636046051130000000</Modified1></DocumentOutbound></root>\"\n}",
-														"type": "Expression"
-													}
-												},
-												"linkedServiceName": {
-													"referenceName": "azure_pipeline_metadata_update_ls",
-													"type": "LinkedServiceReference"
-												}
-											},
-											{
 												"name": "update_metadata_for_false_condition",
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [
@@ -905,7 +857,7 @@
 												}
 											},
 											{
-												"name": "fill_metadata_for_false_condition",
+												"name": "fill_metadata_for_false_condition1",
 												"type": "WebActivity",
 												"dependsOn": [],
 												"policy": {
@@ -927,6 +879,34 @@
 														"value": "@concat('{\n\"filepath\": \"evidential/',item().objectpath,'\"}')",
 														"type": "Expression"
 													}
+												}
+											},
+											{
+												"name": "fill_metadata_for_false_condition",
+												"type": "AzureFunctionActivity",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"functionName": "hcpmetadataupdate",
+													"method": "POST",
+													"headers": {
+														"Content-Type": "application/json"
+													},
+													"body": {
+														"value": "@concat('{\n\"filepath\": \"evidential/',item().objectpath,'\n\"customMetadataExists\": \"False\"}')",
+														"type": "Expression"
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "azure_pipeline_metadata_update_ls",
+													"type": "LinkedServiceReference"
 												}
 											}
 										],
@@ -969,7 +949,7 @@
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [
 													{
-														"activity": "hcp_metadata_download",
+														"activity": "upload_data_hcp_metadata_to_stage_azure",
 														"dependencyConditions": [
 															"Failed"
 														]
@@ -988,7 +968,7 @@
 													"storedProcedureParameters": {
 														"error": {
 															"value": {
-																"value": "@activity('hcp_metadata_download').error.message",
+																"value": "@activity('upload_data_hcp_metadata_to_stage_azure').error.message",
 																"type": "Expression"
 															},
 															"type": "String"
@@ -1016,7 +996,7 @@
 												"type": "AzureFunctionActivity",
 												"dependsOn": [
 													{
-														"activity": "hcp_metadata_download",
+														"activity": "upload_data_hcp_metadata_to_stage_azure",
 														"dependencyConditions": [
 															"Succeeded"
 														]
@@ -1031,11 +1011,11 @@
 												},
 												"userProperties": [],
 												"typeProperties": {
-													"functionName": "ProcessMetadataForPipeline",
+													"functionName": "hcpmetadataupdate",
 													"method": "POST",
 													"headers": {},
 													"body": {
-														"value": "@concat('{','\"filepath\": ',item().ObjectPath,'\n\"customMetadataXml\": ',activity('hcp_metadata_download').output,'}')",
+														"value": "@concat('{\n\"filepath\": \"evidential/',item().objectpath,'\n\"customMetadataExists\": \"False\"}')",
 														"type": "Expression"
 													}
 												},
@@ -1107,6 +1087,65 @@
 													"referenceName": "capita_hcpdata_db",
 													"type": "LinkedServiceReference"
 												}
+											},
+											{
+												"name": "upload_data_hcp_metadata_to_stage_azure",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "AvroSource",
+														"storeSettings": {
+															"type": "HttpReadSettings",
+															"requestMethod": "GET",
+															"additionalHeaders": "Authorization: HCP YWRtaW4=:79ccb574b8b45414a34cb69d17b03040",
+															"requestTimeout": ""
+														}
+													},
+													"sink": {
+														"type": "AvroSink",
+														"storeSettings": {
+															"type": "AzureBlobStorageWriteSettings"
+														},
+														"formatSettings": {
+															"type": "AvroWriteSettings",
+															"quoteAllText": true
+														}
+													},
+													"enableStaging": false
+												},
+												"inputs": [
+													{
+														"referenceName": "hcp_data_download_avro_ds",
+														"type": "DatasetReference",
+														"parameters": {
+															"relativeURL": {
+																"value": "@concat(item().ObjectPath,'?type=custom-metadata&annotation=',item().CustomMetadataAnnotation)",
+																"type": "Expression"
+															}
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "azure_data_upload_avro_stage_ds",
+														"type": "DatasetReference",
+														"parameters": {
+															"relativeURL": {
+																"value": "@concat('metadata/',item().ObjectPath)",
+																"type": "Expression"
+															}
+														}
+													}
+												]
 											}
 										]
 									}
@@ -2245,31 +2284,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzureBatch1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBatch",
-				"typeProperties": {
-					"accountName": "[parameters('AzureBatch1_properties_typeProperties_accountName')]",
-					"accessKey": {
-						"type": "SecureString",
-						"value": "[parameters('AzureBatch1_accessKey')]"
-					},
-					"batchUri": "[parameters('AzureBatch1_properties_typeProperties_batchUri')]",
-					"poolName": "[parameters('AzureBatch1_properties_typeProperties_poolName')]",
-					"linkedServiceName": {
-						"referenceName": "file_connect",
-						"type": "LinkedServiceReference"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/file_connect')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -2291,21 +2305,6 @@
 				"type": "AzureBlobStorage",
 				"typeProperties": {
 					"connectionString": "[parameters('AzureBlobStorage2_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/HttpServer1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "HttpServer",
-				"typeProperties": {
-					"url": "[parameters('HttpServer1_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
 				}
 			},
 			"dependsOn": []
@@ -2374,7 +2373,7 @@
 				"annotations": [],
 				"type": "AzureFunction",
 				"typeProperties": {
-					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-function.azurewebsites.net/api/hcpmetadataupdate",
+					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-function.azurewebsites.net",
 					"functionKey": {
 						"type": "SecureString",
 						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"

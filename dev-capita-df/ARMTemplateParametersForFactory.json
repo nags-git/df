@@ -5,9 +5,6 @@
 		"factoryName": {
 			"value": "dev-capita-df"
 		},
-		"AzureBatch1_accessKey": {
-			"value": ""
-		},
 		"AzureBlobStorage1_connectionString": {
 			"value": ""
 		},
@@ -44,18 +41,6 @@
 		"file_connect_connectionString": {
 			"value": ""
 		},
-		"AzureBatch1_properties_typeProperties_accountName": {
-			"value": "processhcpobject"
-		},
-		"AzureBatch1_properties_typeProperties_batchUri": {
-			"value": "https://uksouth.batch.azure.com"
-		},
-		"AzureBatch1_properties_typeProperties_poolName": {
-			"value": "processhcpobject"
-		},
-		"HttpServer1_properties_typeProperties_url": {
-			"value": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/bop4.png"
-		},
 		"azure_data_upload_avro_dl_ls_properties_typeProperties_url": {
 			"value": "https://devcapitaevidentialst.dfs.core.windows.net"
 		},
@@ -66,7 +51,7 @@
 			"value": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
 		},
 		"hcp_http_ls_properties_typeProperties_url": {
-			"value": "https://ns01.tenant01.coe-hcp01.hitachivantara.com"
+			"value": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/"
 		},
 		"hcp_object_ds_properties_typeProperties_url": {
 			"value": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest"
