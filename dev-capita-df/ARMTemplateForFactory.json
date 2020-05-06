@@ -453,6 +453,20 @@
 													"waitOnCompletion": true,
 													"parameters": {}
 												}
+											},
+											{
+												"name": "process_data_pipe_copy1",
+												"type": "ExecutePipeline",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"pipeline": {
+														"referenceName": "process_data_pipe",
+														"type": "PipelineReference"
+													},
+													"waitOnCompletion": true,
+													"parameters": {}
+												}
 											}
 										]
 									}
