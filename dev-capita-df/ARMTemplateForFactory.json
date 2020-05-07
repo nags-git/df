@@ -2130,7 +2130,7 @@
 				"type": "CosmosDbSqlApiCollection",
 				"schema": {},
 				"typeProperties": {
-					"collectionName": "hcpdata"
+					"collectionName": "metadata"
 				}
 			},
 			"dependsOn": [
