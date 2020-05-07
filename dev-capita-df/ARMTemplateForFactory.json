@@ -135,7 +135,7 @@
 								"requestInterval": "00.00:00:00.010",
 								"requestMethod": "POST",
 								"requestBody": {
-									"value": "@{concat('<queryRequest><object><query>namespace:',activity('Get_Query_to_Process').output.namespace,' ingestTimeString:[',activity('Get_Query_to_Process').output.ingestStartDateTime,' TO ',activity('Get_Query_to_Process').output.ingestEndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
+									"value": "@{concat('<queryRequest><object><query>namespace:',activity('Get_Query_to_Process').output.value.namespace,' ingestTimeString:[',activity('Get_Query_to_Process').output.value.ingestStartDateTime,' TO ',activity('Get_Query_to_Process').output.value.ingestEndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
 									"type": "Expression"
 								},
 								"additionalHeaders": {
