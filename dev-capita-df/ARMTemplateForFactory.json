@@ -135,7 +135,7 @@
 								"requestInterval": "00.00:00:00.010",
 								"requestMethod": "POST",
 								"requestBody": {
-									"value": "@{concat('<queryRequest><object><query>namespace:',activity('Get_Query_to_Process').output.firstRow.namespace,' ingestTimeString:[',activity('Get_Query_to_Process').output.firstRow.ingestStartDateTime,' TO ',activity('Get_Query_to_Process').output.firstRow.ingestEndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
+									"value": "@{concat('<queryRequest><object><query>namespace:',activity('Get_Query_to_Process').output.firstRow.namespace,' +ingestTimeString:[',activity('Get_Query_to_Process').output.firstRow.ingestStartDateTime,' TO ',activity('Get_Query_to_Process').output.firstRow.ingestEndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
 									"type": "Expression"
 								},
 								"additionalHeaders": {
@@ -354,7 +354,7 @@
 						"type": "Until",
 						"dependsOn": [
 							{
-								"activity": "copy_hcpapidata_to_sql",
+								"activity": "update_query_status_copiedData",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -472,6 +472,46 @@
 							},
 							"firstRowOnly": true
 						}
+					},
+					{
+						"name": "update_query_status_copiedData",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "copy_hcpapidata_to_sql",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_Update_QueryData_Status]",
+							"storedProcedureParameters": {
+								"id": {
+									"value": {
+										"value": "@activity('Get_Query_to_Process').output.firstRow.id",
+										"type": "Expression"
+									},
+									"type": "Guid"
+								},
+								"status": {
+									"value": "DataCopiedToDatabase",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "capita_hcpdata_db",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"annotations": []
@@ -479,6 +519,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/hcp_api_ds')]",
 				"[concat(variables('factoryId'), '/datasets/hcp_data_sql_ds')]",
+				"[concat(variables('factoryId'), '/linkedServices/capita_hcpdata_db')]",
 				"[concat(variables('factoryId'), '/pipelines/process_data_pipe')]"
 			]
 		},
