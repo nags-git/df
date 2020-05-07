@@ -954,7 +954,7 @@
 												}
 											},
 											{
-												"name": "update_metadata",
+												"name": "update_metadata_for_true_condition",
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [
 													{
