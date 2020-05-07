@@ -1373,7 +1373,7 @@
 									{
 										"name": "BatchID",
 										"value": {
-											"value": "@activity('Get_Query_to_Process').output.firstRow.Id",
+											"value": "@activity('Get_Query_to_Process').output.value.Id",
 											"type": "Expression"
 										}
 									},
@@ -1390,7 +1390,7 @@
 								"requestInterval": "00.00:00:00.010",
 								"requestMethod": "POST",
 								"requestBody": {
-									"value": "@{concat('<queryRequest><object><query>namespace:',activity('Get_Query_to_Process').output.firstrow.namespace,' ingestTimeString:[',activity('Get_Query_to_Process').output.firstrow.ingestStartDateTime,' TO ',activity('Get_Query_to_Process').output.firstrow.ingestEndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
+									"value": "@{concat('<queryRequest><object><query>namespace:',activity('Get_Query_to_Process').output.value.namespace,' ingestTimeString:[',activity('Get_Query_to_Process').output.value.ingestStartDateTime,' TO ',activity('Get_Query_to_Process').output.value.ingestEndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
 									"type": "Expression"
 								},
 								"additionalHeaders": {
@@ -1725,7 +1725,7 @@
 								"type": "DatasetReference",
 								"parameters": {}
 							},
-							"firstRowOnly": true
+							"firstRowOnly": false
 						}
 					}
 				],
