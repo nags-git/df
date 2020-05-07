@@ -350,11 +350,43 @@
 						]
 					},
 					{
+						"name": "Get_Query_to_Process",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_QueryData_By_Status]",
+								"storedProcedureParameters": {
+									"status": {
+										"type": "String",
+										"value": "InProcess"
+									}
+								},
+								"queryTimeout": "02:00:00"
+							},
+							"dataset": {
+								"referenceName": "hcp_data_sql_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": true
+						}
+					},
+					{
 						"name": "ProcessRecords",
 						"type": "Until",
 						"dependsOn": [
 							{
-								"activity": "update_query_status_copiedData",
+								"activity": "copy_hcpapidata_to_sql",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -440,78 +472,6 @@
 							],
 							"timeout": "7.00:00:00"
 						}
-					},
-					{
-						"name": "Get_Query_to_Process",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_QueryData_By_Status]",
-								"storedProcedureParameters": {
-									"status": {
-										"type": "String",
-										"value": "InProcess"
-									}
-								},
-								"queryTimeout": "02:00:00"
-							},
-							"dataset": {
-								"referenceName": "hcp_data_sql_ds",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": true
-						}
-					},
-					{
-						"name": "update_query_status_copiedData",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "copy_hcpapidata_to_sql",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[USP_Update_QueryData_Status]",
-							"storedProcedureParameters": {
-								"id": {
-									"value": {
-										"value": "@activity('Get_Query_to_Process').output.firstRow.id",
-										"type": "Expression"
-									},
-									"type": "Guid"
-								},
-								"status": {
-									"value": "DataCopiedToDatabase",
-									"type": "String"
-								}
-							}
-						},
-						"linkedServiceName": {
-							"referenceName": "capita_hcpdata_db",
-							"type": "LinkedServiceReference"
-						}
 					}
 				],
 				"annotations": []
@@ -519,7 +479,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/hcp_api_ds')]",
 				"[concat(variables('factoryId'), '/datasets/hcp_data_sql_ds')]",
-				"[concat(variables('factoryId'), '/linkedServices/capita_hcpdata_db')]",
 				"[concat(variables('factoryId'), '/pipelines/process_data_pipe')]"
 			]
 		},
@@ -1833,7 +1792,7 @@
 								"value": "@activity('Get_Query_Info').output.value",
 								"type": "Expression"
 							},
-							"isSequential": false,
+							"isSequential": true,
 							"activities": [
 								{
 									"name": "hcpapi_sql_pipe",
