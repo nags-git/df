@@ -643,7 +643,7 @@
 													"method": "POST",
 													"headers": {},
 													"body": {
-														"value": "{\n\"filepath\": \"evidential/image1.png\",\n\"customMetadataExists\":\"True\"\n}",
+														"value": "@concat('{\n\"filepath\": \"evidential/',item().ObjectPath,'\",\n\"customMetadataExists\":\"True\"\n}')",
 														"type": "Expression"
 													}
 												},
@@ -1654,7 +1654,7 @@
 											"type": "DatasetReference",
 											"parameters": {}
 										},
-										"firstRowOnly": true
+										"firstRowOnly": false
 									}
 								},
 								{
@@ -1724,7 +1724,8 @@
 								"referenceName": "hcp_data_sql_ds",
 								"type": "DatasetReference",
 								"parameters": {}
-							}
+							},
+							"firstRowOnly": true
 						}
 					}
 				],
