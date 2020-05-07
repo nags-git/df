@@ -1075,7 +1075,7 @@
 														"type": "DatasetReference",
 														"parameters": {
 															"relativeURL": {
-																"value": "@concat('metadata/',item().ObjectPath)",
+																"value": "@concat('metadata/',item().ObjectPath,'.txt')",
 																"type": "Expression"
 															}
 														}
