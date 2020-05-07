@@ -1882,7 +1882,7 @@
 								"value": "@activity('Get_Query_Info').output.value",
 								"type": "Expression"
 							},
-							"isSequential": false,
+							"isSequential": true,
 							"activities": [
 								{
 									"name": "hcpapi_sql_pipe",
