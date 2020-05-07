@@ -55,6 +55,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'file_connect'"
 		},
+		"azure_data_upload_avro_stage_metadata_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_avro_stage_metadata_ls'"
+		},
 		"azure_data_upload_avro_dl_ls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://devcapitaevidentialst.dfs.core.windows.net"
@@ -145,6 +149,9 @@
 					},
 					"file_connect_connectionString": {
 						"value": "[parameters('file_connect_connectionString')]"
+					},
+					"azure_data_upload_avro_stage_metadata_ls_connectionString": {
+						"value": "[parameters('azure_data_upload_avro_stage_metadata_ls_connectionString')]"
 					},
 					"azure_data_upload_avro_dl_ls_properties_typeProperties_url": {
 						"value": "[parameters('azure_data_upload_avro_dl_ls_properties_typeProperties_url')]"

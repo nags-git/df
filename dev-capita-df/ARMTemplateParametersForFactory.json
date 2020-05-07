@@ -41,6 +41,9 @@
 		"file_connect_connectionString": {
 			"value": ""
 		},
+		"azure_data_upload_avro_stage_metadata_ls_connectionString": {
+			"value": ""
+		},
 		"azure_data_upload_avro_dl_ls_properties_typeProperties_url": {
 			"value": "https://devcapitaevidentialst.dfs.core.windows.net"
 		},

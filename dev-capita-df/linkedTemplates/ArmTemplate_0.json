@@ -55,6 +55,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'file_connect'"
 		},
+		"azure_data_upload_avro_stage_metadata_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_avro_stage_metadata_ls'"
+		},
 		"azure_data_upload_avro_dl_ls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://devcapitaevidentialst.dfs.core.windows.net"
@@ -277,6 +281,19 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/azure_data_upload_avro_stage_metadata_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('azure_data_upload_avro_stage_metadata_ls_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/azure_data_upload_avro_ds')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -331,7 +348,7 @@
 							"value": "@dataset().relativeURL",
 							"type": "Expression"
 						},
-						"container": "evidential"
+						"container": "hcpstage"
 					}
 				},
 				"schema": {}
@@ -399,48 +416,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/capita_hcpcosmos_db')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/hcp_data_sql_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "capita_hcpdata_db",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "BatchId",
-						"type": "nvarchar"
-					},
-					{
-						"name": "ObjectPath",
-						"type": "nvarchar"
-					},
-					{
-						"name": "HCPSHA",
-						"type": "nvarchar"
-					},
-					{
-						"name": "SHA",
-						"type": "nvarchar"
-					},
-					{
-						"name": "JsonData",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "tblhcpdata"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/capita_hcpdata_db')]"
 			]
 		}
 	]
