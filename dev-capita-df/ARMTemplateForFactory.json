@@ -943,7 +943,7 @@
 													"functionName": "hcpmetadataupdate",
 													"method": "POST",
 													"headers": {
-														"content-type": "application/json"
+														"Content-Type": "application/json"
 													},
 													"body": {
 														"value": "@concat('{\n\"filepath\": \"evidential/',item().ObjectPath,'\",\n\"customMetadataExists\":\"True\"\n}')",
