@@ -78,6 +78,10 @@
 		"hcpapiconnect_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://tenant01.coe-hcp01.hitachivantara.com/query"
+		},
+		"uploadfile_trigger_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/2a3390b4-6a54-48b5-812a-35320c2fab9c/resourceGroups/capita-master-rg/providers/Microsoft.Storage/storageAccounts/capitamasterstrg"
 		}
 	},
 	"variables": {
@@ -993,7 +997,7 @@
 														},
 														"eTag": {
 															"value": {
-																"value": "@@activity('fill_metadata_for_true_condition').output.eTag",
+																"value": "@activity('fill_metadata_for_true_condition').output.eTag",
 																"type": "Expression"
 															},
 															"type": "String"
@@ -1007,7 +1011,7 @@
 														},
 														"MD5": {
 															"value": {
-																"value": "@@activity('fill_metadata_for_true_condition').output.contentMD5",
+																"value": "@activity('fill_metadata_for_true_condition').output.contentMD5",
 																"type": "Expression"
 															},
 															"type": "String"
@@ -2525,6 +2529,36 @@
 				"typeProperties": {}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/uploadfile_trigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "query_info_pipe",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/inputquery/blobs/",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('uploadfile_trigger_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/query_info_pipe')]"
+			]
 		}
 	]
 }
