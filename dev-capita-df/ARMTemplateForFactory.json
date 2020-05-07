@@ -861,7 +861,7 @@
 														"Content-Type": "application/json"
 													},
 													"body": {
-														"value": "@concat('{\n\"filepath\": \"evidential/',item().objectpath,'\n\", customMetadataExists\": \"False\"}')",
+														"value": "{\n\"filepath\": \"evidential/image1.png\",\n\"customMetadataExists\":\"True\"\n}",
 														"type": "Expression"
 													}
 												},
@@ -943,7 +943,7 @@
 													"method": "POST",
 													"headers": {},
 													"body": {
-														"value": "@concat('{\n\"filepath\": \"evidential/',item().objectpath,'\n\", customMetadataExists\": \"True\"}')",
+														"value": "{\n\"filepath\": \"evidential/image1.png\",\n\"customMetadataExists\":\"True\"\n}",
 														"type": "Expression"
 													}
 												},
