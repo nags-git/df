@@ -993,7 +993,7 @@
 														},
 														"eTag": {
 															"value": {
-																"value": "@activity('fill_metadata_for_true_condition').output.output.eTag",
+																"value": "@@activity('fill_metadata_for_true_condition').output.eTag",
 																"type": "Expression"
 															},
 															"type": "String"
@@ -1007,7 +1007,7 @@
 														},
 														"MD5": {
 															"value": {
-																"value": "@activity('fill_metadata_for_true_condition').output.contentMD5",
+																"value": "@@activity('fill_metadata_for_true_condition').output.contentMD5",
 																"type": "Expression"
 															},
 															"type": "String"
