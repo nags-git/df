@@ -71,14 +71,6 @@
 			"type": "string",
 			"defaultValue": "https://tenant01.coe-hcp01.hitachivantara.com/query"
 		},
-		"trigger1_properties_typeProperties_scope": {
-			"type": "string",
-			"defaultValue": "/subscriptions/2a3390b4-6a54-48b5-812a-35320c2fab9c/resourceGroups/capita-master-rg/providers/Microsoft.Storage/storageAccounts/capitamasterstrg"
-		},
-		"uploadfile_trigger_properties_typeProperties_scope": {
-			"type": "string",
-			"defaultValue": "/subscriptions/2a3390b4-6a54-48b5-812a-35320c2fab9c/resourceGroups/capita-master-rg/providers/Microsoft.Storage/storageAccounts/capitamasterstrg"
-		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -171,12 +163,6 @@
 					},
 					"hcpapiconnect_properties_typeProperties_url": {
 						"value": "[parameters('hcpapiconnect_properties_typeProperties_url')]"
-					},
-					"trigger1_properties_typeProperties_scope": {
-						"value": "[parameters('trigger1_properties_typeProperties_scope')]"
-					},
-					"uploadfile_trigger_properties_typeProperties_scope": {
-						"value": "[parameters('uploadfile_trigger_properties_typeProperties_scope')]"
 					}
 				}
 			},

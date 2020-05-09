@@ -329,7 +329,7 @@
 							"value": "@dataset().relativePath",
 							"type": "Expression"
 						},
-						"container": "evidential"
+						"container": "hcpstage"
 					}
 				},
 				"schema": {}
@@ -353,7 +353,8 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "samplequerydata.csv",
-						"container": "inputquery"
+						"folderPath": "inputquery",
+						"container": "hcpstage"
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
