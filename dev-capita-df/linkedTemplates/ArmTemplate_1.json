@@ -19,6 +19,10 @@
 			"type": "string",
 			"defaultValue": "https://tenant01.coe-hcp01.hitachivantara.com/query"
 		},
+		"trigger1_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/2a3390b4-6a54-48b5-812a-35320c2fab9c/resourceGroups/capita-master-rg/providers/Microsoft.Storage/storageAccounts/capitamasterstrg"
+		},
 		"uploadfile_trigger_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/2a3390b4-6a54-48b5-812a-35320c2fab9c/resourceGroups/capita-master-rg/providers/Microsoft.Storage/storageAccounts/capitamasterstrg"
@@ -28,97 +32,6 @@
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/hcp_data_sql_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "capita_hcpdata_db",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "BatchId",
-						"type": "nvarchar"
-					},
-					{
-						"name": "ObjectPath",
-						"type": "nvarchar"
-					},
-					{
-						"name": "HCPSHA",
-						"type": "nvarchar"
-					},
-					{
-						"name": "SHA",
-						"type": "nvarchar"
-					},
-					{
-						"name": "JsonData",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "tblhcpdata"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/hcp_query_param_data')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "capita_hcpdata_db",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "ID",
-						"type": "uniqueidentifier"
-					},
-					{
-						"name": "IngestStartDateTime",
-						"type": "nvarchar"
-					},
-					{
-						"name": "IngestEndDateTime",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Namespace",
-						"type": "nvarchar"
-					},
-					{
-						"name": "RecordsCount",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Status",
-						"type": "nvarchar"
-					},
-					{
-						"name": "CreatedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "tblhcp_queries_to_process"
-				}
-			},
-			"dependsOn": []
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/hcp_data_download_http_ls')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -132,7 +45,7 @@
 					"authenticationType": "Anonymous"
 				},
 				"connectVia": {
-					"referenceName": "hcp-ir",
+					"referenceName": "hcp-Ir",
 					"type": "IntegrationRuntimeReference"
 				}
 			},
@@ -151,7 +64,7 @@
 					"authenticationType": "Anonymous"
 				},
 				"connectVia": {
-					"referenceName": "hcp-ir",
+					"referenceName": "hcp-Ir",
 					"type": "IntegrationRuntimeReference"
 				}
 			},
@@ -170,39 +83,9 @@
 					"authenticationType": "Anonymous"
 				},
 				"connectVia": {
-					"referenceName": "hcp-ir",
+					"referenceName": "hcp-Ir",
 					"type": "IntegrationRuntimeReference"
 				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/azure_data_upload_avro_stage_metadata_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "azure_data_upload_avro_stage_metadata_ls",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"relativePath": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "Avro",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@dataset().relativePath",
-							"type": "Expression"
-						},
-						"container": "evidential"
-					}
-				},
-				"schema": {}
 			},
 			"dependsOn": []
 		},
@@ -1459,9 +1342,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/hcp_data_sql_ds')]",
-				"[concat(variables('factoryId'), '/datasets/hcp_data_download_avro_ds')]",
-				"[concat(variables('factoryId'), '/datasets/azure_data_upload_avro_stage_metadata_ds')]"
+				"[concat(variables('factoryId'), '/datasets/hcp_data_download_avro_ds')]"
 			]
 		},
 		{
@@ -1858,7 +1739,36 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/hcp_api_ds')]",
-				"[concat(variables('factoryId'), '/datasets/hcp_data_sql_ds')]",
+				"[concat(variables('factoryId'), '/pipelines/process_data_pipe')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger1')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "process_data_pipe",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/inputquery/blobs/",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('trigger1_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/process_data_pipe')]"
 			]
 		},
@@ -2151,7 +2061,6 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/hcp_query_param_data')]",
 				"[concat(variables('factoryId'), '/pipelines/hcpapi_sql_pipe')]"
 			]
 		},

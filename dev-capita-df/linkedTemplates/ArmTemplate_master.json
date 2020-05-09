@@ -7,14 +7,6 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dev-capita-df"
 		},
-		"AzureBlobStorage1_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
-		},
-		"AzureBlobStorage2_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage2'"
-		},
 		"azure_blob_csv_ls_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'azure_blob_csv_ls'"
@@ -27,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_avro_stage_ls'"
 		},
+		"azure_data_upload_avro_stage_metadata_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_avro_stage_metadata_ls'"
+		},
 		"azure_data_upload_ls_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_ls'"
@@ -34,10 +30,6 @@
 		"azure_pipeline_metadata_update_ls_functionKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
-		},
-		"blob_connect_link_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'blob_connect_link'"
 		},
 		"capita_hcpcosmos_db_connectionString": {
 			"type": "secureString",
@@ -54,10 +46,6 @@
 		"file_connect_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'file_connect'"
-		},
-		"azure_data_upload_avro_stage_metadata_ls_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_avro_stage_metadata_ls'"
 		},
 		"azure_data_upload_avro_dl_ls_properties_typeProperties_url": {
 			"type": "string",
@@ -82,6 +70,10 @@
 		"hcpapiconnect_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://tenant01.coe-hcp01.hitachivantara.com/query"
+		},
+		"trigger1_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/2a3390b4-6a54-48b5-812a-35320c2fab9c/resourceGroups/capita-master-rg/providers/Microsoft.Storage/storageAccounts/capitamasterstrg"
 		},
 		"uploadfile_trigger_properties_typeProperties_scope": {
 			"type": "string",
@@ -114,12 +106,6 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"AzureBlobStorage1_connectionString": {
-						"value": "[parameters('AzureBlobStorage1_connectionString')]"
-					},
-					"AzureBlobStorage2_connectionString": {
-						"value": "[parameters('AzureBlobStorage2_connectionString')]"
-					},
 					"azure_blob_csv_ls_connectionString": {
 						"value": "[parameters('azure_blob_csv_ls_connectionString')]"
 					},
@@ -129,14 +115,14 @@
 					"azure_data_upload_avro_stage_ls_connectionString": {
 						"value": "[parameters('azure_data_upload_avro_stage_ls_connectionString')]"
 					},
+					"azure_data_upload_avro_stage_metadata_ls_connectionString": {
+						"value": "[parameters('azure_data_upload_avro_stage_metadata_ls_connectionString')]"
+					},
 					"azure_data_upload_ls_connectionString": {
 						"value": "[parameters('azure_data_upload_ls_connectionString')]"
 					},
 					"azure_pipeline_metadata_update_ls_functionKey": {
 						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
-					},
-					"blob_connect_link_connectionString": {
-						"value": "[parameters('blob_connect_link_connectionString')]"
 					},
 					"capita_hcpcosmos_db_connectionString": {
 						"value": "[parameters('capita_hcpcosmos_db_connectionString')]"
@@ -149,9 +135,6 @@
 					},
 					"file_connect_connectionString": {
 						"value": "[parameters('file_connect_connectionString')]"
-					},
-					"azure_data_upload_avro_stage_metadata_ls_connectionString": {
-						"value": "[parameters('azure_data_upload_avro_stage_metadata_ls_connectionString')]"
 					},
 					"azure_data_upload_avro_dl_ls_properties_typeProperties_url": {
 						"value": "[parameters('azure_data_upload_avro_dl_ls_properties_typeProperties_url')]"
@@ -188,6 +171,9 @@
 					},
 					"hcpapiconnect_properties_typeProperties_url": {
 						"value": "[parameters('hcpapiconnect_properties_typeProperties_url')]"
+					},
+					"trigger1_properties_typeProperties_scope": {
+						"value": "[parameters('trigger1_properties_typeProperties_scope')]"
 					},
 					"uploadfile_trigger_properties_typeProperties_scope": {
 						"value": "[parameters('uploadfile_trigger_properties_typeProperties_scope')]"

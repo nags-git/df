@@ -7,14 +7,6 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dev-capita-df"
 		},
-		"AzureBlobStorage1_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
-		},
-		"AzureBlobStorage2_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage2'"
-		},
 		"azure_blob_csv_ls_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'azure_blob_csv_ls'"
@@ -27,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_avro_stage_ls'"
 		},
+		"azure_data_upload_avro_stage_metadata_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_avro_stage_metadata_ls'"
+		},
 		"azure_data_upload_ls_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_ls'"
@@ -34,10 +30,6 @@
 		"azure_pipeline_metadata_update_ls_functionKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
-		},
-		"blob_connect_link_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'blob_connect_link'"
 		},
 		"capita_hcpcosmos_db_connectionString": {
 			"type": "secureString",
@@ -54,10 +46,6 @@
 		"file_connect_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'file_connect'"
-		},
-		"azure_data_upload_avro_stage_metadata_ls_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_avro_stage_metadata_ls'"
 		},
 		"azure_data_upload_avro_dl_ls_properties_typeProperties_url": {
 			"type": "string",
@@ -82,6 +70,10 @@
 		"hcpapiconnect_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://tenant01.coe-hcp01.hitachivantara.com/query"
+		},
+		"trigger1_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/2a3390b4-6a54-48b5-812a-35320c2fab9c/resourceGroups/capita-master-rg/providers/Microsoft.Storage/storageAccounts/capitamasterstrg"
 		},
 		"uploadfile_trigger_properties_typeProperties_scope": {
 			"type": "string",
@@ -2064,6 +2056,38 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/azure_data_upload_avro_stage_metadata_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "azure_data_upload_avro_stage_metadata_ls",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"relativePath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Avro",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().relativePath",
+							"type": "Expression"
+						},
+						"container": "evidential"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/azure_data_upload_avro_stage_metadata_ls')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/csvforquery')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2269,32 +2293,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage2')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('AzureBlobStorage2_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/azure_blob_csv_ls')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -2338,6 +2336,19 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/azure_data_upload_avro_stage_metadata_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('azure_data_upload_avro_stage_metadata_ls_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/azure_data_upload_ls')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -2358,24 +2369,11 @@
 				"annotations": [],
 				"type": "AzureFunction",
 				"typeProperties": {
-					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-function.azurewebsites.net",
+					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net",
 					"functionKey": {
 						"type": "SecureString",
 						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
 					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/blob_connect_link')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('blob_connect_link_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -2445,12 +2443,12 @@
 					"authenticationType": "Anonymous"
 				},
 				"connectVia": {
-					"referenceName": "hcp-ir",
+					"referenceName": "hcp-Ir",
 					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-ir')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
 			]
 		},
 		{
@@ -2481,12 +2479,12 @@
 					"authenticationType": "Anonymous"
 				},
 				"connectVia": {
-					"referenceName": "hcp-ir",
+					"referenceName": "hcp-Ir",
 					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-ir')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
 			]
 		},
 		{
@@ -2517,23 +2515,43 @@
 					"authenticationType": "Anonymous"
 				},
 				"connectVia": {
-					"referenceName": "hcp-ir",
+					"referenceName": "hcp-Ir",
 					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-ir')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/hcp-ir')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"name": "[concat(parameters('factoryName'), '/trigger1')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"type": "SelfHosted",
-				"typeProperties": {}
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "process_data_pipe",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/inputquery/blobs/",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('trigger1_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/process_data_pipe')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/uploadfile_trigger')]",
@@ -2566,49 +2584,14 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/azure_data_upload_avro_stage_metadata_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/hcp-Ir')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('azure_data_upload_avro_stage_metadata_ls_connectionString')]"
-				}
+				"type": "SelfHosted",
+				"typeProperties": {}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/azure_data_upload_avro_stage_metadata_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "azure_data_upload_avro_stage_metadata_ls",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"relativePath": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "Avro",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@dataset().relativePath",
-							"type": "Expression"
-						},
-						"container": "evidential"
-					}
-				},
-				"schema": {}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/azure_data_upload_avro_stage_metadata_ls')]"
-			]
 		}
 	]
 }
