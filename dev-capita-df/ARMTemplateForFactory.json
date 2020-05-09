@@ -2094,8 +2094,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "samplequerydata.csv",
-						"folderPath": "inputquery",
-						"container": "hcpstage"
+						"container": "inputquery"
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
