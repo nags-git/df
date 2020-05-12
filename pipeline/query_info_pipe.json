@@ -273,19 +273,6 @@
 								"referenceName": "capita_hcpdata_db",
 								"type": "LinkedServiceReference"
 							}
-						},
-						{
-							"name": "hcpapi_sql_pipe_copy1",
-							"type": "ExecutePipeline",
-							"dependsOn": [],
-							"userProperties": [],
-							"typeProperties": {
-								"pipeline": {
-									"referenceName": "hcpapi_sql_pipe",
-									"type": "PipelineReference"
-								},
-								"waitOnCompletion": true
-							}
 						}
 					]
 				}
