@@ -1,0 +1,15 @@
+{
+	"name": "hcp_data_cosmos_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "capita_hcpcosmos_db",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "CosmosDbSqlApiCollection",
+		"typeProperties": {
+			"collectionName": "metadata"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

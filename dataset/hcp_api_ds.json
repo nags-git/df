@@ -1,0 +1,13 @@
+{
+	"name": "hcp_api_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "hcpapiconnect",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
