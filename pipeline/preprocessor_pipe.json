@@ -34,18 +34,8 @@
 						"mappings": [
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 1
-								},
-								"sink": {
-									"name": "ID",
-									"type": "Guid"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"ordinal": 2
+									"name": "IngestStartDateTime",
+									"type": "String"
 								},
 								"sink": {
 									"name": "IngestStartDateTime",
@@ -54,8 +44,8 @@
 							},
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 3
+									"name": "IngestEndDateTime",
+									"type": "String"
 								},
 								"sink": {
 									"name": "IngestEndDateTime",
@@ -64,8 +54,8 @@
 							},
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 4
+									"name": "NameSpace",
+									"type": "String"
 								},
 								"sink": {
 									"name": "Namespace",
@@ -73,21 +63,13 @@
 								}
 							},
 							{
+								"source": {
+									"name": "CountOfRecordsToBeProcessedAtOnce",
+									"type": "String"
+								},
 								"sink": {
 									"name": "RecordsCount",
 									"type": "Int32"
-								}
-							},
-							{
-								"sink": {
-									"name": "Status",
-									"type": "String"
-								}
-							},
-							{
-								"sink": {
-									"name": "CreatedDate",
-									"type": "DateTime"
 								}
 							}
 						]
