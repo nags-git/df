@@ -1,0 +1,22 @@
+{
+	"name": "csv_sql_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "az_strg_csv_sql_ls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "samplequerydata.csv",
+				"container": "inputquery"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
