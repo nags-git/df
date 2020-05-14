@@ -71,7 +71,13 @@
 							"inputs": [
 								{
 									"referenceName": "hcp_object_download_ds",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"relativeURL": {
+											"value": "@item().ObjectFullPath",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						}
