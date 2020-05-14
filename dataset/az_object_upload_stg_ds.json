@@ -15,7 +15,10 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "@dataset().relativeURL",
+				"fileName": {
+					"value": "@dataset().relativeURL",
+					"type": "Expression"
+				},
 				"container": "hcpstage"
 			}
 		}
