@@ -85,7 +85,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"relativeURL": {
-											"value": "image3.png",
+											"value": "@replace(item().ObjectFullPath,pipeline().parameters.baseURL,'/')",
 											"type": "Expression"
 										}
 									}
