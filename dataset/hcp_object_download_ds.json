@@ -2,7 +2,7 @@
 	"name": "hcp_object_download_ds",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "hcp_download_http_ls",
+			"referenceName": "hcp_http_ls",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
