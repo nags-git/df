@@ -85,7 +85,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"relativeURL": {
-											"value": "@replace(item().ObjectFullPath,pipeline().parameters.baseURL,'')",
+											"value": "@replace(item().ObjectFullPath,pipeline().parameters.baseURL,'\\')",
 											"type": "Expression"
 										}
 									}
