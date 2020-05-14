@@ -23,7 +23,8 @@
 					"dataset": {
 						"referenceName": "azsql_csv_sql_ds",
 						"type": "DatasetReference"
-					}
+					},
+					"firstRowOnly": false
 				}
 			},
 			{
@@ -40,7 +41,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('get_objects_to_process_lkup').output",
+						"value": "@activity('get_objects_to_process_lkup').output.value",
 						"type": "Expression"
 					},
 					"activities": [
@@ -84,7 +85,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"relativeURL": {
-											"value": "@item().ObjectFullPath",
+											"value": "@replace(item().ObjectFullPath,pipeline().parameters.baseURL,'')",
 											"type": "Expression"
 										}
 									}
@@ -93,7 +94,13 @@
 							"outputs": [
 								{
 									"referenceName": "az_object_upload_stg_ds",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"relativeURL": {
+											"value": "@replace(item().ObjectFullPath,pipeline().parameters.baseURL,'')",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						}
