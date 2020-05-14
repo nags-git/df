@@ -66,6 +66,16 @@
 										"requestTimeout": ""
 									}
 								},
+								"sink": {
+									"type": "AvroSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "AvroWriteSettings",
+										"quoteAllText": true
+									}
+								},
 								"enableStaging": false
 							},
 							"inputs": [
@@ -78,6 +88,12 @@
 											"type": "Expression"
 										}
 									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "az_object_upload_stg_ds",
+									"type": "DatasetReference"
 								}
 							]
 						}
