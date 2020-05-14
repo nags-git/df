@@ -1,0 +1,12 @@
+{
+	"name": "preprocessor_pipe",
+	"properties": {
+		"parameters": {
+			"namespace": {
+				"type": "string",
+				"defaultValue": "evidential"
+			}
+		},
+		"annotations": []
+	}
+}
