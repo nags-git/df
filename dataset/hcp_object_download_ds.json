@@ -1,0 +1,22 @@
+{
+	"name": "hcp_object_download_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "hcp_download_http_ls",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"relativeURL": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Avro",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": " @dataset().relativeURL"
+			}
+		}
+	}
+}

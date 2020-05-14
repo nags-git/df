@@ -1,6 +1,84 @@
 {
 	"name": "processor_pipe",
 	"properties": {
+		"activities": [
+			{
+				"name": "get_objects_to_process_lkup",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[USP_Get_ObjectsToProcess]",
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "azsql_csv_sql_ds",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "foreach_object",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "get_objects_to_process_lkup",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('get_objects_to_process_lkup').output",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "upload_object_to_stage_strg",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AvroSource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET",
+										"additionalHeaders": "Authorization: HCP YWRtaW4=:79ccb574b8b45414a34cb69d17b03040",
+										"requestTimeout": ""
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "hcp_object_download_ds",
+									"type": "DatasetReference"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
 		"annotations": []
 	}
 }
