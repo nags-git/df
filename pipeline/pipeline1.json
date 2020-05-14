@@ -1,0 +1,38 @@
+{
+	"name": "pipeline1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": " https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/image3.png",
+					"connectVia": {
+						"referenceName": "hcp-Ir",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "GET",
+					"headers": {
+						"Authorization": "HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492"
+					},
+					"linkedServices": [
+						{
+							"referenceName": "hcp_http_ls",
+							"type": "LinkedServiceReference"
+						}
+					]
+				}
+			}
+		],
+		"annotations": []
+	}
+}
