@@ -34,42 +34,32 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "IngestStartDateTime",
-									"type": "String"
+									"type": "String",
+									"ordinal": 1
 								},
 								"sink": {
-									"name": "IngestStartDateTime",
+									"name": "ObjectFullPath",
 									"type": "String"
 								}
 							},
 							{
 								"source": {
-									"name": "IngestEndDateTime",
-									"type": "String"
+									"type": "String",
+									"ordinal": 2
 								},
 								"sink": {
-									"name": "IngestEndDateTime",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "NameSpace",
-									"type": "String"
-								},
-								"sink": {
-									"name": "Namespace",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "CountOfRecordsToBeProcessedAtOnce",
-									"type": "String"
-								},
-								"sink": {
-									"name": "RecordsCount",
+									"name": "ObjectSize",
 									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 5
+								},
+								"sink": {
+									"name": "Hash",
+									"type": "String"
 								}
 							}
 						]
