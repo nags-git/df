@@ -18,6 +18,15 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderStoredProcedureName": "[dbo].[USP_Get_ObjectsToProcess]",
+						"storedProcedureParameters": {
+							"baseURL": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.baseURL",
+									"type": "Expression"
+								}
+							}
+						},
 						"queryTimeout": "02:00:00"
 					},
 					"dataset": {
@@ -85,7 +94,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"relativeURL": {
-											"value": "/image3.png",
+											"value": "@item().ObjectPath",
 											"type": "Expression"
 										}
 									}
@@ -97,7 +106,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"relativeURL": {
-											"value": "image3.png",
+											"value": "@item().ObjectPath",
 											"type": "Expression"
 										}
 									}
