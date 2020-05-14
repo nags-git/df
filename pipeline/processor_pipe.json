@@ -120,7 +120,7 @@
 		"parameters": {
 			"baseURL": {
 				"type": "string",
-				"defaultValue": " https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
+				"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
 			},
 			"azurecontainer": {
 				"type": "string",
