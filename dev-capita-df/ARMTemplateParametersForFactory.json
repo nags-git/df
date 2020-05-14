@@ -5,53 +5,14 @@
 		"factoryName": {
 			"value": "dev-capita-df"
 		},
-		"azure_blob_csv_ls_connectionString": {
+		"az_sql_ls_connectionString": {
 			"value": ""
 		},
-		"azure_data_upload_avro_dl_ls_accountKey": {
+		"az_strg_ls_connectionString": {
 			"value": ""
-		},
-		"azure_data_upload_avro_stage_ls_connectionString": {
-			"value": ""
-		},
-		"azure_data_upload_avro_stage_metadata_ls_connectionString": {
-			"value": ""
-		},
-		"azure_data_upload_ls_connectionString": {
-			"value": ""
-		},
-		"azure_pipeline_metadata_update_ls_functionKey": {
-			"value": ""
-		},
-		"capita_hcpcosmos_db_connectionString": {
-			"value": ""
-		},
-		"capita_hcpdata_db_connectionString": {
-			"value": ""
-		},
-		"capita_pgs_connect_connectionString": {
-			"value": ""
-		},
-		"file_connect_connectionString": {
-			"value": ""
-		},
-		"azure_data_upload_avro_dl_ls_properties_typeProperties_url": {
-			"value": "https://devcapitaevidentialst.dfs.core.windows.net"
-		},
-		"hcp_data_download_http_ls_properties_typeProperties_url": {
-			"value": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
-		},
-		"hcp_data_upload_ls_properties_typeProperties_url": {
-			"value": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
 		},
 		"hcp_http_ls_properties_typeProperties_url": {
-			"value": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/"
-		},
-		"hcp_object_ds_properties_typeProperties_url": {
-			"value": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest"
-		},
-		"hcpapiconnect_properties_typeProperties_url": {
-			"value": "https://tenant01.coe-hcp01.hitachivantara.com/query"
+			"value": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
 		}
 	}
 }

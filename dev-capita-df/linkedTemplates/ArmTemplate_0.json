@@ -7,57 +7,17 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dev-capita-df"
 		},
-		"azure_blob_csv_ls_connectionString": {
+		"az_sql_ls_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'azure_blob_csv_ls'"
+			"metadata": "Secure string for 'connectionString' of 'az_sql_ls'"
 		},
-		"azure_data_upload_avro_dl_ls_accountKey": {
+		"az_strg_ls_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'azure_data_upload_avro_dl_ls'"
+			"metadata": "Secure string for 'connectionString' of 'az_strg_ls'"
 		},
-		"azure_data_upload_avro_stage_ls_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_avro_stage_ls'"
-		},
-		"azure_data_upload_avro_stage_metadata_ls_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_avro_stage_metadata_ls'"
-		},
-		"azure_data_upload_ls_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'azure_data_upload_ls'"
-		},
-		"azure_pipeline_metadata_update_ls_functionKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
-		},
-		"capita_hcpcosmos_db_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'capita_hcpcosmos_db'"
-		},
-		"capita_hcpdata_db_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'capita_hcpdata_db'"
-		},
-		"capita_pgs_connect_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'capita_pgs_connect'"
-		},
-		"file_connect_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'file_connect'"
-		},
-		"azure_data_upload_avro_dl_ls_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://devcapitaevidentialst.dfs.core.windows.net"
-		},
-		"hcp_data_upload_ls_properties_typeProperties_url": {
+		"hcp_http_ls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
-		},
-		"hcp_object_ds_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest"
 		}
 	},
 	"variables": {
@@ -65,169 +25,27 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/azure_blob_csv_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('azure_blob_csv_ls_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/azure_data_upload_avro_dl_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('azure_data_upload_avro_dl_ls_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('azure_data_upload_avro_dl_ls_accountKey')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/azure_data_upload_avro_stage_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('azure_data_upload_avro_stage_ls_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/azure_data_upload_avro_stage_metadata_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('azure_data_upload_avro_stage_metadata_ls_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/azure_data_upload_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('azure_data_upload_ls_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/azure_pipeline_metadata_update_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureFunction",
-				"typeProperties": {
-					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net",
-					"functionKey": {
-						"type": "SecureString",
-						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/capita_hcpcosmos_db')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "CosmosDb",
-				"typeProperties": {
-					"connectionString": "[parameters('capita_hcpcosmos_db_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/capita_hcpdata_db')]",
+			"name": "[concat(parameters('factoryName'), '/az_sql_ls')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
-					"connectionString": "[parameters('capita_hcpdata_db_connectionString')]"
+					"connectionString": "[parameters('az_sql_ls_connectionString')]"
 				}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/capita_pgs_connect')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzurePostgreSql",
-				"typeProperties": {
-					"connectionString": "[parameters('capita_pgs_connect_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/file_connect')]",
+			"name": "[concat(parameters('factoryName'), '/az_strg_ls')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
 				"type": "AzureBlobStorage",
 				"typeProperties": {
-					"connectionString": "[parameters('file_connect_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/hcp_data_upload_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "HttpServer",
-				"typeProperties": {
-					"url": "[parameters('hcp_data_upload_ls_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/hcp_object_ds')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "RestService",
-				"typeProperties": {
-					"url": "[parameters('hcp_object_ds_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
+					"connectionString": "[parameters('az_strg_ls_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -243,211 +61,77 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/azure_data_upload_avro_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/postprocessor_pipe')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "azure_data_upload_ls",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"relativeURL": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "Avro",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@dataset().relativeURL",
-							"type": "Expression"
+				"activities": [
+					{
+						"name": "Stored procedure1",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
 						},
-						"container": "evidential"
-					}
-				},
-				"schema": {}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/azure_data_upload_ls')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/azure_data_upload_avro_stage_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "azure_data_upload_avro_stage_ls",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"relativeURL": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "Avro",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@dataset().relativeURL",
-							"type": "Expression"
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_Get_ObjectsToBeProcessedForCosmos]"
 						},
-						"container": "hcpstage"
-					}
-				},
-				"schema": {}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/azure_data_upload_avro_stage_ls')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/azure_data_upload_avro_stage_metadata_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "azure_data_upload_avro_stage_metadata_ls",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"relativePath": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "Avro",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@dataset().relativePath",
-							"type": "Expression"
-						},
-						"container": "hcpstage"
-					}
-				},
-				"schema": {}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/azure_data_upload_avro_stage_metadata_ls')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/csvforquery')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "azure_blob_csv_ls",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "samplequerydata.csv",
-						"container": "inputquery"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/azure_blob_csv_ls')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/hcp_data_cosmos_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "capita_hcpcosmos_db",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "CosmosDbSqlApiCollection",
-				"schema": {},
-				"typeProperties": {
-					"collectionName": "metadata"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/capita_hcpcosmos_db')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/hcp_data_sql_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "capita_hcpdata_db",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "BatchId",
-						"type": "nvarchar"
-					},
-					{
-						"name": "ObjectPath",
-						"type": "nvarchar"
-					},
-					{
-						"name": "HCPSHA",
-						"type": "nvarchar"
-					},
-					{
-						"name": "SHA",
-						"type": "nvarchar"
-					},
-					{
-						"name": "JsonData",
-						"type": "nvarchar"
+						"linkedServiceName": {
+							"referenceName": "az_sql_ls",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "tblhcpdata"
-				}
+				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/capita_hcpdata_db')]"
+				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/hcp_query_param_data')]",
+			"name": "[concat(parameters('factoryName'), '/az_object_upload_stg_ds')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "capita_hcpdata_db",
+					"referenceName": "az_strg_ls",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"relativeURL": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Avro",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().relativeURL",
+							"type": "Expression"
+						},
+						"container": "hcpstage"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_strg_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/azsql_csv_sql_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_sql_ls",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
@@ -487,11 +171,315 @@
 				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "tblhcp_queries_to_process"
+					"table": "tblhcpdata"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/capita_hcpdata_db')]"
+				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/csv_sql_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_strg_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "hcpObjects.txt",
+						"container": "inputquery"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_strg_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hcp_http_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('hcp_http_ls_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": false,
+					"authenticationType": "Anonymous"
+				},
+				"connectVia": {
+					"referenceName": "hcp-Ir",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/preprocessor_pipe')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_csv_sql",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 1
+										},
+										"sink": {
+											"name": "ObjectFullPath",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 2
+										},
+										"sink": {
+											"name": "ObjectSize",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 5
+										},
+										"sink": {
+											"name": "Hash",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "csv_sql_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azsql_csv_sql_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/csv_sql_ds')]",
+				"[concat(variables('factoryId'), '/datasets/azsql_csv_sql_ds')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hcp_object_download_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "hcp_http_ls",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"relativeURL": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Avro",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": " @dataset().relativeURL"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/hcp_http_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/processor_pipe')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "get_objects_to_process_lkup",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_ObjectsToProcess]",
+								"queryTimeout": "02:00:00"
+							},
+							"dataset": {
+								"referenceName": "azsql_csv_sql_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "foreach_object",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "get_objects_to_process_lkup",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('get_objects_to_process_lkup').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "upload_object_to_stage_strg",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AvroSource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "GET",
+												"additionalHeaders": "Authorization: HCP YWRtaW4=:79ccb574b8b45414a34cb69d17b03040",
+												"requestTimeout": ""
+											}
+										},
+										"sink": {
+											"type": "AvroSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "AvroWriteSettings",
+												"quoteAllText": true
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "hcp_object_download_ds",
+											"type": "DatasetReference",
+											"parameters": {
+												"relativeURL": {
+													"value": "@replace(item().ObjectFullPath,pipeline().parameters.baseURL,'')",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "az_object_upload_stg_ds",
+											"type": "DatasetReference",
+											"parameters": {
+												"relativeURL": {
+													"value": "@replace(item().ObjectFullPath,pipeline().parameters.baseURL,'')",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"parameters": {
+					"baseURL": {
+						"type": "string",
+						"defaultValue": " https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
+					},
+					"azurecontainer": {
+						"type": "string",
+						"defaultValue": "evidential"
+					},
+					"azurestagecontainer": {
+						"type": "string",
+						"defaultValue": "hcpstage"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/azsql_csv_sql_ds')]",
+				"[concat(variables('factoryId'), '/datasets/hcp_object_download_ds')]",
+				"[concat(variables('factoryId'), '/datasets/az_object_upload_stg_ds')]"
 			]
 		}
 	]
