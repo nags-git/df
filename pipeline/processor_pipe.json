@@ -63,7 +63,7 @@
 									"storeSettings": {
 										"type": "HttpReadSettings",
 										"requestMethod": "GET",
-										"additionalHeaders": "Authorization: HCP YWRtaW4=:79ccb574b8b45414a34cb69d17b03040",
+										"additionalHeaders": "Authorization: HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492",
 										"requestTimeout": ""
 									}
 								},
@@ -85,7 +85,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"relativeURL": {
-											"value": "@replace(string(item().ObjectFullPath),string(pipeline().parameters.baseURL),'/')",
+											"value": "/image3.png",
 											"type": "Expression"
 										}
 									}
@@ -97,7 +97,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"relativeURL": {
-											"value": "@replace(item().ObjectFullPath,pipeline().parameters.baseURL,'')",
+											"value": "image3.png",
 											"type": "Expression"
 										}
 									}
