@@ -87,43 +87,6 @@
 						"type": "DatasetReference"
 					}
 				]
-			},
-			{
-				"name": "get_query_info_data",
-				"type": "Lookup",
-				"dependsOn": [
-					{
-						"activity": "copy_csv_sql",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[dbo].[USP_Get_QueryData_By_Status]",
-						"storedProcedureParameters": {
-							"status": {
-								"type": "String",
-								"value": "Initial"
-							}
-						},
-						"queryTimeout": "02:00:00"
-					},
-					"dataset": {
-						"referenceName": "azsql_csv_sql_ds",
-						"type": "DatasetReference"
-					}
-				}
 			}
 		],
 		"annotations": []
