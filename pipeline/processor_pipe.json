@@ -114,7 +114,7 @@
 							]
 						},
 						{
-							"name": "update_status_ObjectStaged",
+							"name": "update_status_objectstaged",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
@@ -155,7 +155,7 @@
 							"type": "Copy",
 							"dependsOn": [
 								{
-									"activity": "update_status_ObjectStaged",
+									"activity": "update_status_objectstaged",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -209,7 +209,7 @@
 							]
 						},
 						{
-							"name": "update_status_ObjectLoaded",
+							"name": "update_status_objectloaded",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
@@ -250,7 +250,7 @@
 							"type": "IfCondition",
 							"dependsOn": [
 								{
-									"activity": "update_status_ObjectLoaded",
+									"activity": "update_status_objectloaded",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -286,18 +286,13 @@
 												}
 											},
 											"sink": {
-												"type": "AzureSqlSink",
-												"sqlWriterStoredProcedureName": "[dbo].[USP_Update_Metadata]",
-												"sqlWriterTableType": "SqlServerStoredProcedure",
-												"storedProcedureTableTypeParameterName": "customMetadata",
-												"storedProcedureParameters": {
-													"customMetadata": {
-														"type": "String"
-													},
-													"id": {
-														"type": "Guid",
-														"value": "@item().Id"
-													}
+												"type": "AvroSink",
+												"storeSettings": {
+													"type": "AzureBlobStorageWriteSettings"
+												},
+												"formatSettings": {
+													"type": "AvroWriteSettings",
+													"quoteAllText": true
 												}
 											},
 											"enableStaging": false
@@ -316,12 +311,185 @@
 										],
 										"outputs": [
 											{
-												"referenceName": "az_sql_hcp_data",
-												"type": "DatasetReference"
+												"referenceName": "az_object_upload_stg_ds",
+												"type": "DatasetReference",
+												"parameters": {
+													"relativeURL": "@concat('metadata/',item().ObjectPath,'.txt')"
+												}
 											}
 										]
+									},
+									{
+										"name": "update_status_metadata_downloaded",
+										"type": "SqlServerStoredProcedure",
+										"dependsOn": [
+											{
+												"activity": "download_metadata_object",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"storedProcedureName": "[dbo].[USP_UpdateHcpData_Status]",
+											"storedProcedureParameters": {
+												"id": {
+													"value": "@item().Id",
+													"type": "Guid"
+												},
+												"status": {
+													"value": "Metadata Downloaded",
+													"type": "String"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "az_sql_ls",
+											"type": "LinkedServiceReference"
+										}
 									}
 								]
+							}
+						},
+						{
+							"name": "fill_object_properties",
+							"type": "AzureFunctionActivity",
+							"dependsOn": [
+								{
+									"activity": "check_custommetadata_exists",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"functionName": "hcpmetadataupdate",
+								"method": "POST",
+								"body": {
+									"value": "@concat('{\n\"filepath\": \"evidential/',item().ObjectPath,'\",\n\"customMetadataExists\":item().CustomMetadataExists\n}')",
+									"type": "Expression"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_func_update_props_ls",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "update_status_integritycheck",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "fill_object_properties",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[USP_UpdateHcpData_Status]",
+								"storedProcedureParameters": {
+									"id": {
+										"value": "@item().Id",
+										"type": "Guid"
+									},
+									"status": {
+										"value": "IntegrityCheckInProgress",
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sql_ls",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "update_metadata_and_integrity_check",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "update_status_integritycheck",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[USP_Update_Metadata]",
+								"storedProcedureParameters": {
+									"azureHash": {
+										"value": {
+											"value": "@activity('fill_object_properties').output.sha256",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"customMetadata": {
+										"value": {
+											"value": "@activity('fill_object_properties').output.sha256",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"eTag": {
+										"value": {
+											"value": "@activity('fill_object_properties').output.eTag",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"id": {
+										"value": {
+											"value": "@item().Id",
+											"type": "Expression"
+										},
+										"type": "Guid"
+									},
+									"MD5": {
+										"value": {
+											"value": "@activity('fill_object_properties').output.contentMD5",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sql_ls",
+								"type": "LinkedServiceReference"
 							}
 						}
 					]
