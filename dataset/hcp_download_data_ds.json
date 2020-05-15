@@ -1,5 +1,5 @@
 {
-	"name": "hcp_data_download_ds",
+	"name": "hcp_download_data_ds",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "http_rest_ls",
