@@ -156,7 +156,10 @@
 									"additionalColumns": [
 										{
 											"name": "BatchId",
-											"value": "@item().Id"
+											"value": {
+												"value": "@item().Id",
+												"type": "Expression"
+											}
 										}
 									],
 									"httpRequestTimeout": "00:01:40",
@@ -380,7 +383,10 @@
 								"storedProcedureName": "[dbo].[USP_UpdateQuery_Status]",
 								"storedProcedureParameters": {
 									"id": {
-										"value": "@item().Id",
+										"value": {
+											"value": "@item().Id",
+											"type": "Expression"
+										},
 										"type": "Guid"
 									},
 									"status": {
@@ -393,11 +399,191 @@
 								"referenceName": "az_sql_ls",
 								"type": "LinkedServiceReference"
 							}
+						},
+						{
+							"name": "update_error_upload_hcpdata_to_sql",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "upload_hcpdata_to_sql",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[USP_Insert_ErrorInformation]",
+								"storedProcedureParameters": {
+									"errorAtStage": {
+										"value": "upload hcp data to sql",
+										"type": "String"
+									},
+									"errorInPipeline": {
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"errorMessage": {
+										"value": {
+											"value": "@activity('upload_hcpdata_to_sql').error.message",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"referenceId": {
+										"value": "@item().id",
+										"type": "Guid"
+									},
+									"referenceTable": {
+										"value": {
+											"value": "@pipeline().parameters.referencetable",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sql_ls",
+								"type": "LinkedServiceReference"
+							}
 						}
 					]
 				}
+			},
+			{
+				"name": "update_error_copy_query_sql",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "copy_query_sql",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[USP_Insert_ErrorInformation]",
+					"storedProcedureParameters": {
+						"errorAtStage": {
+							"value": "copy query information to sql",
+							"type": "String"
+						},
+						"errorInPipeline": {
+							"value": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"errorMessage": {
+							"value": {
+								"value": "@activity('copy_query_sql').error.message",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"referenceId": {
+							"value": "",
+							"type": "Guid"
+						},
+						"referenceTable": {
+							"value": {
+								"value": "@pipeline().parameters.referencetable",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "az_sql_ls",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "update_error_get_queries_to_process_lkup",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "get_queries_to_process_lkup",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[USP_Insert_ErrorInformation]",
+					"storedProcedureParameters": {
+						"errorAtStage": {
+							"value": "get queries to process lookup",
+							"type": "String"
+						},
+						"errorInPipeline": {
+							"value": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"errorMessage": {
+							"value": {
+								"value": "@activity('get_queries_to_process_lkup').error.message",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"referenceId": {
+							"value": "",
+							"type": "Guid"
+						},
+						"referenceTable": {
+							"value": {
+								"value": "@pipeline().parameters.referencetable",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "az_sql_ls",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
+		"parameters": {
+			"referenceTable": {
+				"type": "string",
+				"defaultValue": "tblhcpqueries"
+			}
+		},
 		"annotations": []
 	}
 }
