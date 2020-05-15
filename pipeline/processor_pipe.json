@@ -112,6 +112,43 @@
 									}
 								}
 							]
+						},
+						{
+							"name": "update_status_ObjectStaged",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "upload_object_to_stage_strg",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[USP_UpdateHcpData_Status]",
+								"storedProcedureParameters": {
+									"id": {
+										"value": "@item().Id",
+										"type": "Guid"
+									},
+									"status": {
+										"value": "ObjectStaged",
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sql_ls",
+								"type": "LinkedServiceReference"
+							}
 						}
 					]
 				}
