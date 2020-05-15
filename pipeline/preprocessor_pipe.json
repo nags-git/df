@@ -174,7 +174,175 @@
 								"sink": {
 									"type": "AzureSqlSink"
 								},
-								"enableStaging": false
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"path": "['urlName']"
+											},
+											"sink": {
+												"name": "ObjectFullPath",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['operation']"
+											},
+											"sink": {
+												"name": "Operation",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['version']"
+											},
+											"sink": {
+												"name": "Version",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['objectPath']"
+											},
+											"sink": {
+												"name": "ObjectPath",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['type']"
+											},
+											"sink": {
+												"name": "Type",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['size']"
+											},
+											"sink": {
+												"name": "ObjectSize",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "['retention']"
+											},
+											"sink": {
+												"name": "Retention",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['hold']"
+											},
+											"sink": {
+												"name": "Hold",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['shred']"
+											},
+											"sink": {
+												"name": "Shred",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['owner']"
+											},
+											"sink": {
+												"name": "Owner",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['ingestTime']"
+											},
+											"sink": {
+												"name": "IngestTime",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['customMetadata']"
+											},
+											"sink": {
+												"name": "CustomMetadataExists",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['index']"
+											},
+											"sink": {
+												"name": "Index",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['hash']"
+											},
+											"sink": {
+												"name": "Hash",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['updateTime']"
+											},
+											"sink": {
+												"name": "UpdateTime",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['namespace']"
+											},
+											"sink": {
+												"name": "Namespace",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['customMetadataAnnotation']"
+											},
+											"sink": {
+												"name": "CustomMetadataAnnotation",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['BatchId']"
+											},
+											"sink": {
+												"name": "BatchID",
+												"type": "Guid"
+											}
+										}
+									],
+									"collectionReference": "$['queryResult']['resultSet']"
+								}
 							},
 							"inputs": [
 								{
