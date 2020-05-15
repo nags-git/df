@@ -136,7 +136,10 @@
 								"storedProcedureName": "[dbo].[USP_UpdateHcpData_Status]",
 								"storedProcedureParameters": {
 									"id": {
-										"value": "@item().Id",
+										"value": {
+											"value": "@item().Id",
+											"type": "Expression"
+										},
 										"type": "Guid"
 									},
 									"status": {
@@ -231,7 +234,10 @@
 								"storedProcedureName": "[dbo].[USP_UpdateHcpData_Status]",
 								"storedProcedureParameters": {
 									"id": {
-										"value": "@item().Id",
+										"value": {
+											"value": "@item().Id",
+											"type": "Expression"
+										},
 										"type": "Guid"
 									},
 									"status": {
@@ -342,7 +348,10 @@
 											"storedProcedureName": "[dbo].[USP_UpdateHcpData_Status]",
 											"storedProcedureParameters": {
 												"id": {
-													"value": "@item().Id",
+													"value": {
+														"value": "@item().Id",
+														"type": "Expression"
+													},
 													"type": "Guid"
 												},
 												"status": {
@@ -414,7 +423,10 @@
 								"storedProcedureName": "[dbo].[USP_UpdateHcpData_Status]",
 								"storedProcedureParameters": {
 									"id": {
-										"value": "@item().Id",
+										"value": {
+											"value": "@item().Id",
+											"type": "Expression"
+										},
 										"type": "Guid"
 									},
 									"status": {
@@ -588,6 +600,10 @@
 			"azurestagecontainer": {
 				"type": "string",
 				"defaultValue": "hcpstage"
+			},
+			"referencetable": {
+				"type": "string",
+				"defaultValue": "tblhcpqueries"
 			}
 		},
 		"annotations": []
