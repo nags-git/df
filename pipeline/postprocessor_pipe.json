@@ -43,7 +43,84 @@
 					"items": {
 						"value": "@activity('get_objects_cleanup').output.value",
 						"type": "Expression"
-					}
+					},
+					"activities": [
+						{
+							"name": "If Condition1",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@bool(equals(item().CustomMetadataExists,'True'))",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "delete_metadata_object",
+										"type": "Delete",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"dataset": {
+												"referenceName": "az_object_upload_stg_ds",
+												"type": "DatasetReference",
+												"parameters": {
+													"relativeURL": "@concat('metadata/',item().ObjectPath,'.txt')"
+												}
+											},
+											"enableLogging": false,
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true
+											}
+										}
+									}
+								]
+							}
+						},
+						{
+							"name": "delete_stage_object",
+							"type": "Delete",
+							"dependsOn": [
+								{
+									"activity": "If Condition1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "az_object_upload_stg_ds",
+									"type": "DatasetReference",
+									"parameters": {
+										"relativeURL": "@item().ObjectPath"
+									}
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								}
+							}
+						}
+					]
 				}
 			}
 		],
