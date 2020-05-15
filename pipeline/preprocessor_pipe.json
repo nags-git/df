@@ -87,6 +87,105 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "get_queries_to_process",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "copy_query_sql",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select * from tblhcpqueries where status='Initial'",
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "azsql_csv_sql_ds",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "foreach_query",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "get_queries_to_process",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"activities": [
+						{
+							"name": "upload_hcpdata_to_sql",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "RestSource",
+									"additionalColumns": [
+										{
+											"name": "BatchId",
+											"value": "@item().Id"
+										}
+									],
+									"httpRequestTimeout": "00:01:40",
+									"requestInterval": "00.00:00:00.010",
+									"requestMethod": "POST",
+									"requestBody": {
+										"value": "@{concat('<queryRequest><object><query>namespace:',item().namespace,' +ingestTimeString:[',item().ingestStartDateTime,' TO ',item().ingestEndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
+										"type": "Expression"
+									},
+									"additionalHeaders": {
+										"Authorization": "HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492",
+										"Content-Type": "application/xml"
+									}
+								},
+								"sink": {
+									"type": "AzureSqlSink"
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "hcp_data_download_ds",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "az_sql_hcp_data",
+									"type": "DatasetReference"
+								}
+							]
+						}
+					]
+				}
 			}
 		],
 		"annotations": []

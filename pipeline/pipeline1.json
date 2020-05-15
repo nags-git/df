@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Web1",
-				"type": "WebActivity",
+				"name": "copy_csv_sql",
+				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
@@ -15,22 +15,68 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": " https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/image3.png",
-					"connectVia": {
-						"referenceName": "hcp-Ir",
-						"type": "IntegrationRuntimeReference"
-					},
-					"method": "GET",
-					"headers": {
-						"Authorization": "HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492"
-					},
-					"linkedServices": [
-						{
-							"referenceName": "hcp_http_ls",
-							"type": "LinkedServiceReference"
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
 						}
-					]
-				}
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 1
+								},
+								"sink": {
+									"name": "ObjectFullPath",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 2
+								},
+								"sink": {
+									"name": "ObjectSize",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 5
+								},
+								"sink": {
+									"name": "Hash",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "csv_sql_ds",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "azsql_csv_sql_ds",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
