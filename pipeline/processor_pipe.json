@@ -55,7 +55,7 @@
 					},
 					"activities": [
 						{
-							"name": "upload_object_to_stage_strg",
+							"name": "download_object",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -118,7 +118,7 @@
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
-									"activity": "upload_object_to_stage_strg",
+									"activity": "download_object",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -141,6 +141,101 @@
 									},
 									"status": {
 										"value": "ObjectDownloaded",
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sql_ls",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "uploadobject",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "update_status_ObjectStaged",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AvroSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true
+									}
+								},
+								"sink": {
+									"type": "AvroSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "AvroWriteSettings",
+										"quoteAllText": true
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "az_object_upload_stg_ds",
+									"type": "DatasetReference",
+									"parameters": {
+										"relativeURL": "@item().ObjectPath"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "az_object_upload_prod_ds",
+									"type": "DatasetReference",
+									"parameters": {
+										"relativeURL": "@item().ObjectPath"
+									}
+								}
+							]
+						},
+						{
+							"name": "update_status_ObjectLoaded",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "uploadobject",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[USP_UpdateHcpData_Status]",
+								"storedProcedureParameters": {
+									"id": {
+										"value": "@item().Id",
+										"type": "Guid"
+									},
+									"status": {
+										"value": "ObjectLoaded",
 										"type": "String"
 									}
 								}
