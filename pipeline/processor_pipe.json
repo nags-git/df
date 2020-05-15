@@ -244,6 +244,56 @@
 								"referenceName": "az_sql_ls",
 								"type": "LinkedServiceReference"
 							}
+						},
+						{
+							"name": "check_custommetadata_exists",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "update_status_ObjectLoaded",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@bool(equals(item().CustomMetadataExists,'True'))",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "download_metadata_object",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "AvroSource",
+												"storeSettings": {
+													"type": "AzureBlobStorageReadSettings",
+													"recursive": true
+												}
+											},
+											"enableStaging": false
+										},
+										"inputs": [
+											{
+												"referenceName": "hcp_metadata_download_ls",
+												"type": "DatasetReference"
+											}
+										]
+									}
+								]
+							}
 						}
 					]
 				}
