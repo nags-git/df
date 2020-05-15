@@ -5,11 +5,20 @@
 			"referenceName": "az_strg_ls",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"relativeURL": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "Avro",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().relativeURL",
+					"type": "Expression"
+				},
 				"container": "hcpstage"
 			}
 		}
