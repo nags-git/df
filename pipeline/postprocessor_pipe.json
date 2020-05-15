@@ -125,6 +125,42 @@
 									"recursive": true
 								}
 							}
+						},
+						{
+							"name": "update_cleanup_flag",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "delete_staged_object",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[USP_UpdateCleanUp_FlagToTrue]",
+								"storedProcedureParameters": {
+									"id": {
+										"value": {
+											"value": "@item().id",
+											"type": "Expression"
+										},
+										"type": "Guid"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sql_ls",
+								"type": "LinkedServiceReference"
+							}
 						}
 					]
 				}
