@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "copy_csv_sql",
+				"name": "copy_query_sql",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -34,32 +34,42 @@
 						"mappings": [
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 1
+									"name": "IngestStartDateTime",
+									"type": "String"
 								},
 								"sink": {
-									"name": "ObjectFullPath",
+									"name": "IngestStartDateTime",
 									"type": "String"
 								}
 							},
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 2
+									"name": "IngestEndDateTime",
+									"type": "String"
 								},
 								"sink": {
-									"name": "ObjectSize",
+									"name": "IngestEndDateTime",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "NameSpace",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Namespace",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CountOfRecordsToBeProcessedAtOnce",
+									"type": "String"
+								},
+								"sink": {
+									"name": "RecordsCount",
 									"type": "Int32"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"ordinal": 5
-								},
-								"sink": {
-									"name": "Hash",
-									"type": "String"
 								}
 							}
 						]
