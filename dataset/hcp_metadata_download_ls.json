@@ -2,7 +2,7 @@
 	"name": "hcp_metadata_download_ls",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "az_strg_ls",
+			"referenceName": "hcp_http_ls",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
@@ -14,12 +14,11 @@
 		"type": "Avro",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobStorageLocation",
-				"fileName": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
 					"value": "@dataset().relativeURL",
 					"type": "Expression"
-				},
-				"container": "hcpstage"
+				}
 			}
 		}
 	}

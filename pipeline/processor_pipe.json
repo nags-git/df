@@ -279,8 +279,23 @@
 											"source": {
 												"type": "AvroSource",
 												"storeSettings": {
-													"type": "AzureBlobStorageReadSettings",
-													"recursive": true
+													"type": "HttpReadSettings",
+													"requestMethod": "GET"
+												}
+											},
+											"sink": {
+												"type": "AzureSqlSink",
+												"sqlWriterStoredProcedureName": "[dbo].[USP_Update_Metadata]",
+												"sqlWriterTableType": "SqlServerStoredProcedure",
+												"storedProcedureTableTypeParameterName": "customMetadata",
+												"storedProcedureParameters": {
+													"customMetadata": {
+														"type": "String"
+													},
+													"id": {
+														"type": "Guid",
+														"value": "@item().Id"
+													}
 												}
 											},
 											"enableStaging": false
@@ -290,8 +305,17 @@
 												"referenceName": "hcp_metadata_download_ls",
 												"type": "DatasetReference",
 												"parameters": {
-													"relativeURL": "@concat('metadata/',item().ObjectPath,'.txt')"
+													"relativeURL": {
+														"value": "@concat(item().ObjectPath,'?type=custom-metadata&annotation=',item().CustomMetadataAnnotation)",
+														"type": "Expression"
+													}
 												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "az_sql_hcp_data",
+												"type": "DatasetReference"
 											}
 										]
 									}
