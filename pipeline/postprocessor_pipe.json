@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Stored procedure1",
-				"type": "SqlServerStoredProcedure",
+				"name": "get_objects_cleanup",
+				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
@@ -15,11 +15,35 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[USP_Get_ObjectsToBeProcessedForCosmos]"
-				},
-				"linkedServiceName": {
-					"referenceName": "az_sql_ls",
-					"type": "LinkedServiceReference"
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select id,custommetadataexists,objectpath from tblhcpdata where [IsObjectCleanedUp]=0 and status='completed'",
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "az_sql_hcp_data",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "foreach_object_cleanup",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "get_objects_cleanup",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('get_objects_cleanup').output.value",
+						"type": "Expression"
+					}
 				}
 			}
 		],
