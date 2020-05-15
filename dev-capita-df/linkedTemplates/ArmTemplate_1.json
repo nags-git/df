@@ -6,18 +6,6 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "dev-capita-df"
-		},
-		"hcp_data_download_http_ls_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
-		},
-		"hcp_http_ls_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/"
-		},
-		"hcpapiconnect_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://tenant01.coe-hcp01.hitachivantara.com/query"
 		}
 	},
 	"variables": {
@@ -25,123 +13,52 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/hcp_data_download_http_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "HttpServer",
-				"typeProperties": {
-					"url": "[parameters('hcp_data_download_http_ls_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Anonymous"
-				},
-				"connectVia": {
-					"referenceName": "hcp-Ir",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/hcp_http_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "HttpServer",
-				"typeProperties": {
-					"url": "[parameters('hcp_http_ls_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Anonymous"
-				},
-				"connectVia": {
-					"referenceName": "hcp-Ir",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/hcpapiconnect')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "RestService",
-				"typeProperties": {
-					"url": "[parameters('hcpapiconnect_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Anonymous"
-				},
-				"connectVia": {
-					"referenceName": "hcp-Ir",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/hcp_api_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "hcpapiconnect",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/hcpapiconnect')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/hcp_data_download_avro_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "hcp_data_download_http_ls",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"relativeURL": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "Avro",
-				"typeProperties": {
-					"location": {
-						"type": "HttpServerLocation",
-						"relativeUrl": {
-							"value": "@dataset().relativeURL",
-							"type": "Expression"
-						}
-					}
-				},
-				"schema": {}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/hcp_data_download_http_ls')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/process_data_pipe')]",
+			"name": "[concat(parameters('factoryName'), '/processor_pipe')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "for_each_object",
+						"name": "get_objects_to_process_lkup",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_ObjectsToProcess]",
+								"storedProcedureParameters": {
+									"baseURL": {
+										"type": "String",
+										"value": {
+											"value": "@pipeline().parameters.baseURL",
+											"type": "Expression"
+										}
+									}
+								},
+								"queryTimeout": "02:00:00"
+							},
+							"dataset": {
+								"referenceName": "azsql_csv_sql_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "foreach_object",
 						"type": "ForEach",
 						"dependsOn": [
 							{
-								"activity": "get_objects_to_process",
+								"activity": "get_objects_to_process_lkup",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -150,13 +67,12 @@
 						"userProperties": [],
 						"typeProperties": {
 							"items": {
-								"value": "@activity('get_objects_to_process').output.value",
+								"value": "@activity('get_objects_to_process_lkup').output.value",
 								"type": "Expression"
 							},
-							"isSequential": false,
 							"activities": [
 								{
-									"name": "upload_data_hcp_to_stage_azure",
+									"name": "download_object",
 									"type": "Copy",
 									"dependsOn": [],
 									"policy": {
@@ -173,7 +89,7 @@
 											"storeSettings": {
 												"type": "HttpReadSettings",
 												"requestMethod": "GET",
-												"additionalHeaders": "Authorization: HCP YWRtaW4=:79ccb574b8b45414a34cb69d17b03040",
+												"additionalHeaders": "Authorization: HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492",
 												"requestTimeout": ""
 											}
 										},
@@ -191,7 +107,7 @@
 									},
 									"inputs": [
 										{
-											"referenceName": "hcp_data_download_avro_ds",
+											"referenceName": "hcp_object_download_ds",
 											"type": "DatasetReference",
 											"parameters": {
 												"relativeURL": {
@@ -203,7 +119,7 @@
 									],
 									"outputs": [
 										{
-											"referenceName": "azure_data_upload_avro_stage_ds",
+											"referenceName": "az_object_upload_stg_ds",
 											"type": "DatasetReference",
 											"parameters": {
 												"relativeURL": {
@@ -215,11 +131,51 @@
 									]
 								},
 								{
-									"name": "upload_data_stage_to_main_azure",
+									"name": "update_status_objectstaged",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "download_object",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_UpdateHcpData_Status]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": {
+													"value": "@item().Id",
+													"type": "Expression"
+												},
+												"type": "Guid"
+											},
+											"status": {
+												"value": "ObjectDownloaded",
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "uploadobject",
 									"type": "Copy",
 									"dependsOn": [
 										{
-											"activity": "usp_update_status_for_hcp_stage",
+											"activity": "update_status_objectstaged",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -255,35 +211,29 @@
 									},
 									"inputs": [
 										{
-											"referenceName": "azure_data_upload_avro_stage_ds",
+											"referenceName": "az_object_upload_stg_ds",
 											"type": "DatasetReference",
 											"parameters": {
-												"relativeURL": {
-													"value": "@item().ObjectPath",
-													"type": "Expression"
-												}
+												"relativeURL": "@item().ObjectPath"
 											}
 										}
 									],
 									"outputs": [
 										{
-											"referenceName": "azure_data_upload_avro_ds",
+											"referenceName": "az_object_upload_prod_ds",
 											"type": "DatasetReference",
 											"parameters": {
-												"relativeURL": {
-													"value": "@item().ObjectPath",
-													"type": "Expression"
-												}
+												"relativeURL": "@item().ObjectPath"
 											}
 										}
 									]
 								},
 								{
-									"name": "delete_stage_object_Azure",
-									"type": "Delete",
+									"name": "update_status_objectloaded",
+									"type": "SqlServerStoredProcedure",
 									"dependsOn": [
 										{
-											"activity": "usp_update_status_for_stage_main_azure",
+											"activity": "uploadobject",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -298,29 +248,32 @@
 									},
 									"userProperties": [],
 									"typeProperties": {
-										"dataset": {
-											"referenceName": "azure_data_upload_avro_stage_ds",
-											"type": "DatasetReference",
-											"parameters": {
-												"relativeURL": {
-													"value": "@item().ObjectPath",
+										"storedProcedureName": "[[dbo].[USP_UpdateHcpData_Status]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": {
+													"value": "@item().Id",
 													"type": "Expression"
-												}
+												},
+												"type": "Guid"
+											},
+											"status": {
+												"value": "ObjectLoaded",
+												"type": "String"
 											}
-										},
-										"enableLogging": false,
-										"storeSettings": {
-											"type": "AzureBlobStorageReadSettings",
-											"recursive": true
 										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference"
 									}
 								},
 								{
-									"name": "check_if_custommetada_exists",
+									"name": "check_custommetadata_exists",
 									"type": "IfCondition",
 									"dependsOn": [
 										{
-											"activity": "usp_update_status_for_delete_stage_objects",
+											"activity": "update_status_objectloaded",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -332,343 +285,9 @@
 											"value": "@bool(equals(item().CustomMetadataExists,'True'))",
 											"type": "Expression"
 										},
-										"ifFalseActivities": [
-											{
-												"name": "usp_update_error_save_status",
-												"type": "SqlServerStoredProcedure",
-												"dependsOn": [
-													{
-														"activity": "update_metadata_for_false_condition",
-														"dependencyConditions": [
-															"Failed"
-														]
-													}
-												],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"storedProcedureName": "[[dbo].[USP_Update_FailedObjectStatus]",
-													"storedProcedureParameters": {
-														"error": {
-															"value": {
-																"value": "@activity('update_metadata_for_false_condition').error.message",
-																"type": "Expression"
-															},
-															"type": "String"
-														},
-														"errorAtStage": {
-															"value": "update process to cosmos - false condition",
-															"type": "String"
-														},
-														"id": {
-															"value": {
-																"value": "@item().id",
-																"type": "Expression"
-															},
-															"type": "Guid"
-														}
-													}
-												},
-												"linkedServiceName": {
-													"referenceName": "capita_hcpdata_db",
-													"type": "LinkedServiceReference"
-												}
-											},
-											{
-												"name": "update_metadata_for_false_condition",
-												"type": "SqlServerStoredProcedure",
-												"dependsOn": [
-													{
-														"activity": "fill_metadata_for_false_condition",
-														"dependencyConditions": [
-															"Succeeded"
-														]
-													}
-												],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"storedProcedureName": "[[dbo].[USP_Update_Metadata]",
-													"storedProcedureParameters": {
-														"azureHash": {
-															"value": {
-																"value": "@activity('fill_metadata_for_false_condition').output.shA256",
-																"type": "Expression"
-															},
-															"type": "String"
-														},
-														"customMetadata": {
-															"value": {
-																"value": "@activity('fill_metadata_for_false_condition').output.customMetadata",
-																"type": "Expression"
-															},
-															"type": "String"
-														},
-														"eTag": {
-															"value": {
-																"value": "@activity('fill_metadata_for_false_condition').output.eTag",
-																"type": "Expression"
-															},
-															"type": "String"
-														},
-														"id": {
-															"value": {
-																"value": "@item().id",
-																"type": "Expression"
-															},
-															"type": "Guid"
-														},
-														"MD5": {
-															"value": {
-																"value": "@activity('fill_metadata_for_false_condition').output.contentMD5",
-																"type": "Expression"
-															},
-															"type": "String"
-														}
-													}
-												},
-												"linkedServiceName": {
-													"referenceName": "capita_hcpdata_db",
-													"type": "LinkedServiceReference"
-												}
-											},
-											{
-												"name": "usp_update_error_fill_metadata",
-												"type": "SqlServerStoredProcedure",
-												"dependsOn": [
-													{
-														"activity": "fill_metadata_for_false_condition",
-														"dependencyConditions": [
-															"Failed"
-														]
-													}
-												],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"storedProcedureName": "[[dbo].[USP_Update_FailedObjectStatus]",
-													"storedProcedureParameters": {
-														"error": {
-															"value": {
-																"value": "@activity('fill_metadata_for_false_condition').error.message",
-																"type": "Expression"
-															},
-															"type": "String"
-														},
-														"errorAtStage": {
-															"value": "fill metadata ",
-															"type": "String"
-														},
-														"id": {
-															"value": {
-																"value": "@item().id",
-																"type": "Expression"
-															},
-															"type": "Guid"
-														}
-													}
-												},
-												"linkedServiceName": {
-													"referenceName": "capita_hcpdata_db",
-													"type": "LinkedServiceReference"
-												}
-											},
-											{
-												"name": "fill_metadata_for_false_condition",
-												"type": "AzureFunctionActivity",
-												"dependsOn": [],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"functionName": "hcpmetadataupdate",
-													"method": "POST",
-													"headers": {
-														"Content-Type": "application/json"
-													},
-													"body": {
-														"value": "@concat('{\n\"filepath\": \"evidential/',item().ObjectPath,'\",\n\"customMetadataExists\":\"false\"\n}')",
-														"type": "Expression"
-													}
-												},
-												"linkedServiceName": {
-													"referenceName": "azure_pipeline_metadata_update_ls",
-													"type": "LinkedServiceReference"
-												}
-											}
-										],
 										"ifTrueActivities": [
 											{
-												"name": "usp_update_error_hcp_metadata",
-												"type": "SqlServerStoredProcedure",
-												"dependsOn": [
-													{
-														"activity": "upload_data_hcp_metadata_to_stage_azure",
-														"dependencyConditions": [
-															"Failed"
-														]
-													}
-												],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"storedProcedureName": "[[dbo].[USP_Update_FailedObjectStatus]",
-													"storedProcedureParameters": {
-														"error": {
-															"value": {
-																"value": "@activity('upload_data_hcp_metadata_to_stage_azure').error.message",
-																"type": "Expression"
-															},
-															"type": "String"
-														},
-														"errorAtStage": {
-															"value": "upload metadata to hcp error",
-															"type": "String"
-														},
-														"id": {
-															"value": {
-																"value": "@item().id",
-																"type": "Expression"
-															},
-															"type": "Guid"
-														}
-													}
-												},
-												"linkedServiceName": {
-													"referenceName": "capita_hcpdata_db",
-													"type": "LinkedServiceReference"
-												}
-											},
-											{
-												"name": "fill_metadata_for_true_condition",
-												"type": "AzureFunctionActivity",
-												"dependsOn": [
-													{
-														"activity": "upload_data_hcp_metadata_to_stage_azure",
-														"dependencyConditions": [
-															"Succeeded"
-														]
-													}
-												],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"functionName": "hcpmetadataupdate",
-													"method": "POST",
-													"headers": {
-														"Content-Type": "application/json"
-													},
-													"body": {
-														"value": "@concat('{\n\"filepath\": \"evidential/',item().ObjectPath,'\",\n\"customMetadataExists\":\"True\"\n}')",
-														"type": "Expression"
-													}
-												},
-												"linkedServiceName": {
-													"referenceName": "azure_pipeline_metadata_update_ls",
-													"type": "LinkedServiceReference"
-												}
-											},
-											{
-												"name": "update_metadata_for_true_condition",
-												"type": "SqlServerStoredProcedure",
-												"dependsOn": [
-													{
-														"activity": "fill_metadata_for_true_condition",
-														"dependencyConditions": [
-															"Succeeded"
-														]
-													}
-												],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"storedProcedureName": "[[dbo].[USP_Update_Metadata]",
-													"storedProcedureParameters": {
-														"azureHash": {
-															"value": {
-																"value": "@activity('fill_metadata_for_true_condition').output.shA256",
-																"type": "Expression"
-															},
-															"type": "String"
-														},
-														"customMetadata": {
-															"value": {
-																"value": "@activity('fill_metadata_for_true_condition').output.customMetadata",
-																"type": "Expression"
-															},
-															"type": "String"
-														},
-														"eTag": {
-															"value": {
-																"value": "@activity('fill_metadata_for_true_condition').output.eTag",
-																"type": "Expression"
-															},
-															"type": "String"
-														},
-														"id": {
-															"value": {
-																"value": "@item().id",
-																"type": "Expression"
-															},
-															"type": "Guid"
-														},
-														"MD5": {
-															"value": {
-																"value": "@activity('fill_metadata_for_true_condition').output.contentMD5",
-																"type": "Expression"
-															},
-															"type": "String"
-														}
-													}
-												},
-												"linkedServiceName": {
-													"referenceName": "capita_hcpdata_db",
-													"type": "LinkedServiceReference"
-												}
-											},
-											{
-												"name": "upload_data_hcp_metadata_to_stage_azure",
+												"name": "download_metadata_object",
 												"type": "Copy",
 												"dependsOn": [],
 												"policy": {
@@ -685,7 +304,7 @@
 														"storeSettings": {
 															"type": "HttpReadSettings",
 															"requestMethod": "GET",
-															"additionalHeaders": "Authorization: HCP YWRtaW4=:79ccb574b8b45414a34cb69d17b03040",
+															"additionalHeaders": "Authorization: HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492",
 															"requestTimeout": ""
 														}
 													},
@@ -703,7 +322,7 @@
 												},
 												"inputs": [
 													{
-														"referenceName": "hcp_data_download_avro_ds",
+														"referenceName": "hcp_metadata_download_ls",
 														"type": "DatasetReference",
 														"parameters": {
 															"relativeURL": {
@@ -715,25 +334,22 @@
 												],
 												"outputs": [
 													{
-														"referenceName": "azure_data_upload_avro_stage_metadata_ds",
+														"referenceName": "az_object_upload_stg_ds",
 														"type": "DatasetReference",
 														"parameters": {
-															"relativePath": {
-																"value": "@concat('metadata/',item().ObjectPath,'.txt')",
-																"type": "Expression"
-															}
+															"relativeURL": "@concat('metadata/',item().ObjectPath,'.txt')"
 														}
 													}
 												]
 											},
 											{
-												"name": "usp_update_error_fill_metadata_true",
+												"name": "update_status_metadata_downloaded",
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [
 													{
-														"activity": "fill_metadata_for_true_condition",
+														"activity": "download_metadata_object",
 														"dependencyConditions": [
-															"Failed"
+															"Succeeded"
 														]
 													}
 												],
@@ -746,30 +362,23 @@
 												},
 												"userProperties": [],
 												"typeProperties": {
-													"storedProcedureName": "[[dbo].[USP_Update_FailedObjectStatus]",
+													"storedProcedureName": "[[dbo].[USP_UpdateHcpData_Status]",
 													"storedProcedureParameters": {
-														"error": {
-															"value": {
-																"value": "@activity('fill_metadata_for_true_condition').error.message",
-																"type": "Expression"
-															},
-															"type": "String"
-														},
-														"errorAtStage": {
-															"value": "fill_metadata_true_condition",
-															"type": "String"
-														},
 														"id": {
 															"value": {
-																"value": "@item().id",
+																"value": "@item().Id",
 																"type": "Expression"
 															},
 															"type": "Guid"
+														},
+														"status": {
+															"value": "Metadata Downloaded",
+															"type": "String"
 														}
 													}
 												},
 												"linkedServiceName": {
-													"referenceName": "capita_hcpdata_db",
+													"referenceName": "az_sql_ls",
 													"type": "LinkedServiceReference"
 												}
 											}
@@ -777,152 +386,11 @@
 									}
 								},
 								{
-									"name": "usp_update_error_at_hcp_to_stage_storage",
-									"type": "SqlServerStoredProcedure",
+									"name": "fill_object_properties",
+									"type": "AzureFunctionActivity",
 									"dependsOn": [
 										{
-											"activity": "upload_data_hcp_to_stage_azure",
-											"dependencyConditions": [
-												"Failed"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[dbo].[USP_Update_FailedObjectStatus]",
-										"storedProcedureParameters": {
-											"error": {
-												"value": {
-													"value": "@activity('upload_data_hcp_to_stage_azure').error.message",
-													"type": "Expression"
-												},
-												"type": "String"
-											},
-											"errorAtStage": {
-												"value": "Upload Object from HCP to Stage",
-												"type": "String"
-											},
-											"id": {
-												"value": {
-													"value": "@item().id",
-													"type": "Expression"
-												},
-												"type": "Guid"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "capita_hcpdata_db",
-										"type": "LinkedServiceReference"
-									}
-								},
-								{
-									"name": "usp_update_error_at_stage_to_main_storage_copy",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [
-										{
-											"activity": "upload_data_stage_to_main_azure",
-											"dependencyConditions": [
-												"Failed"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[dbo].[USP_Update_FailedObjectStatus]",
-										"storedProcedureParameters": {
-											"error": {
-												"value": {
-													"value": "@activity('upload_data_stage_to_main_azure').error.message",
-													"type": "Expression"
-												},
-												"type": "String"
-											},
-											"errorAtStage": {
-												"value": "Upload Object from Stage to Main",
-												"type": "String"
-											},
-											"id": {
-												"value": {
-													"value": "@item().id",
-													"type": "Expression"
-												},
-												"type": "Guid"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "capita_hcpdata_db",
-										"type": "LinkedServiceReference"
-									}
-								},
-								{
-									"name": "usp_update_error_at_delete_object",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [
-										{
-											"activity": "delete_stage_object_Azure",
-											"dependencyConditions": [
-												"Failed"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[dbo].[USP_Update_FailedObjectStatus]",
-										"storedProcedureParameters": {
-											"error": {
-												"value": {
-													"value": "@activity('delete_stage_object_Azure').error.message",
-													"type": "Expression"
-												},
-												"type": "String"
-											},
-											"errorAtStage": {
-												"value": "Delete Object from Stage",
-												"type": "String"
-											},
-											"id": {
-												"value": {
-													"value": "@item().id",
-													"type": "Expression"
-												},
-												"type": "Guid"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "capita_hcpdata_db",
-										"type": "LinkedServiceReference"
-									}
-								},
-								{
-									"name": "usp_update_status_for_hcp_stage",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [
-										{
-											"activity": "upload_data_hcp_to_stage_azure",
+											"activity": "check_custommetadata_exists",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -937,32 +405,25 @@
 									},
 									"userProperties": [],
 									"typeProperties": {
-										"storedProcedureName": "[[USP_Update_Status_Of_Execution]",
-										"storedProcedureParameters": {
-											"id": {
-												"value": {
-													"value": "@item().Id",
-													"type": "Expression"
-												},
-												"type": "Guid"
-											},
-											"status": {
-												"value": "ObjectIsStaged",
-												"type": "String"
-											}
+										"functionName": "hcpmetadataupdate",
+										"method": "POST",
+										"headers": {},
+										"body": {
+											"value": "@concat('{\n\"filepath\": \"evidential/',item().ObjectPath,'\",\n\"customMetadataExists\":item().CustomMetadataExists\n}')",
+											"type": "Expression"
 										}
 									},
 									"linkedServiceName": {
-										"referenceName": "capita_hcpdata_db",
+										"referenceName": "az_func_update_props_ls",
 										"type": "LinkedServiceReference"
 									}
 								},
 								{
-									"name": "usp_update_status_for_stage_main_azure",
+									"name": "update_status_integritycheck",
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [
 										{
-											"activity": "upload_data_stage_to_main_azure",
+											"activity": "fill_object_properties",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -977,7 +438,7 @@
 									},
 									"userProperties": [],
 									"typeProperties": {
-										"storedProcedureName": "[[USP_Update_Status_Of_Execution]",
+										"storedProcedureName": "[[dbo].[USP_UpdateHcpData_Status]",
 										"storedProcedureParameters": {
 											"id": {
 												"value": {
@@ -987,22 +448,22 @@
 												"type": "Guid"
 											},
 											"status": {
-												"value": "ObjectIsInContainer",
+												"value": "IntegrityCheckInProgress",
 												"type": "String"
 											}
 										}
 									},
 									"linkedServiceName": {
-										"referenceName": "capita_hcpdata_db",
+										"referenceName": "az_sql_ls",
 										"type": "LinkedServiceReference"
 									}
 								},
 								{
-									"name": "usp_update_status_for_delete_stage_objects",
+									"name": "update_metadata_and_integrity_check",
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [
 										{
-											"activity": "delete_stage_object_Azure",
+											"activity": "update_status_integritycheck",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -1017,8 +478,29 @@
 									},
 									"userProperties": [],
 									"typeProperties": {
-										"storedProcedureName": "[[USP_Update_Status_Of_Execution]",
+										"storedProcedureName": "[[dbo].[USP_Update_Metadata]",
 										"storedProcedureParameters": {
+											"azureHash": {
+												"value": {
+													"value": "@activity('fill_object_properties').output.sha256",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"customMetadata": {
+												"value": {
+													"value": "@activity('fill_object_properties').output.sha256",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"eTag": {
+												"value": {
+													"value": "@activity('fill_object_properties').output.eTag",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
 											"id": {
 												"value": {
 													"value": "@item().Id",
@@ -1026,14 +508,17 @@
 												},
 												"type": "Guid"
 											},
-											"status": {
-												"value": "ObjectInStageIsDeleted",
+											"MD5": {
+												"value": {
+													"value": "@activity('fill_object_properties').output.contentMD5",
+													"type": "Expression"
+												},
 												"type": "String"
 											}
 										}
 									},
 									"linkedServiceName": {
-										"referenceName": "capita_hcpdata_db",
+										"referenceName": "az_sql_ls",
 										"type": "LinkedServiceReference"
 									}
 								}
@@ -1041,37 +526,11 @@
 						}
 					},
 					{
-						"name": "get_objects_to_process",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_HCPObjectsToProcess]",
-								"queryTimeout": "23:20:00"
-							},
-							"dataset": {
-								"referenceName": "hcp_data_sql_ds",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "Copy_sql_cosmos",
+						"name": "insert_metadata_to_cosmos",
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "for_each_object",
+								"activity": "foreach_object",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1089,220 +548,44 @@
 							"source": {
 								"type": "AzureSqlSource",
 								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_ObjectsToBeProcessedForCosmos]",
+								"storedProcedureParameters": {
+									"application": {
+										"type": "String",
+										"value": {
+											"value": "@pipeline().parameters.azurecontainer",
+											"type": "Expression"
+										}
+									}
+								},
 								"queryTimeout": "02:00:00"
 							},
 							"sink": {
 								"type": "CosmosDbSqlApiSink",
 								"writeBehavior": "insert"
 							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "Application",
-											"type": "String"
-										},
-										"sink": {
-											"path": "$['application']"
-										}
-									},
-									{
-										"source": {
-											"name": "FilePath",
-											"type": "String"
-										},
-										"sink": {
-											"path": "$['FilePath']"
-										}
-									},
-									{
-										"source": {
-											"name": "SnapshotPath",
-											"type": "String"
-										},
-										"sink": {
-											"path": "$['SnapshotPath']"
-										}
-									},
-									{
-										"source": {
-											"name": "IsSnapshot",
-											"type": "Boolean"
-										},
-										"sink": {
-											"path": "$['IsSnapshot']"
-										}
-									},
-									{
-										"source": {
-											"name": "Version",
-											"type": "Int64"
-										},
-										"sink": {
-											"path": "$['Version']"
-										}
-									},
-									{
-										"source": {
-											"name": "Hold",
-											"type": "Boolean"
-										},
-										"sink": {
-											"path": "$['System']['Hold']"
-										}
-									},
-									{
-										"source": {
-											"name": "Index",
-											"type": "Boolean"
-										},
-										"sink": {
-											"path": "$['System']['Index']"
-										}
-									},
-									{
-										"source": {
-											"name": "Shred",
-											"type": "Boolean"
-										},
-										"sink": {
-											"path": "$['System']['Shred']"
-										}
-									},
-									{
-										"source": {
-											"name": "Retention",
-											"type": "Int64"
-										},
-										"sink": {
-											"path": "$['System']['Retention']"
-										}
-									},
-									{
-										"source": {
-											"name": "CustomMetadata",
-											"type": "String"
-										},
-										"sink": {
-											"path": "$['CustomMetadata']"
-										}
-									},
-									{
-										"source": {
-											"name": "DocumentSize",
-											"type": "Int32"
-										},
-										"sink": {
-											"path": "$['DocumentSize']"
-										}
-									},
-									{
-										"source": {
-											"name": "Status",
-											"type": "String"
-										},
-										"sink": {
-											"path": "$['Status']"
-										}
-									},
-									{
-										"source": {
-											"name": "QueueRequestType",
-											"type": "String"
-										},
-										"sink": {
-											"path": "$['QueueRequestType']"
-										}
-									},
-									{
-										"source": {
-											"name": "ContentMD5",
-											"type": "String"
-										},
-										"sink": {
-											"path": "$['ContentMD5']"
-										}
-									},
-									{
-										"source": {
-											"name": "LeaseId",
-											"type": "String"
-										},
-										"sink": {
-											"path": "$['LeaseId']"
-										}
-									},
-									{
-										"source": {
-											"name": "CreatedDate",
-											"type": "Int32"
-										},
-										"sink": {
-											"path": "$['CreatedDate']"
-										}
-									},
-									{
-										"source": {
-											"name": "LastModifiedDate",
-											"type": "Int32"
-										},
-										"sink": {
-											"path": "$['LastModifiedDate']"
-										}
-									},
-									{
-										"source": {
-											"name": "BatchID",
-											"type": "String"
-										},
-										"sink": {
-											"path": "$['BatchId']"
-										}
-									},
-									{
-										"source": {
-											"name": "ID",
-											"type": "Guid"
-										},
-										"sink": {
-											"path": "$['id']"
-										}
-									},
-									{
-										"source": {
-											"name": "ETag",
-											"type": "String"
-										},
-										"sink": {
-											"path": "$['ETag']"
-										}
-									}
-								]
-							}
+							"enableStaging": false
 						},
 						"inputs": [
 							{
-								"referenceName": "hcp_data_sql_ds",
+								"referenceName": "az_sql_hcp_data",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						],
 						"outputs": [
 							{
-								"referenceName": "hcp_data_cosmos_ds",
+								"referenceName": "az_metadata_cosmos_ds",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						]
 					},
 					{
-						"name": "usp_update_status_success",
+						"name": "update_status_complete_postprocessor",
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "Copy_sql_cosmos",
+								"activity": "insert_metadata_to_cosmos",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1317,714 +600,93 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"storedProcedureName": "[[dbo].[USP_Update_SucessObjectStatus]",
+							"storedProcedureName": "[[dbo].[USP_UpdateProcessor_Pipe_Status]"
+						},
+						"linkedServiceName": {
+							"referenceName": "az_sql_ls",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "update_error_get_objects_to_process_lkup",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "get_objects_to_process_lkup",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
 							"storedProcedureParameters": {
-								"id": {
-									"value": null,
+								"errorAtStage": {
+									"value": "Get Objects To Process",
+									"type": "String"
+								},
+								"errorInPipeline": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"errorMessage": {
+									"value": {
+										"value": "@activity('get_objects_to_process_lkup').error.message",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"referenceId": {
+									"value": "",
 									"type": "Guid"
+								},
+								"referenceTable": {
+									"value": {
+										"value": "@pipeline().parameters.referencetable",
+										"type": "Expression"
+									},
+									"type": "String"
 								}
 							}
 						},
 						"linkedServiceName": {
-							"referenceName": "capita_hcpdata_db",
+							"referenceName": "az_sql_ls",
 							"type": "LinkedServiceReference"
 						}
 					}
 				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/hcp_data_download_avro_ds')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/hcpapi_sql_pipe')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "copy the data from api to sql",
-				"activities": [
-					{
-						"name": "copy_hcpapidata_to_sql",
-						"description": "copies the data from api to sql.",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Get_Query_to_Process",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "RestSource",
-								"additionalColumns": [
-									{
-										"name": "BatchID",
-										"value": {
-											"value": "@activity('Get_Query_to_Process').output.firstRow.id",
-											"type": "Expression"
-										}
-									},
-									{
-										"name": "Status",
-										"value": "Initial"
-									},
-									{
-										"name": "RetryCount",
-										"value": "0"
-									}
-								],
-								"httpRequestTimeout": "00:01:40",
-								"requestInterval": "00.00:00:00.010",
-								"requestMethod": "POST",
-								"requestBody": {
-									"value": "@{concat('<queryRequest><object><query>namespace:',activity('Get_Query_to_Process').output.firstRow.namespace,' +ingestTimeString:[',activity('Get_Query_to_Process').output.firstRow.ingestStartDateTime,' TO ',activity('Get_Query_to_Process').output.firstRow.ingestEndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
-									"type": "Expression"
-								},
-								"additionalHeaders": {
-									"Authorization": "HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492",
-									"Content-Type": "application/xml"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"path": "[['urlName']"
-										},
-										"sink": {
-											"name": "UrlName",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "[['operation']"
-										},
-										"sink": {
-											"name": "Operation",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "[['version']"
-										},
-										"sink": {
-											"name": "Version",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "[['objectPath']"
-										},
-										"sink": {
-											"name": "ObjectPath"
-										}
-									},
-									{
-										"source": {
-											"path": "[['type']"
-										},
-										"sink": {
-											"name": "Type",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "[['size']"
-										},
-										"sink": {
-											"name": "Size",
-											"type": "Int32"
-										}
-									},
-									{
-										"source": {
-											"path": "[['retention']"
-										},
-										"sink": {
-											"name": "Retention",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "[['hold']"
-										},
-										"sink": {
-											"name": "Hold",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "[['shred']"
-										},
-										"sink": {
-											"name": "Shred",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "[['owner']"
-										},
-										"sink": {
-											"name": "Owner",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "[['ingestTime']"
-										},
-										"sink": {
-											"name": "IngestTime",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "[['customMetadata']"
-										},
-										"sink": {
-											"name": "CustomMetadataExists",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "[['index']"
-										},
-										"sink": {
-											"name": "Index",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "[['hash']"
-										},
-										"sink": {
-											"name": "Hash",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "[['updateTime']"
-										},
-										"sink": {
-											"name": "UpdateTime",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "[['namespace']"
-										},
-										"sink": {
-											"name": "Namespace",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "[['customMetadataAnnotation']"
-										},
-										"sink": {
-											"name": "CustomMetadataAnnotation",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['BatchID']"
-										},
-										"sink": {
-											"name": "BatchID",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['Status']"
-										},
-										"sink": {
-											"name": "Status",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['RetryCount']"
-										},
-										"sink": {
-											"name": "RetryCount",
-											"type": "String"
-										}
-									}
-								],
-								"collectionReference": "$['queryResult']['resultSet']",
-								"mapComplexValuesToString": true
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "hcp_api_ds",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "hcp_data_sql_ds",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
+				"parameters": {
+					"baseURL": {
+						"type": "string",
+						"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
 					},
-					{
-						"name": "Get_Query_to_Process",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_QueryData_By_Status]",
-								"storedProcedureParameters": {
-									"status": {
-										"type": "String",
-										"value": "InProcess"
-									}
-								},
-								"queryTimeout": "02:00:00"
-							},
-							"dataset": {
-								"referenceName": "hcp_data_sql_ds",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": true
-						}
+					"azurecontainer": {
+						"type": "string",
+						"defaultValue": "evidential"
 					},
-					{
-						"name": "ProcessRecords",
-						"type": "Until",
-						"dependsOn": [
-							{
-								"activity": "copy_hcpapidata_to_sql",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@lessOrEquals(activity('update_status_and_get_recordscount').output.firstRow.recordsCount,1)",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "update_status_and_get_recordscount",
-									"type": "Lookup",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "AzureSqlSource",
-											"sqlReaderStoredProcedureName": "[[dbo].[USP_Update_StatusToReady]",
-											"storedProcedureParameters": {
-												"count": {
-													"type": "Int32",
-													"value": {
-														"value": "@activity('Get_Query_to_Process').output.firstRow.recordsCount",
-														"type": "Expression"
-													}
-												}
-											},
-											"queryTimeout": "02:00:00"
-										},
-										"dataset": {
-											"referenceName": "hcp_data_sql_ds",
-											"type": "DatasetReference",
-											"parameters": {}
-										},
-										"firstRowOnly": true
-									}
-								},
-								{
-									"name": "check_if_rowsExists_to_process",
-									"type": "IfCondition",
-									"dependsOn": [
-										{
-											"activity": "update_status_and_get_recordscount",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"expression": {
-											"value": "@equals(activity('update_status_and_get_recordscount').output.firstRow.recordsCount,0)",
-											"type": "Expression"
-										},
-										"ifFalseActivities": [
-											{
-												"name": "process_data_pipe",
-												"type": "ExecutePipeline",
-												"dependsOn": [],
-												"userProperties": [],
-												"typeProperties": {
-													"pipeline": {
-														"referenceName": "process_data_pipe",
-														"type": "PipelineReference"
-													},
-													"waitOnCompletion": true,
-													"parameters": {}
-												}
-											}
-										]
-									}
-								}
-							],
-							"timeout": "7.00:00:00"
-						}
+					"azurestagecontainer": {
+						"type": "string",
+						"defaultValue": "hcpstage"
+					},
+					"referencetable": {
+						"type": "string",
+						"defaultValue": "tblhcpdata"
 					}
-				],
+				},
 				"annotations": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/hcp_api_ds')]",
-				"[concat(variables('factoryId'), '/pipelines/process_data_pipe')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/query_info_pipe')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "copy from CSV to DB",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "IngestStartDateTime",
-											"type": "String"
-										},
-										"sink": {
-											"name": "IngestStartDateTime"
-										}
-									},
-									{
-										"source": {
-											"name": "IngestEndDateTime",
-											"type": "String"
-										},
-										"sink": {
-											"name": "IngestEndDateTime"
-										}
-									},
-									{
-										"source": {
-											"name": "NameSpace",
-											"type": "String"
-										},
-										"sink": {
-											"name": "Namespace"
-										}
-									},
-									{
-										"source": {
-											"name": "CountOfRecordsToBeProcessedAtOnce",
-											"type": "String"
-										},
-										"sink": {
-											"name": "RecordsCount"
-										}
-									}
-								]
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "csvforquery",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "hcp_query_param_data",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "Get_Query_Info",
-						"type": "Lookup",
-						"dependsOn": [
-							{
-								"activity": "copy from CSV to DB",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_QueryData_By_Status]",
-								"storedProcedureParameters": {
-									"status": {
-										"type": "String",
-										"value": "Initial"
-									}
-								},
-								"queryTimeout": "02:00:00"
-							},
-							"dataset": {
-								"referenceName": "hcp_query_param_data",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "ForEachQuery",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "Get_Query_Info",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('Get_Query_Info').output.value",
-								"type": "Expression"
-							},
-							"isSequential": true,
-							"activities": [
-								{
-									"name": "hcpapi_sql_pipe",
-									"type": "ExecutePipeline",
-									"dependsOn": [
-										{
-											"activity": "update_query_status_InProgress",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"pipeline": {
-											"referenceName": "hcpapi_sql_pipe",
-											"type": "PipelineReference"
-										},
-										"waitOnCompletion": true,
-										"parameters": {}
-									}
-								},
-								{
-									"name": "update_query_status_InProgress",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[dbo].[USP_Update_QueryData_Status]",
-										"storedProcedureParameters": {
-											"id": {
-												"value": {
-													"value": "@item().Id",
-													"type": "Expression"
-												},
-												"type": "Guid"
-											},
-											"status": {
-												"value": "InProcess",
-												"type": "String"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "capita_hcpdata_db",
-										"type": "LinkedServiceReference"
-									}
-								},
-								{
-									"name": "update_query_status_processed",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [
-										{
-											"activity": "hcpapi_sql_pipe",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[dbo].[USP_Update_QueryData_Status]",
-										"storedProcedureParameters": {
-											"id": {
-												"value": {
-													"value": "@item().Id",
-													"type": "Expression"
-												},
-												"type": "Guid"
-											},
-											"status": {
-												"value": "processed",
-												"type": "String"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "capita_hcpdata_db",
-										"type": "LinkedServiceReference"
-									}
-								},
-								{
-									"name": "update_query_status_failed",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [
-										{
-											"activity": "hcpapi_sql_pipe",
-											"dependencyConditions": [
-												"Failed"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[dbo].[USP_Update_QueryData_Status]",
-										"storedProcedureParameters": {
-											"id": {
-												"value": {
-													"value": "@item().Id",
-													"type": "Expression"
-												},
-												"type": "Guid"
-											},
-											"status": {
-												"value": "failed",
-												"type": "String"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "capita_hcpdata_db",
-										"type": "LinkedServiceReference"
-									}
-								}
-							]
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/hcpapi_sql_pipe')]"
-			]
+			"dependsOn": []
 		}
 	]
 }

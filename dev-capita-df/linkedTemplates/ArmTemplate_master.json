@@ -7,6 +7,14 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dev-capita-df"
 		},
+		"az_cosmos_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az_cosmos_ls'"
+		},
+		"az_func_update_props_ls_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'az_func_update_props_ls'"
+		},
 		"az_sql_ls_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'az_sql_ls'"
@@ -50,6 +58,12 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"az_cosmos_ls_connectionString": {
+						"value": "[parameters('az_cosmos_ls_connectionString')]"
+					},
+					"az_func_update_props_ls_functionKey": {
+						"value": "[parameters('az_func_update_props_ls_functionKey')]"
+					},
 					"az_sql_ls_connectionString": {
 						"value": "[parameters('az_sql_ls_connectionString')]"
 					},
@@ -65,6 +79,26 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ArmTemplate_0')]"
+			]
 		}
 	]
 }
