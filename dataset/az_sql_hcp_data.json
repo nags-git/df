@@ -1,0 +1,16 @@
+{
+	"name": "az_sql_hcp_data",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "az_sql_ls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "tblhcpdata"
+		}
+	}
+}
