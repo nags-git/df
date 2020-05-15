@@ -793,7 +793,7 @@
 				]
 			},
 			{
-				"name": "update_status_complete_postprocessor",
+				"name": "update_status_cleanup_postprocessor",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
