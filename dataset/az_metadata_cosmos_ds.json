@@ -1,0 +1,302 @@
+{
+	"name": "az_metadata_cosmos_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "az_cosmos_ls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "CosmosDbSqlApiCollection",
+		"schema": {
+			"type": "object",
+			"properties": {
+				"application": {
+					"type": "string"
+				},
+				"FilePath": {
+					"type": "string"
+				},
+				"SnapshotPath": {
+					"type": "null"
+				},
+				"IsSnapshot": {
+					"type": "boolean"
+				},
+				"Version": {
+					"type": "string"
+				},
+				"SystemMetadata": {
+					"type": "object",
+					"properties": {
+						"Hold": {
+							"type": "boolean"
+						},
+						"Index": {
+							"type": "boolean"
+						},
+						"Shred": {
+							"type": "boolean"
+						},
+						"Retention": {
+							"type": "integer"
+						}
+					}
+				},
+				"CustomMetadata": {
+					"type": "object",
+					"properties": {
+						"Root": {
+							"type": "object",
+							"properties": {
+								"DocumentOutbound": {
+									"type": "object",
+									"properties": {
+										"CorrespondenceID": {
+											"type": "string"
+										},
+										"Version": {
+											"type": "object",
+											"properties": {
+												"@key": {
+													"type": "string"
+												},
+												"@val": {
+													"type": "string"
+												},
+												"#text": {
+													"type": "string"
+												}
+											}
+										},
+										"Contract": {
+											"type": "string"
+										},
+										"RepositoryID": {
+											"type": "string"
+										},
+										"SourceSystemID": {
+											"type": "string"
+										},
+										"FileName": {
+											"type": "string"
+										},
+										"Submitter": {
+											"type": "string"
+										},
+										"Comment": {
+											"type": "string"
+										},
+										"CategoryID": {
+											"type": "object",
+											"properties": {
+												"@rm": {
+													"type": "string"
+												},
+												"#text": {
+													"type": "string"
+												}
+											}
+										},
+										"SubCategoryID": {
+											"type": "string"
+										},
+										"AccountNumber": {
+											"type": "string"
+										},
+										"PCNNumber": {
+											"type": "string"
+										},
+										"SelfID": {
+											"type": "string"
+										},
+										"Batched": {
+											"type": "string"
+										},
+										"Posted": {
+											"type": "string"
+										},
+										"BatchType": {
+											"type": "string"
+										},
+										"BatchNumber": {
+											"type": "string"
+										},
+										"RelatedDocumentID": {
+											"type": "string"
+										},
+										"Created": {
+											"type": "string"
+										},
+										"Modified": {
+											"type": "string"
+										}
+									}
+								},
+								"EmailOutbound": {
+									"type": "object",
+									"properties": {
+										"CorrespondenceID": {
+											"type": "string"
+										},
+										"Version": {
+											"type": "string"
+										},
+										"Contract": {
+											"type": "string"
+										},
+										"RepositoryID": {
+											"type": "string"
+										},
+										"SourceSystemID": {
+											"type": "string"
+										},
+										"FileName": {
+											"type": "string"
+										},
+										"Submitter": {
+											"type": "string"
+										},
+										"Comment": {
+											"type": "string"
+										},
+										"CategoryID": {
+											"type": "string"
+										},
+										"SubCategoryID": {
+											"type": "string"
+										},
+										"AccountNumber": {
+											"type": "string"
+										},
+										"PCNNumber": {
+											"type": "string"
+										},
+										"SelfID": {
+											"type": "string"
+										},
+										"Batched": {
+											"type": "string"
+										},
+										"Posted": {
+											"type": "string"
+										},
+										"BatchType": {
+											"type": "string"
+										},
+										"BatchNumber": {
+											"type": "string"
+										},
+										"RelatedDocumentID": {
+											"type": "string"
+										},
+										"Created": {
+											"type": "string"
+										},
+										"Modified": {
+											"type": "string"
+										}
+									}
+								},
+								"Test": {
+									"type": "object",
+									"properties": {
+										"CorrespondenceID": {
+											"type": "string"
+										},
+										"Version": {
+											"type": "string"
+										},
+										"Contract": {
+											"type": "string"
+										},
+										"RepositoryID": {
+											"type": "string"
+										},
+										"SourceSystemID": {
+											"type": "string"
+										},
+										"FileName": {
+											"type": "string"
+										},
+										"Submitter": {
+											"type": "string"
+										},
+										"Comment": {
+											"type": "string"
+										},
+										"CategoryID": {
+											"type": "string"
+										},
+										"SubCategoryID": {
+											"type": "string"
+										},
+										"AccountNumber": {
+											"type": "string"
+										},
+										"PCNNumber": {
+											"type": "string"
+										},
+										"SelfID": {
+											"type": "string"
+										},
+										"Batched": {
+											"type": "string"
+										},
+										"Posted": {
+											"type": "string"
+										},
+										"BatchType": {
+											"type": "string"
+										},
+										"BatchNumber": {
+											"type": "string"
+										},
+										"RelatedDocumentID": {
+											"type": "string"
+										},
+										"Created": {
+											"type": "string"
+										},
+										"Modified": {
+											"type": "string"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"DocumentSize": {
+					"type": "integer"
+				},
+				"ClientId": {
+					"type": "string"
+				},
+				"LastModifiedDate": {
+					"type": "integer"
+				},
+				"Status": {
+					"type": "string"
+				},
+				"QueueRequestType": {
+					"type": "string"
+				},
+				"ContentMD5": {
+					"type": "string"
+				},
+				"LeaseId": {
+					"type": "string"
+				},
+				"CreatedDate": {
+					"type": "integer"
+				},
+				"ETag": {
+					"type": "string"
+				}
+			}
+		},
+		"typeProperties": {
+			"collectionName": "metadata"
+		}
+	}
+}

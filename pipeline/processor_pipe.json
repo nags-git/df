@@ -494,6 +494,86 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "insert_metadata_to_cosmos",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "foreach_object",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[USP_Get_ObjectsToBeProcessedForCosmos]",
+						"storedProcedureParameters": {
+							"application": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.azurecontainer",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "CosmosDbSqlApiSink",
+						"writeBehavior": "insert"
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "az_sql_hcp_data",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "az_metadata_cosmos_ds",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "update_status_complete_postprocessor",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "insert_metadata_to_cosmos",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[USP_UpdateProcessor_Pipe_Status]"
+				},
+				"linkedServiceName": {
+					"referenceName": "az_sql_ls",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"parameters": {
