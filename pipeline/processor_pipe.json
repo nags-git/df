@@ -364,6 +364,64 @@
 											"referenceName": "az_sql_ls",
 											"type": "LinkedServiceReference"
 										}
+									},
+									{
+										"name": "update_error_download_metadata",
+										"type": "SqlServerStoredProcedure",
+										"dependsOn": [
+											{
+												"activity": "download_metadata_object",
+												"dependencyConditions": [
+													"Failed"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"storedProcedureName": "[dbo].[USP_Insert_ErrorInformation]",
+											"storedProcedureParameters": {
+												"errorAtStage": {
+													"value": "download metadata object",
+													"type": "String"
+												},
+												"errorInPipeline": {
+													"value": {
+														"value": "@pipeline().Pipeline",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"errorMessage": {
+													"value": {
+														"value": "@activity('download_metadata_object').error.message",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"referenceId": {
+													"value": "@item().id",
+													"type": "Guid"
+												},
+												"referenceTable": {
+													"value": {
+														"value": "@pipeline().parameters.referencetable",
+														"type": "Expression"
+													},
+													"type": "String"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "az_sql_ls",
+											"type": "LinkedServiceReference"
+										}
 									}
 								]
 							}
