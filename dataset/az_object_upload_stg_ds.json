@@ -22,5 +22,6 @@
 				"container": "hcpstage"
 			}
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

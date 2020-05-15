@@ -22,5 +22,6 @@
 				"container": "evidential"
 			}
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

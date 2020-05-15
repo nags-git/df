@@ -406,7 +406,10 @@
 													"type": "String"
 												},
 												"referenceId": {
-													"value": "@item().id",
+													"value": {
+														"value": "@item().id",
+														"type": "Expression"
+													},
 													"type": "Guid"
 												},
 												"referenceTable": {
@@ -603,7 +606,10 @@
 										"type": "String"
 									},
 									"referenceId": {
-										"value": "@item().id",
+										"value": {
+											"value": "@item().id",
+											"type": "Expression"
+										},
 										"type": "Guid"
 									},
 									"referenceTable": {
@@ -661,7 +667,10 @@
 										"type": "String"
 									},
 									"referenceId": {
-										"value": "@item().id",
+										"value": {
+											"value": "@item().id",
+											"type": "Expression"
+										},
 										"type": "Guid"
 									},
 									"referenceTable": {
@@ -719,7 +728,10 @@
 										"type": "String"
 									},
 									"referenceId": {
-										"value": "@item().id",
+										"value": {
+											"value": "@item().id",
+											"type": "Expression"
+										},
 										"type": "Guid"
 									},
 									"referenceTable": {
@@ -897,5 +909,6 @@
 			}
 		},
 		"annotations": []
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }

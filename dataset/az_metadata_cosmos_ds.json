@@ -298,5 +298,6 @@
 		"typeProperties": {
 			"collectionName": "metadata"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }
