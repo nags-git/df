@@ -288,7 +288,10 @@
 										"inputs": [
 											{
 												"referenceName": "hcp_metadata_download_ls",
-												"type": "DatasetReference"
+												"type": "DatasetReference",
+												"parameters": {
+													"relativeURL": "@concat('metadata/',item().ObjectPath,'.txt')"
+												}
 											}
 										]
 									}
