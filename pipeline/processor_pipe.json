@@ -140,7 +140,7 @@
 										"type": "Guid"
 									},
 									"status": {
-										"value": "ObjectStaged",
+										"value": "ObjectDownloaded",
 										"type": "String"
 									}
 								}
