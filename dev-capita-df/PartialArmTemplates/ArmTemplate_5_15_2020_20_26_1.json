@@ -47,8 +47,7 @@
 							},
 							"dataset": {
 								"referenceName": "azsql_csv_sql_ds",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": false
 						}
@@ -465,7 +464,6 @@
 									"typeProperties": {
 										"functionName": "hcpmetadataupdate",
 										"method": "POST",
-										"headers": {},
 										"body": {
 											"value": "@concat('{\n\"filepath\": \"evidential/',item().ObjectPath,'\",\n\"customMetadataExists\":item().CustomMetadataExists\n}')",
 											"type": "Expression"
@@ -800,15 +798,13 @@
 						"inputs": [
 							{
 								"referenceName": "az_sql_hcp_data",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "az_metadata_cosmos_ds",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
