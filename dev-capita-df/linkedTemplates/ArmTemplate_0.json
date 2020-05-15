@@ -18,6 +18,10 @@
 		"hcp_http_ls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
+		},
+		"http_rest_ls_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://tenant01.coe-hcp01.hitachivantara.com/query"
 		}
 	},
 	"variables": {
@@ -171,7 +175,7 @@
 				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "tblhcpdata"
+					"table": "tblhcpqueries"
 				}
 			},
 			"dependsOn": [
@@ -192,12 +196,12 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "hcpObjects.txt",
+						"fileName": "hcpqueries.csv",
 						"container": "inputquery"
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
-					"firstRowAsHeader": false,
+					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
 				"schema": []
@@ -228,7 +232,109 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/preprocessor_pipe')]",
+			"name": "[concat(parameters('factoryName'), '/http_rest_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('http_rest_ls_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": false,
+					"authenticationType": "Anonymous"
+				},
+				"connectVia": {
+					"referenceName": "hcp-Ir",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_sql_hcp_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_sql_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "tblhcpdata"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_object_upload_prod_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_strg_ls",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"relativeURL": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Avro",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().relativeURL",
+							"type": "Expression"
+						},
+						"container": "evidential"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_strg_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hcp_object_download_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "hcp_http_ls",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"relativeURL": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Avro",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "@dataset().relativeURL"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/hcp_http_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -320,7 +426,25 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/hcp_object_download_ds')]",
+			"name": "[concat(parameters('factoryName'), '/hcp_data_download_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "http_rest_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/http_rest_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hcp_metadata_download_ls')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -338,13 +462,433 @@
 				"typeProperties": {
 					"location": {
 						"type": "HttpServerLocation",
-						"relativeUrl": " @dataset().relativeURL"
+						"relativeUrl": {
+							"value": "@dataset().relativeURL",
+							"type": "Expression"
+						}
 					}
 				},
 				"schema": {}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/hcp_http_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/preprocessor_pipe')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_query_sql",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "IngestStartDateTime",
+											"type": "String"
+										},
+										"sink": {
+											"name": "IngestStartDateTime",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "IngestEndDateTime",
+											"type": "String"
+										},
+										"sink": {
+											"name": "IngestEndDateTime",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "NameSpace",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Namespace",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "CountOfRecordsToBeProcessedAtOnce",
+											"type": "String"
+										},
+										"sink": {
+											"name": "RecordsCount",
+											"type": "Int32"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "csv_sql_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azsql_csv_sql_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "get_queries_to_process_lkup",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "copy_query_sql",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "select * from tblhcpqueries where status='Initial'",
+								"queryTimeout": "02:00:00"
+							},
+							"dataset": {
+								"referenceName": "azsql_csv_sql_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "foreach_query",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "get_queries_to_process_lkup",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('get_queries_to_process_lkup').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "upload_hcpdata_to_sql",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "RestSource",
+											"additionalColumns": [
+												{
+													"name": "BatchId",
+													"value": "@item().Id"
+												}
+											],
+											"httpRequestTimeout": "00:01:40",
+											"requestInterval": "00.00:00:00.010",
+											"requestMethod": "POST",
+											"requestBody": {
+												"value": "@{concat('<queryRequest><object><query>namespace:',item().namespace,' +ingestTimeString:[',item().ingestStartDateTime,' TO ',item().ingestEndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
+												"type": "Expression"
+											},
+											"additionalHeaders": {
+												"Authorization": "HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492",
+												"Content-Type": "application/xml"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink"
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"path": "[['urlName']"
+													},
+													"sink": {
+														"name": "ObjectFullPath",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['operation']"
+													},
+													"sink": {
+														"name": "Operation",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['version']"
+													},
+													"sink": {
+														"name": "Version",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['objectPath']"
+													},
+													"sink": {
+														"name": "ObjectPath",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['type']"
+													},
+													"sink": {
+														"name": "Type",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['size']"
+													},
+													"sink": {
+														"name": "ObjectSize",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "[['retention']"
+													},
+													"sink": {
+														"name": "Retention",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['hold']"
+													},
+													"sink": {
+														"name": "Hold",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['shred']"
+													},
+													"sink": {
+														"name": "Shred",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['owner']"
+													},
+													"sink": {
+														"name": "Owner",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ingestTime']"
+													},
+													"sink": {
+														"name": "IngestTime",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['customMetadata']"
+													},
+													"sink": {
+														"name": "CustomMetadataExists",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['index']"
+													},
+													"sink": {
+														"name": "Index",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['hash']"
+													},
+													"sink": {
+														"name": "Hash",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['updateTime']"
+													},
+													"sink": {
+														"name": "UpdateTime",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['namespace']"
+													},
+													"sink": {
+														"name": "Namespace",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['customMetadataAnnotation']"
+													},
+													"sink": {
+														"name": "CustomMetadataAnnotation",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['BatchId']"
+													},
+													"sink": {
+														"name": "BatchID",
+														"type": "Guid"
+													}
+												}
+											],
+											"collectionReference": "$['queryResult']['resultSet']"
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "hcp_data_download_ds",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "az_sql_hcp_data",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								},
+								{
+									"name": "usp_update_query_status",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "upload_hcpdata_to_sql",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_UpdateQuery_Status]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": "@item().Id",
+												"type": "Guid"
+											},
+											"status": {
+												"value": "Complete",
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/csv_sql_ds')]",
+				"[concat(variables('factoryId'), '/datasets/azsql_csv_sql_ds')]",
+				"[concat(variables('factoryId'), '/datasets/hcp_data_download_ds')]",
+				"[concat(variables('factoryId'), '/datasets/az_sql_hcp_data')]",
+				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]"
 			]
 		},
 		{
@@ -369,6 +913,15 @@
 							"source": {
 								"type": "AzureSqlSource",
 								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_ObjectsToProcess]",
+								"storedProcedureParameters": {
+									"baseURL": {
+										"type": "String",
+										"value": {
+											"value": "@pipeline().parameters.baseURL",
+											"type": "Expression"
+										}
+									}
+								},
 								"queryTimeout": "02:00:00"
 							},
 							"dataset": {
@@ -398,7 +951,7 @@
 							},
 							"activities": [
 								{
-									"name": "upload_object_to_stage_strg",
+									"name": "download_object",
 									"type": "Copy",
 									"dependsOn": [],
 									"policy": {
@@ -415,7 +968,7 @@
 											"storeSettings": {
 												"type": "HttpReadSettings",
 												"requestMethod": "GET",
-												"additionalHeaders": "Authorization: HCP YWRtaW4=:79ccb574b8b45414a34cb69d17b03040",
+												"additionalHeaders": "Authorization: HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492",
 												"requestTimeout": ""
 											}
 										},
@@ -437,7 +990,7 @@
 											"type": "DatasetReference",
 											"parameters": {
 												"relativeURL": {
-													"value": "@replace(item().ObjectFullPath,pipeline().parameters.baseURL,'\\')",
+													"value": "@item().ObjectPath",
 													"type": "Expression"
 												}
 											}
@@ -449,12 +1002,224 @@
 											"type": "DatasetReference",
 											"parameters": {
 												"relativeURL": {
-													"value": "@replace(item().ObjectFullPath,pipeline().parameters.baseURL,'')",
+													"value": "@item().ObjectPath",
 													"type": "Expression"
 												}
 											}
 										}
 									]
+								},
+								{
+									"name": "update_status_ObjectStaged",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "download_object",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_UpdateHcpData_Status]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": "@item().Id",
+												"type": "Guid"
+											},
+											"status": {
+												"value": "ObjectDownloaded",
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "uploadobject",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "update_status_ObjectStaged",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AvroSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true
+											}
+										},
+										"sink": {
+											"type": "AvroSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "AvroWriteSettings",
+												"quoteAllText": true
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "az_object_upload_stg_ds",
+											"type": "DatasetReference",
+											"parameters": {
+												"relativeURL": "@item().ObjectPath"
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "az_object_upload_prod_ds",
+											"type": "DatasetReference",
+											"parameters": {
+												"relativeURL": "@item().ObjectPath"
+											}
+										}
+									]
+								},
+								{
+									"name": "update_status_ObjectLoaded",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "uploadobject",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_UpdateHcpData_Status]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": "@item().Id",
+												"type": "Guid"
+											},
+											"status": {
+												"value": "ObjectLoaded",
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "check_custommetadata_exists",
+									"type": "IfCondition",
+									"dependsOn": [
+										{
+											"activity": "update_status_ObjectLoaded",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@bool(equals(item().CustomMetadataExists,'True'))",
+											"type": "Expression"
+										},
+										"ifTrueActivities": [
+											{
+												"name": "download_metadata_object",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "AvroSource",
+														"storeSettings": {
+															"type": "HttpReadSettings",
+															"requestMethod": "GET",
+															"additionalHeaders": "Authorization: HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492",
+															"requestTimeout": ""
+														}
+													},
+													"sink": {
+														"type": "AzureSqlSink",
+														"sqlWriterStoredProcedureName": "[[dbo].[USP_Update_Metadata]",
+														"sqlWriterTableType": "SqlServerStoredProcedure",
+														"storedProcedureTableTypeParameterName": "customMetadata",
+														"storedProcedureParameters": {
+															"customMetadata": {
+																"type": "String"
+															},
+															"id": {
+																"type": "Guid",
+																"value": "@item().Id"
+															}
+														}
+													},
+													"enableStaging": false
+												},
+												"inputs": [
+													{
+														"referenceName": "hcp_metadata_download_ls",
+														"type": "DatasetReference",
+														"parameters": {
+															"relativeURL": {
+																"value": "@concat(item().ObjectPath,'?type=custom-metadata&annotation=',item().CustomMetadataAnnotation)",
+																"type": "Expression"
+															}
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "az_sql_hcp_data",
+														"type": "DatasetReference",
+														"parameters": {}
+													}
+												]
+											}
+										]
+									}
 								}
 							]
 						}
@@ -463,7 +1228,7 @@
 				"parameters": {
 					"baseURL": {
 						"type": "string",
-						"defaultValue": " https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
+						"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
 					},
 					"azurecontainer": {
 						"type": "string",
@@ -479,7 +1244,11 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/azsql_csv_sql_ds')]",
 				"[concat(variables('factoryId'), '/datasets/hcp_object_download_ds')]",
-				"[concat(variables('factoryId'), '/datasets/az_object_upload_stg_ds')]"
+				"[concat(variables('factoryId'), '/datasets/az_object_upload_stg_ds')]",
+				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]",
+				"[concat(variables('factoryId'), '/datasets/az_object_upload_prod_ds')]",
+				"[concat(variables('factoryId'), '/datasets/hcp_metadata_download_ls')]",
+				"[concat(variables('factoryId'), '/datasets/az_sql_hcp_data')]"
 			]
 		}
 	]

@@ -13,6 +13,9 @@
 		},
 		"hcp_http_ls_properties_typeProperties_url": {
 			"value": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
+		},
+		"http_rest_ls_properties_typeProperties_url": {
+			"value": "https://tenant01.coe-hcp01.hitachivantara.com/query"
 		}
 	}
 }
