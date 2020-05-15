@@ -423,7 +423,10 @@
 															"type": "String"
 														},
 														"referenceId": {
-															"value": "@item().id",
+															"value": {
+																"value": "@item().id",
+																"type": "Expression"
+															},
 															"type": "Guid"
 														},
 														"referenceTable": {
@@ -621,7 +624,10 @@
 												"type": "String"
 											},
 											"referenceId": {
-												"value": "@item().id",
+												"value": {
+													"value": "@item().id",
+													"type": "Expression"
+												},
 												"type": "Guid"
 											},
 											"referenceTable": {
@@ -679,7 +685,10 @@
 												"type": "String"
 											},
 											"referenceId": {
-												"value": "@item().id",
+												"value": {
+													"value": "@item().id",
+													"type": "Expression"
+												},
 												"type": "Guid"
 											},
 											"referenceTable": {
@@ -737,7 +746,10 @@
 												"type": "String"
 											},
 											"referenceId": {
-												"value": "@item().id",
+												"value": {
+													"value": "@item().id",
+													"type": "Expression"
+												},
 												"type": "Guid"
 											},
 											"referenceTable": {
@@ -833,64 +845,6 @@
 						"userProperties": [],
 						"typeProperties": {
 							"storedProcedureName": "[[dbo].[USP_UpdateProcessor_Pipe_Status]"
-						},
-						"linkedServiceName": {
-							"referenceName": "az_sql_ls",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "update_error_get_objects_to_process_lkup",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "get_objects_to_process_lkup",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
-							"storedProcedureParameters": {
-								"errorAtStage": {
-									"value": "get objects to process",
-									"type": "String"
-								},
-								"errorInPipeline": {
-									"value": {
-										"value": "@pipeline().Pipeline",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"errorMessage": {
-									"value": {
-										"value": "@activity('get_objects_to_process_lkup').error.message",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"referenceId": {
-									"value": "",
-									"type": "Guid"
-								},
-								"referenceTable": {
-									"value": {
-										"value": "@pipeline().parameters.referencetable",
-										"type": "Expression"
-									},
-									"type": "String"
-								}
-							}
 						},
 						"linkedServiceName": {
 							"referenceName": "az_sql_ls",
