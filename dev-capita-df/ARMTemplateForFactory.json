@@ -11,9 +11,9 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'az_cosmos_ls'"
 		},
-		"az_func_update_props_ls_functionKey": {
+		"az_func_update_objectprops_functionKey": {
 			"type": "secureString",
-			"metadata": "Secure string for 'functionKey' of 'az_func_update_props_ls'"
+			"metadata": "Secure string for 'functionKey' of 'az_func_update_objectprops'"
 		},
 		"az_sql_ls_connectionString": {
 			"type": "secureString",
@@ -47,8 +47,8 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "copy_csv_sql",
-						"type": "Copy",
+						"name": "fill_object_properties",
+						"type": "AzureFunctionActivity",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "7.00:00:00",
@@ -59,77 +59,26 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
+							"functionName": "hcpmetadataupdate",
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
 							},
-							"sink": {
-								"type": "AzureSqlSink"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"type": "String",
-											"ordinal": 1
-										},
-										"sink": {
-											"name": "ObjectFullPath",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"type": "String",
-											"ordinal": 2
-										},
-										"sink": {
-											"name": "ObjectSize",
-											"type": "Int32"
-										}
-									},
-									{
-										"source": {
-											"type": "String",
-											"ordinal": 5
-										},
-										"sink": {
-											"name": "Hash",
-											"type": "String"
-										}
-									}
-								]
+							"body": {
+								"value": "{\n\"filepath\": \"evidential/image1.png\",\n\"customMetadataExists\":\"True\"\n}",
+								"type": "Expression"
 							}
 						},
-						"inputs": [
-							{
-								"referenceName": "csv_sql_ds",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "azsql_csv_sql_ds",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
+						"linkedServiceName": {
+							"referenceName": "az_func_update_objectprops",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/csv_sql_ds')]",
-				"[concat(variables('factoryId'), '/datasets/azsql_csv_sql_ds')]"
+				"[concat(variables('factoryId'), '/linkedServices/az_func_update_objectprops')]"
 			]
 		},
 		{
@@ -1319,12 +1268,12 @@
 											"Content-Type": "application/json"
 										},
 										"body": {
-											"value": "@concat('{\n\"filepath\": \"evidential/',item().ObjectPath,'\",\n\"customMetadataExists\":item().CustomMetadataExists\n}')",
+											"value": "@concat('{\n\"filepath\": \"',pipeline().parameters.azurecontainer,'/',item().ObjectPath,'\",\n\"customMetadataExists\":\"',item().CustomMetadataExists,'\"\n}')",
 											"type": "Expression"
 										}
 									},
 									"linkedServiceName": {
-										"referenceName": "az_func_update_props_ls",
+										"referenceName": "az_func_update_objectprops",
 										"type": "LinkedServiceReference"
 									}
 								},
@@ -1645,7 +1594,7 @@
 				"[concat(variables('factoryId'), '/datasets/az_object_upload_stg_ds')]",
 				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]",
 				"[concat(variables('factoryId'), '/datasets/az_object_upload_prod_ds')]",
-				"[concat(variables('factoryId'), '/linkedServices/az_func_update_props_ls')]",
+				"[concat(variables('factoryId'), '/linkedServices/az_func_update_objectprops')]",
 				"[concat(variables('factoryId'), '/datasets/hcp_metadata_download_ls')]"
 			]
 		},
@@ -2234,7 +2183,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/az_func_update_props_ls')]",
+			"name": "[concat(parameters('factoryName'), '/az_func_update_objectprops')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -2244,7 +2193,7 @@
 					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net",
 					"functionKey": {
 						"type": "SecureString",
-						"value": "[parameters('az_func_update_props_ls_functionKey')]"
+						"value": "[parameters('az_func_update_objectprops_functionKey')]"
 					}
 				}
 			},

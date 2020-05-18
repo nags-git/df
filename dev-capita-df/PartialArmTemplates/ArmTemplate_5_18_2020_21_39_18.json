@@ -6,16 +6,53 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "dev-capita-df"
-		},
-		"on_query_csv_upload_properties_typeProperties_scope": {
-			"type": "string",
-			"defaultValue": "/subscriptions/2a3390b4-6a54-48b5-812a-35320c2fab9c/resourceGroups/dev-capita-rg/providers/Microsoft.Storage/storageAccounts/devcapitaevidentialst"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "fill_object_properties",
+						"type": "AzureFunctionActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"functionName": "hcpmetadataupdate",
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"body": {
+								"value": "{\n\"filepath\": \"evidential/image1.png\",\n\"customMetadataExists\":\"True\"\n}",
+								"type": "Expression"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "az_func_update_objectprops",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_func_update_objectprops')]"
+			]
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/processor_pipe')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -51,8 +88,7 @@
 							},
 							"dataset": {
 								"referenceName": "azsql_csv_sql_ds",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": false
 						}
@@ -796,33 +832,23 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_func_update_objectprops')]"
+			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/on_query_csv_upload')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
+			"name": "[concat(parameters('factoryName'), '/az_func_update_objectprops')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "preprocessor_pipe",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "BlobEventsTrigger",
+				"type": "AzureFunction",
 				"typeProperties": {
-					"blobPathBeginsWith": "/inputquery/blobs/",
-					"blobPathEndsWith": "samplequerydata.csv",
-					"ignoreEmptyBlobs": true,
-					"scope": "[parameters('on_query_csv_upload_properties_typeProperties_scope')]",
-					"events": [
-						"Microsoft.Storage.BlobCreated"
-					]
+					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net",
+					"functionKey": {
+						"type": "SecureString",
+						"value": "**********"
+					}
 				}
 			},
 			"dependsOn": []

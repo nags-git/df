@@ -8,7 +8,7 @@
 		"az_cosmos_ls_connectionString": {
 			"value": ""
 		},
-		"az_func_update_props_ls_functionKey": {
+		"az_func_update_objectprops_functionKey": {
 			"value": ""
 		},
 		"az_sql_ls_connectionString": {
