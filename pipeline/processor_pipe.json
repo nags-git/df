@@ -966,6 +966,14 @@
 								"sink": {
 									"path": "$['ETag']"
 								}
+							},
+							{
+								"source": {
+									"name": "BatchID"
+								},
+								"sink": {
+									"path": "$['BatchID']"
+								}
 							}
 						]
 					}
