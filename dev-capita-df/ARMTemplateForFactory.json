@@ -1315,7 +1315,9 @@
 									"typeProperties": {
 										"functionName": "hcpmetadataupdate",
 										"method": "POST",
-										"headers": {},
+										"headers": {
+											"Content-Type": "application/json"
+										},
 										"body": {
 											"value": "@concat('{\n\"filepath\": \"evidential/',item().ObjectPath,'\",\n\"customMetadataExists\":item().CustomMetadataExists\n}')",
 											"type": "Expression"
@@ -1654,7 +1656,183 @@
 								"type": "CosmosDbSqlApiSink",
 								"writeBehavior": "insert"
 							},
-							"enableStaging": false
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "ID",
+											"type": "Guid"
+										},
+										"sink": {
+											"path": "$['id']"
+										}
+									},
+									{
+										"source": {
+											"name": "Application",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['application']"
+										}
+									},
+									{
+										"source": {
+											"name": "FilePath",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['FilePath']"
+										}
+									},
+									{
+										"source": {
+											"name": "SnapshotPath",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['SnapshotPath']"
+										}
+									},
+									{
+										"source": {
+											"name": "IsSnapshot",
+											"type": "Boolean"
+										},
+										"sink": {
+											"path": "$['IsSnapshot']"
+										}
+									},
+									{
+										"source": {
+											"name": "Version",
+											"type": "Int64"
+										},
+										"sink": {
+											"path": "$['Version']"
+										}
+									},
+									{
+										"source": {
+											"name": "Hold",
+											"type": "Boolean"
+										},
+										"sink": {
+											"path": "$['SystemMetadata']['Hold']"
+										}
+									},
+									{
+										"source": {
+											"name": "Index",
+											"type": "Boolean"
+										},
+										"sink": {
+											"path": "$['SystemMetadata']['Index']"
+										}
+									},
+									{
+										"source": {
+											"name": "Shred",
+											"type": "Boolean"
+										},
+										"sink": {
+											"path": "$['SystemMetadata']['Shred']"
+										}
+									},
+									{
+										"source": {
+											"name": "Retention",
+											"type": "Int64"
+										},
+										"sink": {
+											"path": "$['SystemMetadata']['Retention']"
+										}
+									},
+									{
+										"source": {
+											"name": "CustomMetadata",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['CustomMetadata']"
+										}
+									},
+									{
+										"source": {
+											"name": "DocumentSize",
+											"type": "Int32"
+										},
+										"sink": {
+											"path": "$['DocumentSize']"
+										}
+									},
+									{
+										"source": {
+											"name": "LastModifiedDate",
+											"type": "Int32"
+										},
+										"sink": {
+											"path": "$['LastModifiedDate']"
+										}
+									},
+									{
+										"source": {
+											"name": "Status",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Status']"
+										}
+									},
+									{
+										"source": {
+											"name": "QueueRequestType",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['QueueRequestType']"
+										}
+									},
+									{
+										"source": {
+											"name": "ContentMD5",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['ContentMD5']"
+										}
+									},
+									{
+										"source": {
+											"name": "LeaseId",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['LeaseId']"
+										}
+									},
+									{
+										"source": {
+											"name": "CreatedDate",
+											"type": "Int32"
+										},
+										"sink": {
+											"path": "$['CreatedDate']"
+										}
+									},
+									{
+										"source": {
+											"name": "ETag",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['ETag']"
+										}
+									}
+								]
+							}
 						},
 						"inputs": [
 							{
@@ -2459,16 +2637,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/hcp-Ir')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "SelfHosted",
-				"typeProperties": {}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/on_query_csv_upload')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -2498,6 +2666,16 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/preprocessor_pipe')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hcp-Ir')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
 		}
 	]
 }
