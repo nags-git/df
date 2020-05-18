@@ -6,10 +6,6 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "dev-capita-df"
-		},
-		"on_query_csv_upload_properties_typeProperties_scope": {
-			"type": "string",
-			"defaultValue": "/subscriptions/2a3390b4-6a54-48b5-812a-35320c2fab9c/resourceGroups/dev-capita-rg/providers/Microsoft.Storage/storageAccounts/devcapitaevidentialst"
 		}
 	},
 	"variables": {
@@ -51,8 +47,7 @@
 							},
 							"dataset": {
 								"referenceName": "azsql_csv_sql_ds",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": false
 						}
@@ -795,35 +790,6 @@
 					}
 				},
 				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/on_query_csv_upload')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "preprocessor_pipe",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "BlobEventsTrigger",
-				"typeProperties": {
-					"blobPathBeginsWith": "/inputquery/blobs/",
-					"blobPathEndsWith": "samplequerydata.csv",
-					"ignoreEmptyBlobs": true,
-					"scope": "[parameters('on_query_csv_upload_properties_typeProperties_scope')]",
-					"events": [
-						"Microsoft.Storage.BlobCreated"
-					]
-				}
 			},
 			"dependsOn": []
 		}
