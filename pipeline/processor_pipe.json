@@ -535,7 +535,7 @@
 									},
 									"customMetadata": {
 										"value": {
-											"value": "@activity('fill_object_properties').output.sha256",
+											"value": "@activity('fill_object_properties').output.customMetadata",
 											"type": "Expression"
 										},
 										"type": "String"
