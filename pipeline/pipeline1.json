@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "copy_csv_sql",
-				"type": "Copy",
+				"name": "fill_object_properties",
+				"type": "AzureFunctionActivity",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
@@ -15,68 +15,20 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
+					"functionName": "hcpmetadataupdate",
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/json"
 					},
-					"sink": {
-						"type": "AzureSqlSink"
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"type": "String",
-									"ordinal": 1
-								},
-								"sink": {
-									"name": "ObjectFullPath",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"ordinal": 2
-								},
-								"sink": {
-									"name": "ObjectSize",
-									"type": "Int32"
-								}
-							},
-							{
-								"source": {
-									"type": "String",
-									"ordinal": 5
-								},
-								"sink": {
-									"name": "Hash",
-									"type": "String"
-								}
-							}
-						]
+					"body": {
+						"value": "{\n\"filepath\": \"evidential/image1.png\",\n\"customMetadataExists\":\"True\"\n}",
+						"type": "Expression"
 					}
 				},
-				"inputs": [
-					{
-						"referenceName": "csv_sql_ds",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "azsql_csv_sql_ds",
-						"type": "DatasetReference"
-					}
-				]
+				"linkedServiceName": {
+					"referenceName": "az_func_update_objectprops",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"annotations": []
