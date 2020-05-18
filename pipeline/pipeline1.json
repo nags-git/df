@@ -3,47 +3,57 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
-				"type": "Copy",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[dbo].[USP_Get_ObjectsToBeProcessedForCosmos]",
-						"storedProcedureParameters": {
-							"application": {
-								"type": "String",
-								"value": "evidential"
-							}
-						},
-						"queryTimeout": "02:00:00"
-					},
-					"sink": {
-						"type": "CosmosDbSqlApiSink",
-						"writeBehavior": "insert"
-					},
-					"enableStaging": false
-				},
-				"inputs": [
+				"name": "processor_pipe",
+				"type": "ExecutePipeline",
+				"dependsOn": [
 					{
-						"referenceName": "az_sql_hcp_data",
-						"type": "DatasetReference"
+						"activity": "preprocessor_pipe",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
-				"outputs": [
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "processor_pipe",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "preprocessor_pipe",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "preprocessor_pipe",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "postprocessor_pipe",
+				"type": "ExecutePipeline",
+				"dependsOn": [
 					{
-						"referenceName": "az_metadata_cosmos_ds",
-						"type": "DatasetReference"
+						"activity": "processor_pipe",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
-				]
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "postprocessor_pipe",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
 			}
 		],
 		"annotations": []
