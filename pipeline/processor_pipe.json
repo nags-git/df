@@ -697,7 +697,7 @@
 								{
 									"activity": "fill_object_properties",
 									"dependencyConditions": [
-										"Succeeded"
+										"Failed"
 									]
 								}
 							],
