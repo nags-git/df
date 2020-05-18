@@ -965,6 +965,14 @@
 								"sink": {
 									"path": "$['BatchID']"
 								}
+							},
+							{
+								"source": {
+									"name": "CustomMetadata"
+								},
+								"sink": {
+									"path": "$['CustomMetadata']"
+								}
 							}
 						]
 					}
