@@ -865,7 +865,7 @@
 							"application": {
 								"type": "String",
 								"value": {
-									"value": "@pipeline().parameters.azurestagecontainer",
+									"value": "@pipeline().parameters.azurecontainer",
 									"type": "Expression"
 								}
 							}
