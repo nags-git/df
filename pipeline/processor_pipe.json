@@ -888,15 +888,6 @@
 							},
 							{
 								"source": {
-									"name": "CustomMetadata",
-									"type": "String"
-								},
-								"sink": {
-									"path": "$['CustomMetadata']"
-								}
-							},
-							{
-								"source": {
 									"name": "DocumentSize",
 									"type": "Int32"
 								},
