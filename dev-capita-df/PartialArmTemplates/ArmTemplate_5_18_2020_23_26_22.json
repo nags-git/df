@@ -6,16 +6,68 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "dev-capita-df"
-		},
-		"on_query_csv_upload_properties_typeProperties_scope": {
-			"type": "string",
-			"defaultValue": "/subscriptions/2a3390b4-6a54-48b5-812a-35320c2fab9c/resourceGroups/dev-capita-rg/providers/Microsoft.Storage/storageAccounts/devcapitaevidentialst"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_ObjectsToBeProcessedForCosmos]",
+								"storedProcedureParameters": {
+									"application": {
+										"type": "String",
+										"value": "evidential"
+									}
+								},
+								"queryTimeout": "02:00:00"
+							},
+							"sink": {
+								"type": "CosmosDbSqlApiSink",
+								"writeBehavior": "insert"
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "az_sql_hcp_data",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "az_metadata_cosmos_ds",
+								"type": "DatasetReference"
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/az_metadata_cosmos_ds')]"
+			]
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/processor_pipe')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -51,8 +103,7 @@
 							},
 							"dataset": {
 								"referenceName": "azsql_csv_sql_ds",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": false
 						}
@@ -1085,15 +1136,13 @@
 						"inputs": [
 							{
 								"referenceName": "az_sql_hcp_data",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "az_metadata_cosmos_ds",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					}
@@ -1118,33 +1167,90 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/az_metadata_cosmos_ds')]"
+			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/on_query_csv_upload')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
+			"name": "[concat(parameters('factoryName'), '/az_metadata_cosmos_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_cosmos_ls",
+					"type": "LinkedServiceReference"
+				},
 				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "preprocessor_pipe",
-							"type": "PipelineReference"
+				"type": "CosmosDbSqlApiCollection",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"application": {
+							"type": "string"
 						},
-						"parameters": {}
+						"FilePath": {
+							"type": "string"
+						},
+						"SnapshotPath": {
+							"type": "string"
+						},
+						"IsSnapshot": {
+							"type": "boolean"
+						},
+						"Version": {
+							"type": "string"
+						},
+						"SystemMetadata": {
+							"type": "object",
+							"properties": {
+								"Hold": {
+									"type": "boolean"
+								},
+								"Index": {
+									"type": "boolean"
+								},
+								"Shred": {
+									"type": "boolean"
+								},
+								"Retention": {
+									"type": "integer"
+								}
+							}
+						},
+						"CustomMetadata": {
+							"type": "null"
+						},
+						"DocumentSize": {
+							"type": "integer"
+						},
+						"ClientId": {
+							"type": "string"
+						},
+						"LastModifiedDate": {
+							"type": "integer"
+						},
+						"Status": {
+							"type": "string"
+						},
+						"QueueRequestType": {
+							"type": "string"
+						},
+						"ContentMD5": {
+							"type": "string"
+						},
+						"LeaseId": {
+							"type": "string"
+						},
+						"CreatedDate": {
+							"type": "integer"
+						},
+						"ETag": {
+							"type": "string"
+						}
 					}
-				],
-				"type": "BlobEventsTrigger",
+				},
 				"typeProperties": {
-					"blobPathBeginsWith": "/inputquery/blobs/",
-					"blobPathEndsWith": "samplequerydata.csv",
-					"ignoreEmptyBlobs": true,
-					"scope": "[parameters('on_query_csv_upload_properties_typeProperties_scope')]",
-					"events": [
-						"Microsoft.Storage.BlobCreated"
-					]
+					"collectionName": "metadata"
 				}
 			},
 			"dependsOn": []

@@ -47,8 +47,8 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "fill_object_properties",
-						"type": "AzureFunctionActivity",
+						"name": "Copy data1",
+						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "7.00:00:00",
@@ -59,26 +59,44 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"functionName": "hcpmetadataupdate",
-							"method": "POST",
-							"headers": {
-								"Content-Type": "application/json"
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_ObjectsToBeProcessedForCosmos]",
+								"storedProcedureParameters": {
+									"application": {
+										"type": "String",
+										"value": "evidential"
+									}
+								},
+								"queryTimeout": "02:00:00"
 							},
-							"body": {
-								"value": "{\n\"filepath\": \"evidential/image1.png\",\n\"customMetadataExists\":\"True\"\n}",
-								"type": "Expression"
-							}
+							"sink": {
+								"type": "CosmosDbSqlApiSink",
+								"writeBehavior": "insert"
+							},
+							"enableStaging": false
 						},
-						"linkedServiceName": {
-							"referenceName": "az_func_update_objectprops",
-							"type": "LinkedServiceReference"
-						}
+						"inputs": [
+							{
+								"referenceName": "az_sql_hcp_data",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "az_metadata_cosmos_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/az_func_update_objectprops')]"
+				"[concat(variables('factoryId'), '/datasets/az_sql_hcp_data')]",
+				"[concat(variables('factoryId'), '/datasets/az_metadata_cosmos_ds')]"
 			]
 		},
 		{
@@ -1568,6 +1586,90 @@
 						}
 					},
 					{
+						"name": "update_error_copy_data_to_cosmos",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "copy_data_to_cosmos",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
+							"storedProcedureParameters": {
+								"errorAtStage": {
+									"value": "download object",
+									"type": "String"
+								},
+								"errorInPipeline": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"errorMessage": {
+									"value": {
+										"value": "@activity('copy_data_to_cosmos').error.message",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"referenceId": {
+									"type": "Guid"
+								},
+								"referenceTable": {
+									"value": {
+										"value": "@pipeline().parameters.referencetable",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "az_sql_ls",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "save_status_of_processor",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "copy_data_to_cosmos",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_UpdateProcessor_Pipe_Status]"
+						},
+						"linkedServiceName": {
+							"referenceName": "az_sql_ls",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
 						"name": "copy_data_to_cosmos",
 						"type": "Copy",
 						"dependsOn": [
@@ -1594,7 +1696,7 @@
 									"application": {
 										"type": "String",
 										"value": {
-											"value": "@pipeline().parameters.azurecontainer",
+											"value": "@pipeline().parameters.azurestagecontainer",
 											"type": "Expression"
 										}
 									}
@@ -1701,15 +1803,6 @@
 									},
 									{
 										"source": {
-											"name": "CustomMetadata",
-											"type": "String"
-										},
-										"sink": {
-											"path": "$['CustomMetadata']"
-										}
-									},
-									{
-										"source": {
 											"name": "DocumentSize",
 											"type": "Int32"
 										},
@@ -1779,6 +1872,22 @@
 										"sink": {
 											"path": "$['ETag']"
 										}
+									},
+									{
+										"source": {
+											"name": "BatchID"
+										},
+										"sink": {
+											"path": "$['BatchID']"
+										}
+									},
+									{
+										"source": {
+											"name": "CustomMetadata"
+										},
+										"sink": {
+											"path": "$['CustomMetadata']"
+										}
 									}
 								]
 							}
@@ -1797,90 +1906,6 @@
 								"parameters": {}
 							}
 						]
-					},
-					{
-						"name": "update_error_copy_data_to_cosmos",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "copy_data_to_cosmos",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
-							"storedProcedureParameters": {
-								"errorAtStage": {
-									"value": "download object",
-									"type": "String"
-								},
-								"errorInPipeline": {
-									"value": {
-										"value": "@pipeline().Pipeline",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"errorMessage": {
-									"value": {
-										"value": "@activity('copy_data_to_cosmos').error.message",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"referenceId": {
-									"type": "Guid"
-								},
-								"referenceTable": {
-									"value": {
-										"value": "@pipeline().parameters.referencetable",
-										"type": "Expression"
-									},
-									"type": "String"
-								}
-							}
-						},
-						"linkedServiceName": {
-							"referenceName": "az_sql_ls",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "save_status_of_processor",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "copy_data_to_cosmos",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[USP_UpdateProcessor_Pipe_Status]"
-						},
-						"linkedServiceName": {
-							"referenceName": "az_sql_ls",
-							"type": "LinkedServiceReference"
-						}
 					}
 				],
 				"parameters": {
@@ -1905,9 +1930,9 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/azsql_csv_sql_ds')]",
+				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]",
 				"[concat(variables('factoryId'), '/datasets/az_sql_hcp_data')]",
 				"[concat(variables('factoryId'), '/datasets/az_metadata_cosmos_ds')]",
-				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]",
 				"[concat(variables('factoryId'), '/datasets/hcp_object_download_ds')]",
 				"[concat(variables('factoryId'), '/datasets/az_object_upload_stg_ds')]",
 				"[concat(variables('factoryId'), '/datasets/az_object_upload_prod_ds')]",
@@ -1936,7 +1961,7 @@
 							"type": "string"
 						},
 						"SnapshotPath": {
-							"type": "null"
+							"type": "string"
 						},
 						"IsSnapshot": {
 							"type": "boolean"
@@ -1962,228 +1987,7 @@
 							}
 						},
 						"CustomMetadata": {
-							"type": "object",
-							"properties": {
-								"Root": {
-									"type": "object",
-									"properties": {
-										"DocumentOutbound": {
-											"type": "object",
-											"properties": {
-												"CorrespondenceID": {
-													"type": "string"
-												},
-												"Version": {
-													"type": "object",
-													"properties": {
-														"@key": {
-															"type": "string"
-														},
-														"@val": {
-															"type": "string"
-														},
-														"#text": {
-															"type": "string"
-														}
-													}
-												},
-												"Contract": {
-													"type": "string"
-												},
-												"RepositoryID": {
-													"type": "string"
-												},
-												"SourceSystemID": {
-													"type": "string"
-												},
-												"FileName": {
-													"type": "string"
-												},
-												"Submitter": {
-													"type": "string"
-												},
-												"Comment": {
-													"type": "string"
-												},
-												"CategoryID": {
-													"type": "object",
-													"properties": {
-														"@rm": {
-															"type": "string"
-														},
-														"#text": {
-															"type": "string"
-														}
-													}
-												},
-												"SubCategoryID": {
-													"type": "string"
-												},
-												"AccountNumber": {
-													"type": "string"
-												},
-												"PCNNumber": {
-													"type": "string"
-												},
-												"SelfID": {
-													"type": "string"
-												},
-												"Batched": {
-													"type": "string"
-												},
-												"Posted": {
-													"type": "string"
-												},
-												"BatchType": {
-													"type": "string"
-												},
-												"BatchNumber": {
-													"type": "string"
-												},
-												"RelatedDocumentID": {
-													"type": "string"
-												},
-												"Created": {
-													"type": "string"
-												},
-												"Modified": {
-													"type": "string"
-												}
-											}
-										},
-										"EmailOutbound": {
-											"type": "object",
-											"properties": {
-												"CorrespondenceID": {
-													"type": "string"
-												},
-												"Version": {
-													"type": "string"
-												},
-												"Contract": {
-													"type": "string"
-												},
-												"RepositoryID": {
-													"type": "string"
-												},
-												"SourceSystemID": {
-													"type": "string"
-												},
-												"FileName": {
-													"type": "string"
-												},
-												"Submitter": {
-													"type": "string"
-												},
-												"Comment": {
-													"type": "string"
-												},
-												"CategoryID": {
-													"type": "string"
-												},
-												"SubCategoryID": {
-													"type": "string"
-												},
-												"AccountNumber": {
-													"type": "string"
-												},
-												"PCNNumber": {
-													"type": "string"
-												},
-												"SelfID": {
-													"type": "string"
-												},
-												"Batched": {
-													"type": "string"
-												},
-												"Posted": {
-													"type": "string"
-												},
-												"BatchType": {
-													"type": "string"
-												},
-												"BatchNumber": {
-													"type": "string"
-												},
-												"RelatedDocumentID": {
-													"type": "string"
-												},
-												"Created": {
-													"type": "string"
-												},
-												"Modified": {
-													"type": "string"
-												}
-											}
-										},
-										"Test": {
-											"type": "object",
-											"properties": {
-												"CorrespondenceID": {
-													"type": "string"
-												},
-												"Version": {
-													"type": "string"
-												},
-												"Contract": {
-													"type": "string"
-												},
-												"RepositoryID": {
-													"type": "string"
-												},
-												"SourceSystemID": {
-													"type": "string"
-												},
-												"FileName": {
-													"type": "string"
-												},
-												"Submitter": {
-													"type": "string"
-												},
-												"Comment": {
-													"type": "string"
-												},
-												"CategoryID": {
-													"type": "string"
-												},
-												"SubCategoryID": {
-													"type": "string"
-												},
-												"AccountNumber": {
-													"type": "string"
-												},
-												"PCNNumber": {
-													"type": "string"
-												},
-												"SelfID": {
-													"type": "string"
-												},
-												"Batched": {
-													"type": "string"
-												},
-												"Posted": {
-													"type": "string"
-												},
-												"BatchType": {
-													"type": "string"
-												},
-												"BatchNumber": {
-													"type": "string"
-												},
-												"RelatedDocumentID": {
-													"type": "string"
-												},
-												"Created": {
-													"type": "string"
-												},
-												"Modified": {
-													"type": "string"
-												}
-											}
-										}
-									}
-								}
-							}
+							"type": "null"
 						},
 						"DocumentSize": {
 							"type": "integer"
