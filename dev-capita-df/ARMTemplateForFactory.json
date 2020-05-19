@@ -41,7 +41,7 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"name": "[concat(parameters('factoryName'), '/Main')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -86,7 +86,7 @@
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "processor_pipe",
+								"activity": "processor_copy_db_pipe",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -101,6 +101,27 @@
 							"waitOnCompletion": true,
 							"parameters": {}
 						}
+					},
+					{
+						"name": "processor_copy_db_pipe",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "processor_pipe",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "processor_copy_db_pipe",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
 					}
 				],
 				"annotations": []
@@ -108,7 +129,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/processor_pipe')]",
 				"[concat(variables('factoryId'), '/pipelines/preprocessor_pipe')]",
-				"[concat(variables('factoryId'), '/pipelines/postprocessor_pipe')]"
+				"[concat(variables('factoryId'), '/pipelines/postprocessor_pipe')]",
+				"[concat(variables('factoryId'), '/pipelines/processor_copy_db_pipe')]"
 			]
 		},
 		{
