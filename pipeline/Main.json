@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "Main",
 	"properties": {
 		"activities": [
 			{
@@ -40,7 +40,7 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "processor_pipe",
+						"activity": "processor_copy_db_pipe",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -50,6 +50,26 @@
 				"typeProperties": {
 					"pipeline": {
 						"referenceName": "postprocessor_pipe",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "processor_copy_db_pipe",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "processor_pipe",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "processor_copy_db_pipe",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
