@@ -2460,6 +2460,13 @@
 							"type": "PipelineReference"
 						},
 						"parameters": {}
+					},
+					{
+						"pipelineReference": {
+							"referenceName": "Main",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
 					}
 				],
 				"type": "BlobEventsTrigger",
@@ -2474,7 +2481,8 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/preprocessor_pipe')]"
+				"[concat(variables('factoryId'), '/pipelines/preprocessor_pipe')]",
+				"[concat(variables('factoryId'), '/pipelines/Main')]"
 			]
 		},
 		{
