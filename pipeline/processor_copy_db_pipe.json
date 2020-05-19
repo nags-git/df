@@ -9,7 +9,7 @@
 					{
 						"activity": "copy_data_to_cosmos",
 						"dependencyConditions": [
-							"Succeeded"
+							"Failed"
 						]
 					}
 				],
