@@ -2283,6 +2283,14 @@
 										"sink": {
 											"path": "$['CustomMetadata']"
 										}
+									},
+									{
+										"source": {
+											"name": "CustomMetadataAnnotation"
+										},
+										"sink": {
+											"path": "$['CustomMetadataAnnotation']"
+										}
 									}
 								]
 							}
