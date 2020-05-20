@@ -231,11 +231,6 @@
 								}
 							},
 							{
-								"sink": {
-									"path": "$['ClientId']"
-								}
-							},
-							{
 								"source": {
 									"name": "LastModifiedDate",
 									"type": "Int32"
