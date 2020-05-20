@@ -21,7 +21,10 @@
 						"storedProcedureParameters": {
 							"baseURL": {
 								"type": "String",
-								"value": "@pipeline().parameters.baseURL"
+								"value": {
+									"value": "@pipeline().parameters.baseURL",
+									"type": "Expression"
+								}
 							},
 							"status": {
 								"type": "String",
