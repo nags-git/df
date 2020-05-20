@@ -166,7 +166,7 @@
 									"requestInterval": "00.00:00:00.010",
 									"requestMethod": "POST",
 									"requestBody": {
-										"value": "@{concat('<queryRequest><object><query>namespace:',item().namespace,' +ingestTimeString:[',item().ingestStartDateTime,' TO ',item().ingestEndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
+										"value": "@{concat('<queryRequest><object><query>namespace:',item().namespace,' +updateTimeString:[',item().StartDateTime,' TO ',item().EndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
 										"type": "Expression"
 									},
 									"additionalHeaders": {
