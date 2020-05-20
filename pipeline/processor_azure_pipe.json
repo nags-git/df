@@ -25,6 +25,10 @@
 									"value": "@pipeline().parameters.baseURL",
 									"type": "Expression"
 								}
+							},
+							"status": {
+								"type": "String",
+								"value": "ObjectStaged"
 							}
 						},
 						"queryTimeout": "02:00:00"
