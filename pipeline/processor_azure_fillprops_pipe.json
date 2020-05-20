@@ -1,5 +1,5 @@
 {
-	"name": "processor_azure_pipe",
+	"name": "processor_azure_fillprops_pipe",
 	"properties": {
 		"activities": [
 			{
@@ -28,7 +28,7 @@
 							},
 							"status": {
 								"type": "String",
-								"value": "ObjectStaged"
+								"value": "ObjectLoaded"
 							}
 						},
 						"queryTimeout": "02:00:00"
