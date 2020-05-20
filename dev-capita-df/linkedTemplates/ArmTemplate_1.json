@@ -83,21 +83,21 @@
 								"mappings": [
 									{
 										"source": {
-											"name": "IngestStartDateTime",
+											"name": "StartDateTime",
 											"type": "String"
 										},
 										"sink": {
-											"name": "IngestStartDateTime",
+											"name": "StartDateTime",
 											"type": "String"
 										}
 									},
 									{
 										"source": {
-											"name": "IngestEndDateTime",
+											"name": "EndDateTime",
 											"type": "String"
 										},
 										"sink": {
-											"name": "IngestEndDateTime",
+											"name": "EndDateTime",
 											"type": "String"
 										}
 									},
