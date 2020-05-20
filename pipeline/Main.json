@@ -3,26 +3,6 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "processor_pipe",
-				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "preprocessor_pipe",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"pipeline": {
-						"referenceName": "processor_pipe",
-						"type": "PipelineReference"
-					},
-					"waitOnCompletion": true
-				}
-			},
-			{
 				"name": "preprocessor_pipe",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
@@ -60,7 +40,7 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "processor_pipe",
+						"activity": "processor_azure_fillprops_pipe",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -70,6 +50,66 @@
 				"typeProperties": {
 					"pipeline": {
 						"referenceName": "processor_sql_cosmos_pipe",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "processor_hcp_pipe",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "preprocessor_pipe",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "processor_hcp_pipe",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "processor_azure_pipe",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "processor_hcp_pipe",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "processor_azure_pipe",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "processor_azure_fillprops_pipe",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "processor_azure_pipe",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "processor_azure_fillprops_pipe",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
