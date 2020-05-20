@@ -1948,7 +1948,8 @@
 							},
 							"sink": {
 								"type": "CosmosDbSqlApiSink",
-								"writeBehavior": "insert"
+								"writeBehavior": "upsert",
+								"disableMetricsCollection": false
 							},
 							"enableStaging": false,
 							"translator": {
@@ -2046,6 +2047,15 @@
 									},
 									{
 										"source": {
+											"name": "CustomMetadata",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['CustomMetadata']"
+										}
+									},
+									{
+										"source": {
 											"name": "DocumentSize",
 											"type": "Int32"
 										},
@@ -2118,26 +2128,20 @@
 									},
 									{
 										"source": {
-											"name": "BatchID"
+											"name": "FileName",
+											"type": "String"
 										},
 										"sink": {
-											"path": "$['BatchID']"
+											"path": "$['FileName']"
 										}
 									},
 									{
 										"source": {
-											"name": "CustomMetadata"
+											"name": "FileType",
+											"type": "String"
 										},
 										"sink": {
-											"path": "$['CustomMetadata']"
-										}
-									},
-									{
-										"source": {
-											"name": "CustomMetadataAnnotation"
-										},
-										"sink": {
-											"path": "$['CustomMetadataAnnotation']"
+											"path": "$['FileType']"
 										}
 									}
 								]
