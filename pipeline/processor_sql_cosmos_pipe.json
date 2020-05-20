@@ -1,5 +1,5 @@
 {
-	"name": "processor_copy_db_pipe",
+	"name": "processor_sql_cosmos_pipe",
 	"properties": {
 		"activities": [
 			{
