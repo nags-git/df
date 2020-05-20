@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "hcpqueries.csv",
+				"fileName": "samplequerydata.csv",
 				"container": "inputquery"
 			},
 			"columnDelimiter": ",",
