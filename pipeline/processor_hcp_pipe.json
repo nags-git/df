@@ -26,9 +26,12 @@
 									"type": "Expression"
 								}
 							},
-							"status": {
+							"currentStatus": {
 								"type": "String",
-								"value": "Initial"
+								"value": "ObjectStagingInProgress..."
+							},
+							"previousStatus": {
+								"type": "String"
 							}
 						},
 						"queryTimeout": "02:00:00"
