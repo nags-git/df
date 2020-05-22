@@ -61,89 +61,89 @@
 								"referenceName": "az_sql_ls",
 								"type": "LinkedServiceReference"
 							}
+						},
+						{
+							"name": "processor_copy_db_pipe",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "processor_azure_fillprops_pipe",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "processor_sql_cosmos_pipe",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true
+							}
+						},
+						{
+							"name": "cleanup_pipe",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "processor_copy_db_pipe",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "cleanup_pipe",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true
+							}
+						},
+						{
+							"name": "processor_azure_pipe",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "processor_hcp_pipe",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "processor_azure_pipe",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true
+							}
+						},
+						{
+							"name": "processor_azure_fillprops_pipe",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "processor_azure_pipe",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "processor_azure_fillprops_pipe",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true
+							}
 						}
 					],
 					"timeout": "7.00:00:00"
-				}
-			},
-			{
-				"name": "processor_copy_db_pipe",
-				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "processor_azure_fillprops_pipe",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"pipeline": {
-						"referenceName": "processor_sql_cosmos_pipe",
-						"type": "PipelineReference"
-					},
-					"waitOnCompletion": true
-				}
-			},
-			{
-				"name": "cleanup_pipe",
-				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "processor_copy_db_pipe",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"pipeline": {
-						"referenceName": "cleanup_pipe",
-						"type": "PipelineReference"
-					},
-					"waitOnCompletion": true
-				}
-			},
-			{
-				"name": "processor_azure_pipe",
-				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "until_records_processed",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"pipeline": {
-						"referenceName": "processor_azure_pipe",
-						"type": "PipelineReference"
-					},
-					"waitOnCompletion": true
-				}
-			},
-			{
-				"name": "processor_azure_fillprops_pipe",
-				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "processor_azure_pipe",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"pipeline": {
-						"referenceName": "processor_azure_fillprops_pipe",
-						"type": "PipelineReference"
-					},
-					"waitOnCompletion": true
 				}
 			}
 		],
