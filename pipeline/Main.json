@@ -9,7 +9,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@lessOrEquals(activity('get_records_with_InitialStatus').output.Value,1)",
+						"value": "@lessOrEquals(activity('get_records_from_initialstatus').output.firstRow.recordsCount,0)",
 						"type": "Expression"
 					},
 					"activities": [
@@ -18,7 +18,7 @@
 							"type": "ExecutePipeline",
 							"dependsOn": [
 								{
-									"activity": "get_records_with_InitialStatus",
+									"activity": "get_records_from_initialstatus",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -31,35 +31,6 @@
 									"type": "PipelineReference"
 								},
 								"waitOnCompletion": true
-							}
-						},
-						{
-							"name": "get_records_with_InitialStatus",
-							"type": "SqlServerStoredProcedure",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "7.00:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"storedProcedureName": "[dbo].[USP_Get_ObjectsWithInitialStatus]",
-								"storedProcedureParameters": {
-									"count": {
-										"value": {
-											"value": "@pipeline().parameters.CountofRecordsToProcess",
-											"type": "Expression"
-										},
-										"type": "Int32"
-									}
-								}
-							},
-							"linkedServiceName": {
-								"referenceName": "az_sql_ls",
-								"type": "LinkedServiceReference"
 							}
 						},
 						{
@@ -140,6 +111,39 @@
 									"type": "PipelineReference"
 								},
 								"waitOnCompletion": true
+							}
+						},
+						{
+							"name": "get_records_from_initialstatus",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderStoredProcedureName": "[dbo].[USP_Get_ObjectsWithInitialStatus]",
+									"storedProcedureParameters": {
+										"count": {
+											"type": "Int32",
+											"value": {
+												"value": "@pipeline().parameters.CountOfRecordsToProcess",
+												"type": "Expression"
+											}
+										}
+									},
+									"queryTimeout": "02:00:00"
+								},
+								"dataset": {
+									"referenceName": "az_sql_hcp_data",
+									"type": "DatasetReference"
+								}
 							}
 						}
 					],
