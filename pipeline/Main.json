@@ -28,6 +28,10 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
+					"expression": {
+						"value": "@lessOrEquals(activity('get_records_with_InitialStatus').output.firstRow.recordsCount,1)",
+						"type": "Expression"
+					},
 					"activities": [
 						{
 							"name": "processor_copy_db_pipe",
@@ -52,7 +56,14 @@
 						{
 							"name": "processor_hcp_pipe",
 							"type": "ExecutePipeline",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "get_records_with_InitialStatus",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"userProperties": [],
 							"typeProperties": {
 								"pipeline": {
@@ -121,12 +132,47 @@
 								},
 								"waitOnCompletion": true
 							}
+						},
+						{
+							"name": "get_records_with_InitialStatus",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[USP_Get_ObjectsWithInitialStatus]",
+								"storedProcedureParameters": {
+									"count": {
+										"value": {
+											"value": "@pipeline().parameters.CountofRecordsToProcess",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sql_ls",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"timeout": "7.00:00:00"
 				}
 			}
 		],
+		"parameters": {
+			"CountofRecordsToProcess": {
+				"type": "int",
+				"defaultValue": 1
+			}
+		},
 		"annotations": []
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
