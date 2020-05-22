@@ -17,6 +17,9 @@
 		"az_strg_ls_connectionString": {
 			"value": ""
 		},
+		"azure_pipeline_metadata_update_ls_functionKey": {
+			"value": ""
+		},
 		"hcp_http_ls_properties_typeProperties_url": {
 			"value": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
 		},

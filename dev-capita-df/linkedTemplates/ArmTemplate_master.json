@@ -23,6 +23,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'az_strg_ls'"
 		},
+		"azure_pipeline_metadata_update_ls_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
+		},
 		"hcp_http_ls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
@@ -73,6 +77,9 @@
 					},
 					"az_strg_ls_connectionString": {
 						"value": "[parameters('az_strg_ls_connectionString')]"
+					},
+					"azure_pipeline_metadata_update_ls_functionKey": {
+						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
 					},
 					"hcp_http_ls_properties_typeProperties_url": {
 						"value": "[parameters('hcp_http_ls_properties_typeProperties_url')]"

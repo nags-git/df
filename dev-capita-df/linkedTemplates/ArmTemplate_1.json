@@ -17,6 +17,35 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/hcp_metadata_download_ls')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "hcp_http_ls",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"relativeURL": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Avro",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": {
+							"value": "@dataset().relativeURL",
+							"type": "Expression"
+						}
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/hcp_object_download_ds')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -617,9 +646,12 @@
 											"type": "Expression"
 										}
 									},
-									"status": {
+									"currentStatus": {
 										"type": "String",
-										"value": "Initial"
+										"value": "ObjectStagingInProgress..."
+									},
+									"previousStatus": {
+										"type": "String"
 									}
 								},
 								"queryTimeout": "02:00:00"
@@ -1013,7 +1045,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/hcp_object_download_ds')]"
+				"[concat(variables('factoryId'), '/datasets/hcp_object_download_ds')]",
+				"[concat(variables('factoryId'), '/datasets/hcp_metadata_download_ls')]"
 			]
 		},
 		{
@@ -1037,50 +1070,8 @@
 						}
 					},
 					{
-						"name": "postprocessor_pipe",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "processor_copy_db_pipe",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "postprocessor_pipe",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "processor_copy_db_pipe",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "processor_azure_fillprops_pipe",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "processor_sql_cosmos_pipe",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "processor_hcp_pipe",
-						"type": "ExecutePipeline",
+						"name": "until_records_processed",
+						"type": "Until",
 						"dependsOn": [
 							{
 								"activity": "preprocessor_pipe",
@@ -1091,57 +1082,156 @@
 						],
 						"userProperties": [],
 						"typeProperties": {
-							"pipeline": {
-								"referenceName": "processor_hcp_pipe",
-								"type": "PipelineReference"
+							"expression": {
+								"value": "@lessOrEquals(activity('get_records_with_InitialStatus').output.firstRow.recordsCount,1)",
+								"type": "Expression"
 							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "processor_azure_pipe",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "processor_hcp_pipe",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "processor_azure_pipe",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "processor_azure_fillprops_pipe",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "processor_azure_pipe",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "processor_azure_fillprops_pipe",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
+							"activities": [
+								{
+									"name": "processor_copy_db_pipe",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "processor_azure_fillprops_pipe",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "processor_sql_cosmos_pipe",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {}
+									}
+								},
+								{
+									"name": "processor_hcp_pipe",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "get_records_with_InitialStatus",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "processor_hcp_pipe",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {}
+									}
+								},
+								{
+									"name": "processor_azure_pipe",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "processor_hcp_pipe",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "processor_azure_pipe",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {}
+									}
+								},
+								{
+									"name": "processor_azure_fillprops_pipe",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "processor_azure_pipe",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "processor_azure_fillprops_pipe",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {}
+									}
+								},
+								{
+									"name": "cleanup_pipe",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "processor_copy_db_pipe",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "cleanup_pipe",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {}
+									}
+								},
+								{
+									"name": "get_records_with_InitialStatus",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_Get_ObjectsWithInitialStatus]",
+										"storedProcedureParameters": {
+											"count": {
+												"value": {
+													"value": "@pipeline().parameters.CountofRecordsToProcess",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference"
+									}
+								}
+							],
+							"timeout": "7.00:00:00"
 						}
 					}
 				],
+				"parameters": {
+					"CountofRecordsToProcess": {
+						"type": "int",
+						"defaultValue": 1
+					}
+				},
 				"annotations": []
 			},
 			"dependsOn": [
