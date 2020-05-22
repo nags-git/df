@@ -54,26 +54,6 @@
 							}
 						},
 						{
-							"name": "cleanup_pipe",
-							"type": "ExecutePipeline",
-							"dependsOn": [
-								{
-									"activity": "processor_copy_db_pipe",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"userProperties": [],
-							"typeProperties": {
-								"pipeline": {
-									"referenceName": "cleanup_pipe",
-									"type": "PipelineReference"
-								},
-								"waitOnCompletion": true
-							}
-						},
-						{
 							"name": "processor_azure_pipe",
 							"type": "ExecutePipeline",
 							"dependsOn": [
