@@ -31,7 +31,8 @@
 								"value": "ObjectStagingInProgress..."
 							},
 							"previousStatus": {
-								"type": "String"
+								"type": "String",
+								"value": null
 							}
 						},
 						"queryTimeout": "02:00:00"
