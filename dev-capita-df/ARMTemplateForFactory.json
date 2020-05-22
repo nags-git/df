@@ -51,37 +51,37 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "preprocessor_pipe",
-						"type": "ExecutePipeline",
+						"name": "until_records_processed",
+						"type": "Until",
 						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
-							"pipeline": {
-								"referenceName": "preprocessor_pipe",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "until_records_processed",
-						"type": "Until",
-						"dependsOn": [
-							{
-								"activity": "preprocessor_pipe",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
 							"expression": {
-								"value": "@lessOrEquals(activity('get_records_with_InitialStatus').output.firstRow.recordsCount,1)",
+								"value": "@lessOrEquals(activity('get_records_from_initialstatus').output.firstRow.recordsCount,0)",
 								"type": "Expression"
 							},
 							"activities": [
+								{
+									"name": "processor_hcp_pipe",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "get_records_from_initialstatus",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "processor_hcp_pipe",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {}
+									}
+								},
 								{
 									"name": "processor_copy_db_pipe",
 									"type": "ExecutePipeline",
@@ -104,11 +104,11 @@
 									}
 								},
 								{
-									"name": "processor_hcp_pipe",
+									"name": "cleanup_pipe",
 									"type": "ExecutePipeline",
 									"dependsOn": [
 										{
-											"activity": "get_records_with_InitialStatus",
+											"activity": "processor_copy_db_pipe",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -117,7 +117,7 @@
 									"userProperties": [],
 									"typeProperties": {
 										"pipeline": {
-											"referenceName": "processor_hcp_pipe",
+											"referenceName": "cleanup_pipe",
 											"type": "PipelineReference"
 										},
 										"waitOnCompletion": true,
@@ -167,29 +167,8 @@
 									}
 								},
 								{
-									"name": "cleanup_pipe",
-									"type": "ExecutePipeline",
-									"dependsOn": [
-										{
-											"activity": "processor_copy_db_pipe",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"pipeline": {
-											"referenceName": "cleanup_pipe",
-											"type": "PipelineReference"
-										},
-										"waitOnCompletion": true,
-										"parameters": {}
-									}
-								},
-								{
-									"name": "get_records_with_InitialStatus",
-									"type": "SqlServerStoredProcedure",
+									"name": "get_records_from_initialstatus",
+									"type": "Lookup",
 									"dependsOn": [],
 									"policy": {
 										"timeout": "7.00:00:00",
@@ -200,20 +179,25 @@
 									},
 									"userProperties": [],
 									"typeProperties": {
-										"storedProcedureName": "[[dbo].[USP_Get_ObjectsWithInitialStatus]",
-										"storedProcedureParameters": {
-											"count": {
-												"value": {
-													"value": "@pipeline().parameters.CountofRecordsToProcess",
-													"type": "Expression"
-												},
-												"type": "Int32"
-											}
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_ObjectsWithInitialStatus]",
+											"storedProcedureParameters": {
+												"count": {
+													"type": "Int32",
+													"value": {
+														"value": "@pipeline().parameters.CountOfRecordsToProcess",
+														"type": "Expression"
+													}
+												}
+											},
+											"queryTimeout": "02:00:00"
+										},
+										"dataset": {
+											"referenceName": "az_sql_hcp_data",
+											"type": "DatasetReference",
+											"parameters": {}
 										}
-									},
-									"linkedServiceName": {
-										"referenceName": "az_sql_ls",
-										"type": "LinkedServiceReference"
 									}
 								}
 							],
@@ -230,13 +214,12 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/preprocessor_pipe')]",
-				"[concat(variables('factoryId'), '/pipelines/processor_sql_cosmos_pipe')]",
 				"[concat(variables('factoryId'), '/pipelines/processor_hcp_pipe')]",
+				"[concat(variables('factoryId'), '/pipelines/processor_sql_cosmos_pipe')]",
+				"[concat(variables('factoryId'), '/pipelines/cleanup_pipe')]",
 				"[concat(variables('factoryId'), '/pipelines/processor_azure_pipe')]",
 				"[concat(variables('factoryId'), '/pipelines/processor_azure_fillprops_pipe')]",
-				"[concat(variables('factoryId'), '/pipelines/cleanup_pipe')]",
-				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]"
+				"[concat(variables('factoryId'), '/datasets/az_sql_hcp_data')]"
 			]
 		},
 		{
