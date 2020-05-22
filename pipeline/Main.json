@@ -9,7 +9,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@lessOrEquals(activity('get_records_with_InitialStatus').output.recordsCount,1)",
+						"value": "@lessOrEquals(activity('get_records_with_InitialStatus').output.Value,1)",
 						"type": "Expression"
 					},
 					"activities": [
