@@ -1,5 +1,5 @@
 {
-	"name": "postprocessor_pipe",
+	"name": "cleanup_pipe",
 	"properties": {
 		"activities": [
 			{

@@ -36,7 +36,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"pipeline": {
-									"referenceName": "postprocessor_pipe",
+									"referenceName": "cleanup_pipe",
 									"type": "PipelineReference"
 								},
 								"waitOnCompletion": true
