@@ -26,7 +26,11 @@
 									"type": "Expression"
 								}
 							},
-							"status": {
+							"currentStatus": {
+								"type": "String",
+								"value": "ObjectLoadingInProgress...."
+							},
+							"previousStatus": {
 								"type": "String",
 								"value": "ObjectStaged"
 							}
