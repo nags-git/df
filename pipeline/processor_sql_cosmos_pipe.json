@@ -310,11 +310,6 @@
 								"sink": {
 									"path": "$['FileType']"
 								}
-							},
-							{
-								"sink": {
-									"path": "$['Column_1']"
-								}
 							}
 						]
 					}
