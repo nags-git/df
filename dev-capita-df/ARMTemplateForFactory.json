@@ -104,27 +104,6 @@
 									}
 								},
 								{
-									"name": "cleanup_pipe",
-									"type": "ExecutePipeline",
-									"dependsOn": [
-										{
-											"activity": "processor_copy_db_pipe",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"pipeline": {
-											"referenceName": "cleanup_pipe",
-											"type": "PipelineReference"
-										},
-										"waitOnCompletion": true,
-										"parameters": {}
-									}
-								},
-								{
 									"name": "processor_azure_pipe",
 									"type": "ExecutePipeline",
 									"dependsOn": [
@@ -199,6 +178,27 @@
 											"parameters": {}
 										}
 									}
+								},
+								{
+									"name": "cleanup_pipe",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "processor_copy_db_pipe",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "cleanup_pipe",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {}
+									}
 								}
 							],
 							"timeout": "7.00:00:00"
@@ -216,10 +216,10 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/processor_hcp_pipe')]",
 				"[concat(variables('factoryId'), '/pipelines/processor_sql_cosmos_pipe')]",
-				"[concat(variables('factoryId'), '/pipelines/cleanup_pipe')]",
 				"[concat(variables('factoryId'), '/pipelines/processor_azure_pipe')]",
 				"[concat(variables('factoryId'), '/pipelines/processor_azure_fillprops_pipe')]",
-				"[concat(variables('factoryId'), '/datasets/az_sql_hcp_data')]"
+				"[concat(variables('factoryId'), '/datasets/az_sql_hcp_data')]",
+				"[concat(variables('factoryId'), '/pipelines/cleanup_pipe')]"
 			]
 		},
 		{

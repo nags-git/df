@@ -1110,27 +1110,6 @@
 									}
 								},
 								{
-									"name": "cleanup_pipe",
-									"type": "ExecutePipeline",
-									"dependsOn": [
-										{
-											"activity": "processor_copy_db_pipe",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"pipeline": {
-											"referenceName": "cleanup_pipe",
-											"type": "PipelineReference"
-										},
-										"waitOnCompletion": true,
-										"parameters": {}
-									}
-								},
-								{
 									"name": "processor_azure_pipe",
 									"type": "ExecutePipeline",
 									"dependsOn": [
@@ -1204,6 +1183,27 @@
 											"type": "DatasetReference",
 											"parameters": {}
 										}
+									}
+								},
+								{
+									"name": "cleanup_pipe",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "processor_copy_db_pipe",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "cleanup_pipe",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {}
 									}
 								}
 							],
