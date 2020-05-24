@@ -466,16 +466,6 @@
 											"name": "Namespace",
 											"type": "String"
 										}
-									},
-									{
-										"source": {
-											"name": "CountOfRecordsToBeProcessedAtOnce",
-											"type": "String"
-										},
-										"sink": {
-											"name": "RecordsCount",
-											"type": "Int32"
-										}
 									}
 								]
 							}
