@@ -91,7 +91,7 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"functionName": "hcpmetadataupdate",
+								"functionName": "deleterecord",
 								"method": "POST",
 								"headers": {
 									"Content-Type": "application/json"
