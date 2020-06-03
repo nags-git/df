@@ -1,6 +1,75 @@
 {
 	"name": "purgedrecords_pipe",
 	"properties": {
+		"activities": [
+			{
+				"name": "get_purged_records",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "az_sql_hcp_data",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "foreachrecord",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "get_purged_records",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"activities": [
+						{
+							"name": "delete_object",
+							"type": "Delete",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "az_object_upload_prod_ds",
+									"type": "DatasetReference",
+									"parameters": {
+										"relativeURL": "@item().ObjectPath"
+									}
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								}
+							}
+						}
+					]
+				}
+			}
+		],
 		"annotations": []
 	}
 }
