@@ -402,6 +402,129 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/delta_purgerecords_pipe')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "getrecords_forpurge",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_PurgedObject]",
+								"queryTimeout": "02:00:00"
+							},
+							"dataset": {
+								"referenceName": "az_sql_hcp_data",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "foreach_record",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "getrecords_forpurge",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('getrecords_forpurge').output",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "delete_staged_object",
+									"type": "Delete",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataset": {
+											"referenceName": "az_object_upload_prod_ds",
+											"type": "DatasetReference",
+											"parameters": {
+												"relativeURL": "@item().ObjectPath"
+											}
+										},
+										"enableLogging": false,
+										"storeSettings": {
+											"type": "AzureBlobStorageReadSettings",
+											"recursive": true
+										}
+									}
+								},
+								{
+									"name": "fill_object_properties",
+									"type": "AzureFunctionActivity",
+									"dependsOn": [
+										{
+											"activity": "delete_staged_object",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"functionName": "deleterecord",
+										"method": "POST",
+										"headers": {
+											"Content-Type": "application/json"
+										},
+										"body": {
+											"value": "@item().Id",
+											"type": "Expression"
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_func_update_objectprops",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/az_sql_hcp_data')]",
+				"[concat(variables('factoryId'), '/datasets/az_object_upload_prod_ds')]",
+				"[concat(variables('factoryId'), '/linkedServices/az_func_update_objectprops')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/preprocessor_pipe')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
