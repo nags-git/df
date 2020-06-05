@@ -47,7 +47,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('getrecords_forpurge').output",
+						"value": "@activity('getrecords_forpurge').output.value",
 						"type": "Expression"
 					},
 					"activities": [
