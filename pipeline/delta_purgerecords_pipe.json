@@ -7,7 +7,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "ForEach1",
+						"activity": "foreach_record_query",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -142,7 +142,7 @@
 				}
 			},
 			{
-				"name": "ForEach1",
+				"name": "foreach_record_query",
 				"type": "ForEach",
 				"dependsOn": [
 					{
@@ -152,7 +152,49 @@
 						]
 					}
 				],
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('get_queries_to_process_lkup').output",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "usp_update_query_status",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[USP_UpdateQuery_Status]",
+								"storedProcedureParameters": {
+									"id": {
+										"value": "@item().Id",
+										"type": "Guid"
+									},
+									"processPurge": {
+										"value": "true",
+										"type": "Boolean"
+									},
+									"status": {
+										"value": "Complete",
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sql_ls",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
 			}
 		],
 		"annotations": []
