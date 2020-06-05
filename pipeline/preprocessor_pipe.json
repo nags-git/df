@@ -377,7 +377,7 @@
 										"type": "Guid"
 									},
 									"processPurge": {
-										"value": "0",
+										"value": "false",
 										"type": "Boolean"
 									},
 									"status": {
