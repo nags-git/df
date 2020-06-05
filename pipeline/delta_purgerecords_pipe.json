@@ -155,7 +155,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('get_queries_to_process_lkup').output",
+						"value": "@activity('get_queries_to_process_lkup').output.value",
 						"type": "Expression"
 					},
 					"activities": [
