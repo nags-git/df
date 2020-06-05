@@ -108,6 +108,31 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "get_queries_to_process_lkup",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select * from tblhcpqueries where status='CheckForPurge'",
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "azsql_csv_sql_ds",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
 			}
 		],
 		"annotations": []
