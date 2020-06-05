@@ -373,11 +373,12 @@
 								"storedProcedureName": "[dbo].[USP_UpdateQuery_Status]",
 								"storedProcedureParameters": {
 									"id": {
-										"value": {
-											"value": "@item().Id",
-											"type": "Expression"
-										},
+										"value": "@item().Id",
 										"type": "Guid"
+									},
+									"processPurge": {
+										"value": "0",
+										"type": "Boolean"
 									},
 									"status": {
 										"value": "Complete",
