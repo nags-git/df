@@ -163,7 +163,14 @@
 						{
 							"name": "usp_update_query_status",
 							"type": "SqlServerStoredProcedure",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "upload_hcpdelta_purge_records_to_sql",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "7.00:00:00",
 								"retry": 0,
@@ -185,6 +192,289 @@
 									},
 									"status": {
 										"value": "Complete",
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sql_ls",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "upload_hcpdelta_purge_records_to_sql",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "RestSource",
+									"additionalColumns": [
+										{
+											"name": "BatchId",
+											"value": {
+												"value": "@item().Id",
+												"type": "Expression"
+											}
+										}
+									],
+									"httpRequestTimeout": "00:01:40",
+									"requestInterval": "00.00:00:00.010",
+									"requestMethod": "POST",
+									"requestBody": {
+										"value": "@{concat('<queryRequest><object><query>namespace:',item().namespace,' +updateTimeString:[',item().StartDateTime,' TO ',item().EndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
+										"type": "Expression"
+									},
+									"additionalHeaders": {
+										"Authorization": "HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492",
+										"Content-Type": "application/xml"
+									}
+								},
+								"sink": {
+									"type": "AzureSqlSink"
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"path": "['urlName']"
+											},
+											"sink": {
+												"name": "ObjectFullPath",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['operation']"
+											},
+											"sink": {
+												"name": "Operation",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['version']"
+											},
+											"sink": {
+												"name": "Version",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['objectPath']"
+											},
+											"sink": {
+												"name": "ObjectPath",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['type']"
+											},
+											"sink": {
+												"name": "Type",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['size']"
+											},
+											"sink": {
+												"name": "ObjectSize",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "['retention']"
+											},
+											"sink": {
+												"name": "Retention",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['hold']"
+											},
+											"sink": {
+												"name": "Hold",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['shred']"
+											},
+											"sink": {
+												"name": "Shred",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['owner']"
+											},
+											"sink": {
+												"name": "Owner",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['ingestTime']"
+											},
+											"sink": {
+												"name": "IngestTime",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['customMetadata']"
+											},
+											"sink": {
+												"name": "CustomMetadataExists",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['index']"
+											},
+											"sink": {
+												"name": "Index",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['hash']"
+											},
+											"sink": {
+												"name": "Hash",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['updateTime']"
+											},
+											"sink": {
+												"name": "UpdateTime",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['namespace']"
+											},
+											"sink": {
+												"name": "Namespace",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['customMetadataAnnotation']"
+											},
+											"sink": {
+												"name": "CustomMetadataAnnotation",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['BatchId']"
+											},
+											"sink": {
+												"name": "BatchID",
+												"type": "Guid"
+											}
+										}
+									],
+									"collectionReference": "$['queryResult']['resultSet']"
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "hcp_data_download_ds",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "az_sql_hcp_delta_purge_data",
+									"type": "DatasetReference"
+								}
+							]
+						},
+						{
+							"name": "update_error_upload_hcpdata_to_sql",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "upload_hcpdelta_purge_records_to_sql",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[USP_Insert_ErrorInformation]",
+								"storedProcedureParameters": {
+									"errorAtStage": {
+										"value": "upload hcp data to sql",
+										"type": "String"
+									},
+									"errorInPipeline": {
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"errorMessage": {
+										"value": {
+											"value": "@activity('upload_hcpdata_to_sql').error.message",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"referenceId": {
+										"value": {
+											"value": "@item().id",
+											"type": "Expression"
+										},
+										"type": "Guid"
+									},
+									"referenceTable": {
+										"value": {
+											"value": "@pipeline().parameters.referencetable",
+											"type": "Expression"
+										},
 										"type": "String"
 									}
 								}
