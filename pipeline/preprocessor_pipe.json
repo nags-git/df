@@ -61,6 +61,16 @@
 									"name": "Namespace",
 									"type": "String"
 								}
+							},
+							{
+								"source": {
+									"name": "IncludePurgeRecords",
+									"type": "Boolean"
+								},
+								"sink": {
+									"name": "IncludePurgeRecords",
+									"type": "Boolean"
+								}
 							}
 						]
 					}
