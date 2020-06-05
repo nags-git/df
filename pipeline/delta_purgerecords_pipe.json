@@ -7,7 +7,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "foreach_record_query",
+						"activity": "update_records_to_purge_operation",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -350,6 +350,30 @@
 							}
 						}
 					]
+				}
+			},
+			{
+				"name": "update_records_to_purge_operation",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "foreach_record_query",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "az_sql_ls",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],
