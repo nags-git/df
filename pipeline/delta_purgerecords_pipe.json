@@ -30,7 +30,8 @@
 					"dataset": {
 						"referenceName": "az_sql_hcp_data",
 						"type": "DatasetReference"
-					}
+					},
+					"firstRowOnly": false
 				}
 			},
 			{
