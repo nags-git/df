@@ -50,7 +50,7 @@ pipeline {
                             #appservicename=`jq -r '.app_service_name' target/app-capitadf.json`
                             #appname=$appservicename
                             #az webapp deployment source config-zip --resource-group $resourcegroupname --name ${appname} --src /opt/jenkins/jobs/capita-tfl-api/publish/${artifactzipfilename}
-                            az group create --name DFGroup --location "Central US"
+                            #az group create --name DFGroup --location "Central US"
                             az deployment group create \
                               --name DFDeployment \
                               --resource-group $resourcegroupname \
