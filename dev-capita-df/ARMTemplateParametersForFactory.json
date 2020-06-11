@@ -3,7 +3,7 @@
 	"contentVersion": "1.0.0.0",
 	"parameters": {
 		"factoryName": {
-			"value": "dev-capita-df"
+			"value": "dev-capitatfl-df"
 		},
 		"az_cosmos_ls_connectionString": {
 			"value": ""
