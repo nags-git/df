@@ -46,8 +46,8 @@ pipeline {
                         println "\u001B[34m\u001B[1m**************\u001B[0m"
                         try {
                            sh'''
-                            resourcegroupname=`jq -r '.resource_groupname' target/app-myapp.json`
-                            #appservicename=`jq -r '.app_service_name' target/app-capitaapi.json`
+                            resourcegroupname=`jq -r '.resource_groupname' target/app-capitadf.json`
+                            #appservicename=`jq -r '.app_service_name' target/app-capitadf.json`
                             #appname=$appservicename
                             #az webapp deployment source config-zip --resource-group $resourcegroupname --name ${appname} --src /opt/jenkins/jobs/capita-tfl-api/publish/${artifactzipfilename}
                             az group create --name DFGroup --location "Central US"
