@@ -53,7 +53,7 @@
 					},
 					"activities": [
 						{
-							"name": "delete_staged_object",
+							"name": "delete_object",
 							"type": "Delete",
 							"dependsOn": [],
 							"policy": {
@@ -84,7 +84,7 @@
 							"type": "AzureFunctionActivity",
 							"dependsOn": [
 								{
-									"activity": "delete_staged_object",
+									"activity": "delete_object",
 									"dependencyConditions": [
 										"Succeeded"
 									]
