@@ -23,6 +23,8 @@ pipeline {
 
      parameters {
         string(name:'artifactzipfilename', defaultValue:"publish.zip")
+        string(name: 'environment', defaultValue: "dev")
+
     }
 
 
@@ -30,8 +32,8 @@ pipeline {
       stage ('copy artifacts') {
        steps {
             script {
-            copyArtifacts filter: 'target/app-myapp.json', fingerprintArtifacts: true, projectName: 'app-pipelines/capita/deploy/dev/Deploy'
-            copyArtifacts filter: 'target/app-capitaapi.json', fingerprintArtifacts: true, projectName: 'app-pipelines/capita/deploy/dev/Deploy'
+            copyArtifacts filter: 'target/app-capitadf.json', fingerprintArtifacts: true, projectName: 'app-pipelines/capita-df/${environment}/Deploy'
+            copyArtifacts filter: 'target/app-capitadf.json', fingerprintArtifacts: true, projectName: 'app-pipelines/capita-df/${environment}/Deploy'
            }
        }
    }
@@ -40,17 +42,17 @@ pipeline {
                  script {
                     ansiColor('xterm') {
                         println "\u001B[34m\u001B[1m**************\u001B[0m"
-                        println "\u001B[34m\u001B[1mdotnet restore\u001B[0m"
+                        println "\u001B[34m\u001B[1m deploy template\u001B[0m"
                         println "\u001B[34m\u001B[1m**************\u001B[0m"
                         try {
                            sh'''
-                            resourcegroupname=`jq -r '.resource_group_name' target/app-myapp.json`
+                            resourcegroupname=`jq -r '.resource_groupname' target/app-myapp.json`
                             #appservicename=`jq -r '.app_service_name' target/app-capitaapi.json`
                             #appname=$appservicename
                             #az webapp deployment source config-zip --resource-group $resourcegroupname --name ${appname} --src /opt/jenkins/jobs/capita-tfl-api/publish/${artifactzipfilename}
-                            az group create --name ExampleGroup --location "Central US"
+                            az group create --name DFGroup --location "Central US"
                             az deployment group create \
-                              --name ExampleDeployment \
+                              --name DFDeployment \
                               --resource-group $resourcegroupname \
                               --template-file ARMTemplateForFactory.json \
                               --parameters @ARMTemplateParametersForFactory.json
