@@ -120,7 +120,14 @@
 			{
 				"name": "get_queries_to_process_lkup",
 				"type": "Lookup",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "copy_csv_purged_records",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -368,6 +375,22 @@
 				"linkedServiceName": {
 					"referenceName": "az_sql_ls",
 					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "copy_csv_purged_records",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"enableStaging": false
 				}
 			}
 		],
