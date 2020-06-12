@@ -122,7 +122,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "copy_csv_purged_records",
+						"activity": "copy_sftp_files_azstore",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -143,104 +143,6 @@
 					"referenceName": "az_sql_ls",
 					"type": "LinkedServiceReference"
 				}
-			},
-			{
-				"name": "copy_csv_purged_records",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "copy_sftp_files_azstore",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"wildcardFolderPath": "*",
-							"wildcardFileName": "*.csv",
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
-					"sink": {
-						"type": "AzureSqlSink"
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"sink": {
-									"name": "ID",
-									"type": "Guid"
-								}
-							},
-							{
-								"sink": {
-									"name": "ObjectFullPath",
-									"type": "String"
-								}
-							},
-							{
-								"sink": {
-									"name": "Operation",
-									"type": "String"
-								}
-							},
-							{
-								"sink": {
-									"name": "ObjectPath",
-									"type": "String"
-								}
-							},
-							{
-								"sink": {
-									"name": "Status",
-									"type": "String"
-								}
-							},
-							{
-								"sink": {
-									"name": "CreatedDate",
-									"type": "DateTime"
-								}
-							},
-							{
-								"sink": {
-									"name": "ModifiedDate",
-									"type": "DateTime"
-								}
-							}
-						]
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "csv_purgerecords_sql_ds",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "az_sql_hcp_delta_purge_data",
-						"type": "DatasetReference"
-					}
-				]
 			},
 			{
 				"name": "copy_sftp_files_azstore",
@@ -267,17 +169,66 @@
 						}
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".csv"
-						}
+						"type": "AzureSqlSink"
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 1
+								},
+								"sink": {
+									"name": "ID",
+									"type": "Guid"
+								}
+							},
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 2
+								},
+								"sink": {
+									"name": "EvidentialRecordId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 3
+								},
+								"sink": {
+									"name": "ObjectPath",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 4
+								},
+								"sink": {
+									"name": "Status",
+									"type": "String"
+								}
+							},
+							{
+								"sink": {
+									"name": "CreatedDate",
+									"type": "DateTime"
+								}
+							},
+							{
+								"sink": {
+									"name": "ModifiedDate",
+									"type": "DateTime"
+								}
+							}
+						]
+					}
 				},
 				"inputs": [
 					{
@@ -287,7 +238,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "az_csv_purged_ls",
+						"referenceName": "az_sql_hcp_delta_purge_data",
 						"type": "DatasetReference"
 					}
 				]
