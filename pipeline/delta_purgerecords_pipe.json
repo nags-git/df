@@ -177,8 +177,8 @@
 						"mappings": [
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 1
+									"name": "EvidentialRecordID",
+									"type": "String"
 								},
 								"sink": {
 									"name": "EvidentialRecordId",
@@ -187,8 +187,8 @@
 							},
 							{
 								"source": {
-									"type": "String",
-									"ordinal": 2
+									"name": "EvidenceStoreID",
+									"type": "String"
 								},
 								"sink": {
 									"name": "ObjectPath",
