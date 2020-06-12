@@ -1,0 +1,17 @@
+{
+	"name": "az_purged_objects_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "az_strg_ls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Avro",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "purgedrecords"
+			}
+		}
+	}
+}
