@@ -155,6 +155,26 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/trigger1')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 1,
+						"startTime": "2020-06-12T19:44:00.000Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/hcp-Ir')]",
 			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
 			"apiVersion": "2018-06-01",
@@ -163,6 +183,32 @@
 				"typeProperties": {}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_csv_purged_ls')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_strg_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "purgedrecords"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_strg_ls')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/az_metadata_cosmos_ds')]",
@@ -427,9 +473,27 @@
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
+					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
-				"schema": []
+				"schema": [
+					{
+						"name": "EvidentialRecordID",
+						"type": "String"
+					},
+					{
+						"name": "EvidenceStoreID",
+						"type": "String"
+					},
+					{
+						"name": "RetentionDate",
+						"type": "String"
+					},
+					{
+						"name": "DeletionDate",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/az_strg_ls')]"
@@ -481,7 +545,7 @@
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
-					"firstRowAsHeader": true,
+					"firstRowAsHeader": false,
 					"quoteChar": "\""
 				},
 				"schema": [
@@ -535,211 +599,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/az_csv_purged_ls')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "az_strg_ls",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "purgedrecords"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/az_strg_ls')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/cleanup_pipe')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "get_objects_cleanup",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_ObjectsToCleanUp]",
-								"queryTimeout": "02:00:00"
-							},
-							"dataset": {
-								"referenceName": "az_sql_hcp_data",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "foreach_object",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "get_objects_cleanup",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('get_objects_cleanup').output.value",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "check_if_custommetadata_exists",
-									"type": "IfCondition",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"expression": {
-											"value": "@bool(equals(item().CustomMetadataExists,'True'))",
-											"type": "Expression"
-										},
-										"ifTrueActivities": [
-											{
-												"name": "delete_metadata_from_stage",
-												"type": "Delete",
-												"dependsOn": [],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"dataset": {
-														"referenceName": "az_object_upload_stg_ds",
-														"type": "DatasetReference",
-														"parameters": {
-															"relativeURL": {
-																"value": "@concat('metadata\\',item().ObjectPath,'.txt')",
-																"type": "Expression"
-															}
-														}
-													},
-													"enableLogging": false,
-													"storeSettings": {
-														"type": "AzureBlobStorageReadSettings",
-														"recursive": true
-													}
-												}
-											}
-										]
-									}
-								},
-								{
-									"name": "delete_staged_object",
-									"type": "Delete",
-									"dependsOn": [
-										{
-											"activity": "check_if_custommetadata_exists",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"dataset": {
-											"referenceName": "az_object_upload_stg_ds",
-											"type": "DatasetReference",
-											"parameters": {
-												"relativeURL": {
-													"value": "@item().ObjectPath",
-													"type": "Expression"
-												}
-											}
-										},
-										"enableLogging": false,
-										"storeSettings": {
-											"type": "AzureBlobStorageReadSettings",
-											"recursive": true
-										}
-									}
-								},
-								{
-									"name": "update_cleanup_flag",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [
-										{
-											"activity": "delete_staged_object",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[dbo].[USP_UpdateCleanUp_FlagToTrue]",
-										"storedProcedureParameters": {
-											"id": {
-												"value": {
-													"value": "@item().id",
-													"type": "Expression"
-												},
-												"type": "Guid"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "az_sql_ls",
-										"type": "LinkedServiceReference"
-									}
-								}
-							]
-						}
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/az_sql_hcp_data')]",
-				"[concat(variables('factoryId'), '/datasets/az_object_upload_stg_ds')]",
-				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]"
 			]
 		}
 	]
