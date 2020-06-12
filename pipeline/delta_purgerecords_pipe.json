@@ -212,7 +212,9 @@
 						"type": "DelimitedTextSource",
 						"storeSettings": {
 							"type": "SftpReadSettings",
-							"fileListPath": "incoming"
+							"recursive": true,
+							"wildcardFolderPath": "*",
+							"wildcardFileName": "*.csv"
 						},
 						"formatSettings": {
 							"type": "DelimitedTextReadSettings"
