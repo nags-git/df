@@ -20,6 +20,9 @@
 		"azure_pipeline_metadata_update_ls_functionKey": {
 			"value": ""
 		},
+		"sftp_capita_ls_password": {
+			"value": ""
+		},
 		"az_func_update_objectprops_properties_typeProperties_functionAppUrl": {
 			"value": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net"
 		},
@@ -31,6 +34,12 @@
 		},
 		"http_rest_ls_properties_typeProperties_url": {
 			"value": "https://tenant01.coe-hcp01.hitachivantara.com/query"
+		},
+		"sftp_capita_ls_properties_typeProperties_host": {
+			"value": "13.78.132.95"
+		},
+		"sftp_capita_ls_properties_typeProperties_userName": {
+			"value": "guestuser"
 		},
 		"on_query_csv_upload_properties_typeProperties_scope": {
 			"value": "/subscriptions/2a3390b4-6a54-48b5-812a-35320c2fab9c/resourceGroups/dev-capita-rg/providers/Microsoft.Storage/storageAccounts/devcapitaevidentialst"
