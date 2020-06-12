@@ -213,7 +213,6 @@
 						"storeSettings": {
 							"type": "SftpReadSettings",
 							"recursive": true,
-							"wildcardFolderPath": "incoming",
 							"wildcardFileName": "*.csv"
 						},
 						"formatSettings": {
