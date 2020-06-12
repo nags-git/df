@@ -27,6 +27,14 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
 		},
+		"az_func_update_objectprops_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net"
+		},
+		"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net"
+		},
 		"hcp_http_ls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
@@ -80,6 +88,12 @@
 					},
 					"azure_pipeline_metadata_update_ls_functionKey": {
 						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
+					},
+					"az_func_update_objectprops_properties_typeProperties_functionAppUrl": {
+						"value": "[parameters('az_func_update_objectprops_properties_typeProperties_functionAppUrl')]"
+					},
+					"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
+						"value": "[parameters('azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl')]"
 					},
 					"hcp_http_ls_properties_typeProperties_url": {
 						"value": "[parameters('hcp_http_ls_properties_typeProperties_url')]"

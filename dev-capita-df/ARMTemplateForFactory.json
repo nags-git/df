@@ -27,6 +27,14 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
 		},
+		"az_func_update_objectprops_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net"
+		},
+		"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net"
+		},
 		"hcp_http_ls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
@@ -524,240 +532,11 @@
 						}
 					},
 					{
-						"name": "get_queries_to_process_lkup",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "select * from tblhcpqueries where status='CheckForPurge'",
-								"queryTimeout": "02:00:00"
-							},
-							"dataset": {
-								"referenceName": "azsql_csv_sql_ds",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "foreach_record_query",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "get_queries_to_process_lkup",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('get_queries_to_process_lkup').output.value",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "usp_update_query_status",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [
-										{
-											"activity": "upload_hcpdelta_purge_records_to_sql",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[dbo].[USP_UpdateQuery_Status]",
-										"storedProcedureParameters": {
-											"id": {
-												"value": "@item().Id",
-												"type": "Guid"
-											},
-											"processPurge": {
-												"value": "true",
-												"type": "Boolean"
-											},
-											"status": {
-												"value": "Complete",
-												"type": "String"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "az_sql_ls",
-										"type": "LinkedServiceReference"
-									}
-								},
-								{
-									"name": "upload_hcpdelta_purge_records_to_sql",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "RestSource",
-											"httpRequestTimeout": "00:01:40",
-											"requestInterval": "00.00:00:00.010",
-											"requestMethod": "POST",
-											"requestBody": {
-												"value": "@{concat('<queryRequest><object><query>namespace:',item().namespace,' +updateTimeString:[',item().StartDateTime,' TO ',item().EndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
-												"type": "Expression"
-											},
-											"additionalHeaders": {
-												"Authorization": "HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492",
-												"Content-Type": "application/xml"
-											}
-										},
-										"sink": {
-											"type": "AzureSqlSink"
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"mappings": [
-												{
-													"source": {
-														"path": "[['urlName']"
-													},
-													"sink": {
-														"name": "ObjectFullPath",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "[['operation']"
-													},
-													"sink": {
-														"name": "Operation",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "[['objectPath']"
-													},
-													"sink": {
-														"name": "ObjectPath",
-														"type": "String"
-													}
-												}
-											],
-											"collectionReference": "$['queryResult']['resultSet']"
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "hcp_data_download_ds",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "az_sql_hcp_delta_purge_data",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									]
-								},
-								{
-									"name": "update_error_upload_hcpdata_to_sql",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [
-										{
-											"activity": "upload_hcpdelta_purge_records_to_sql",
-											"dependencyConditions": [
-												"Failed"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
-										"storedProcedureParameters": {
-											"errorAtStage": {
-												"value": "upload hcp data to sql",
-												"type": "String"
-											},
-											"errorInPipeline": {
-												"value": {
-													"value": "@pipeline().Pipeline",
-													"type": "Expression"
-												},
-												"type": "String"
-											},
-											"errorMessage": {
-												"value": {
-													"value": "@activity('upload_hcpdelta_purge_records_to_sql').error.message",
-													"type": "Expression"
-												},
-												"type": "String"
-											},
-											"referenceId": {
-												"value": {
-													"value": "@item().id",
-													"type": "Expression"
-												},
-												"type": "Guid"
-											},
-											"referenceTable": {
-												"value": {
-													"value": "@pipeline().parameters.referencetable",
-													"type": "Expression"
-												},
-												"type": "String"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "az_sql_ls",
-										"type": "LinkedServiceReference"
-									}
-								}
-							]
-						}
-					},
-					{
 						"name": "update_records_to_purge_operation",
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "foreach_record_query",
+								"activity": "copy_csv_purged_records",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -778,6 +557,49 @@
 							"referenceName": "az_sql_ls",
 							"type": "LinkedServiceReference"
 						}
+					},
+					{
+						"name": "copy_csv_purged_records",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "csv_purgerecords_sql_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "az_sql_hcp_delta_purge_data",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
 				"parameters": {
@@ -790,12 +612,11 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/az_sql_hcp_data')]",
-				"[concat(variables('factoryId'), '/datasets/azsql_csv_sql_ds')]",
 				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]",
+				"[concat(variables('factoryId'), '/datasets/csv_purgerecords_sql_ds')]",
+				"[concat(variables('factoryId'), '/datasets/az_sql_hcp_delta_purge_data')]",
 				"[concat(variables('factoryId'), '/datasets/az_object_upload_prod_ds')]",
-				"[concat(variables('factoryId'), '/linkedServices/az_func_update_objectprops')]",
-				"[concat(variables('factoryId'), '/datasets/hcp_data_download_ds')]",
-				"[concat(variables('factoryId'), '/datasets/az_sql_hcp_delta_purge_data')]"
+				"[concat(variables('factoryId'), '/linkedServices/az_func_update_objectprops')]"
 			]
 		},
 		{
@@ -1190,12 +1011,11 @@
 										"storedProcedureName": "[[dbo].[USP_UpdateQuery_Status]",
 										"storedProcedureParameters": {
 											"id": {
-												"value": "@item().Id",
+												"value": {
+													"value": "@item().Id",
+													"type": "Expression"
+												},
 												"type": "Guid"
-											},
-											"processPurge": {
-												"value": "false",
-												"type": "Boolean"
 											},
 											"status": {
 												"value": "Complete",
@@ -2808,6 +2628,27 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/az_sql_hcp_delta_purge_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_sql_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "tblPurgeRecords"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/azsql_csv_sql_ds')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2858,6 +2699,33 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/csv_purgerecords_sql_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_strg_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "purgedrecords.csv",
+						"container": "inputquery"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_strg_ls')]"
 			]
 		},
 		{
@@ -3007,7 +2875,7 @@
 				"annotations": [],
 				"type": "AzureFunction",
 				"typeProperties": {
-					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net",
+					"functionAppUrl": "[parameters('az_func_update_objectprops_properties_typeProperties_functionAppUrl')]",
 					"functionKey": {
 						"type": "SecureString",
 						"value": "[parameters('az_func_update_objectprops_functionKey')]"
@@ -3050,7 +2918,7 @@
 				"annotations": [],
 				"type": "AzureFunction",
 				"typeProperties": {
-					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net",
+					"functionAppUrl": "[parameters('azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl')]",
 					"functionKey": {
 						"type": "SecureString",
 						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
@@ -3141,27 +3009,6 @@
 				"typeProperties": {}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/az_sql_hcp_delta_purge_data')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "az_sql_ls",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "tblPurgeRecords"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]"
-			]
 		}
 	]
 }
