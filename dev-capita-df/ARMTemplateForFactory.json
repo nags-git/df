@@ -594,7 +594,10 @@
 								"type": "DelimitedTextSource",
 								"storeSettings": {
 									"type": "AzureBlobStorageReadSettings",
-									"recursive": true
+									"recursive": true,
+									"wildcardFolderPath": "*",
+									"wildcardFileName": "*.txt",
+									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
 									"type": "DelimitedTextReadSettings"
@@ -637,20 +640,22 @@
 								"type": "DelimitedTextSource",
 								"storeSettings": {
 									"type": "SftpReadSettings",
-									"fileListPath": "incoming"
+									"recursive": true,
+									"wildcardFileName": "*.csv"
 								},
 								"formatSettings": {
 									"type": "DelimitedTextReadSettings"
 								}
 							},
 							"sink": {
-								"type": "AvroSink",
+								"type": "DelimitedTextSink",
 								"storeSettings": {
 									"type": "AzureBlobStorageWriteSettings"
 								},
 								"formatSettings": {
-									"type": "AvroWriteSettings",
-									"quoteAllText": true
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".csv"
 								}
 							},
 							"enableStaging": false
@@ -664,7 +669,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "az_purged_objects_ds",
+								"referenceName": "az_csv_purged_ls",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -685,7 +690,7 @@
 				"[concat(variables('factoryId'), '/datasets/csv_purgerecords_sql_ds')]",
 				"[concat(variables('factoryId'), '/datasets/az_sql_hcp_delta_purge_data')]",
 				"[concat(variables('factoryId'), '/datasets/sftp_csv_purged_ds')]",
-				"[concat(variables('factoryId'), '/datasets/az_purged_objects_ds')]",
+				"[concat(variables('factoryId'), '/datasets/az_csv_purged_ls')]",
 				"[concat(variables('factoryId'), '/datasets/az_object_upload_prod_ds')]",
 				"[concat(variables('factoryId'), '/linkedServices/az_func_update_objectprops')]"
 			]
@@ -2678,29 +2683,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/az_purged_objects_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "az_strg_ls",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Avro",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "purgedrecords"
-					}
-				},
-				"schema": {}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/az_strg_ls')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/az_sql_hcp_data')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -3155,6 +3137,32 @@
 				"typeProperties": {}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_csv_purged_ls')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_strg_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "purgedrecords"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_strg_ls')]"
+			]
 		}
 	]
 }

@@ -189,7 +189,10 @@
 								"type": "DelimitedTextSource",
 								"storeSettings": {
 									"type": "AzureBlobStorageReadSettings",
-									"recursive": true
+									"recursive": true,
+									"wildcardFolderPath": "*",
+									"wildcardFileName": "*.txt",
+									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
 									"type": "DelimitedTextReadSettings"
@@ -232,20 +235,22 @@
 								"type": "DelimitedTextSource",
 								"storeSettings": {
 									"type": "SftpReadSettings",
-									"fileListPath": "incoming"
+									"recursive": true,
+									"wildcardFileName": "*.csv"
 								},
 								"formatSettings": {
 									"type": "DelimitedTextReadSettings"
 								}
 							},
 							"sink": {
-								"type": "AvroSink",
+								"type": "DelimitedTextSink",
 								"storeSettings": {
 									"type": "AzureBlobStorageWriteSettings"
 								},
 								"formatSettings": {
-									"type": "AvroWriteSettings",
-									"quoteAllText": true
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".csv"
 								}
 							},
 							"enableStaging": false
@@ -259,7 +264,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "az_purged_objects_ds",
+								"referenceName": "az_csv_purged_ls",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
