@@ -220,14 +220,14 @@
 						}
 					},
 					"sink": {
-						"type": "AvroSink",
+						"type": "DelimitedTextSink",
 						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings",
-							"copyBehavior": "FlattenHierarchy"
+							"type": "AzureBlobStorageWriteSettings"
 						},
 						"formatSettings": {
-							"type": "AvroWriteSettings",
-							"quoteAllText": true
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
 						}
 					},
 					"enableStaging": false
@@ -240,7 +240,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "az_purged_objects_ds",
+						"referenceName": "az_csv_purged_ls",
 						"type": "DatasetReference"
 					}
 				]
