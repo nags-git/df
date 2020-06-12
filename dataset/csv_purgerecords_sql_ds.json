@@ -10,8 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "purgedrecords.csv",
-				"container": "inputquery"
+				"container": "purgedrecords"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
