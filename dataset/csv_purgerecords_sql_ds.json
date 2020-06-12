@@ -14,9 +14,27 @@
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
+			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "EvidentialRecordID",
+				"type": "String"
+			},
+			{
+				"name": "EvidenceStoreID",
+				"type": "String"
+			},
+			{
+				"name": "RetentionDate",
+				"type": "String"
+			},
+			{
+				"name": "DeletionDate",
+				"type": "String"
+			}
+		]
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
 }
