@@ -9,8 +9,7 @@
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
-				"type": "SftpLocation",
-				"folderPath": "/incoming"
+				"type": "SftpLocation"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
