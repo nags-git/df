@@ -84,10 +84,6 @@
 									"value": "@concat('{\n\"filepath\": \"',pipeline().parameters.azurecontainer,'/',item().ObjectPath,'\",\n\"customMetadataExists\":\"',item().CustomMetadataExists,'\"\n}')",
 									"type": "Expression"
 								}
-							},
-							"linkedServiceName": {
-								"referenceName": "az_func_update_objectprops",
-								"type": "LinkedServiceReference"
 							}
 						},
 						{
