@@ -11,9 +11,9 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'az_cosmos_ls'"
 		},
-		"az_func_update_objectprops_functionKey": {
+		"az_fun_delete_cosmos_record_functionKey": {
 			"type": "secureString",
-			"metadata": "Secure string for 'functionKey' of 'az_func_update_objectprops'"
+			"metadata": "Secure string for 'functionKey' of 'az_fun_delete_cosmos_record'"
 		},
 		"az_sql_ls_connectionString": {
 			"type": "secureString",
@@ -31,9 +31,9 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'sftp_capita_ls'"
 		},
-		"az_func_update_objectprops_properties_typeProperties_functionAppUrl": {
+		"az_fun_delete_cosmos_record_properties_typeProperties_functionAppUrl": {
 			"type": "string",
-			"defaultValue": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net"
+			"defaultValue": "https://dev-capitatfl-deletecosmosrecord.azurewebsites.net"
 		},
 		"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
 			"type": "string",
@@ -506,7 +506,7 @@
 									}
 								},
 								{
-									"name": "fill_object_properties",
+									"name": "delete_cosmos_record",
 									"type": "AzureFunctionActivity",
 									"dependsOn": [
 										{
@@ -536,7 +536,7 @@
 										}
 									},
 									"linkedServiceName": {
-										"referenceName": "az_func_update_objectprops",
+										"referenceName": "az_fun_delete_cosmos_record",
 										"type": "LinkedServiceReference"
 									}
 								}
@@ -654,7 +654,7 @@
 				"[concat(variables('factoryId'), '/datasets/sftp_csv_purged_ds')]",
 				"[concat(variables('factoryId'), '/datasets/az_sql_hcp_delta_purge_data')]",
 				"[concat(variables('factoryId'), '/datasets/az_object_upload_prod_ds')]",
-				"[concat(variables('factoryId'), '/linkedServices/az_func_update_objectprops')]"
+				"[concat(variables('factoryId'), '/linkedServices/az_fun_delete_cosmos_record')]"
 			]
 		},
 		{
@@ -1296,7 +1296,7 @@
 										}
 									},
 									"linkedServiceName": {
-										"referenceName": "az_func_update_objectprops",
+										"referenceName": "azure_pipeline_metadata_update_ls",
 										"type": "LinkedServiceReference"
 									}
 								},
@@ -1451,7 +1451,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/azsql_csv_sql_ds')]",
-				"[concat(variables('factoryId'), '/linkedServices/az_func_update_objectprops')]",
+				"[concat(variables('factoryId'), '/linkedServices/azure_pipeline_metadata_update_ls')]",
 				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]"
 			]
 		},
@@ -2981,17 +2981,17 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/az_func_update_objectprops')]",
+			"name": "[concat(parameters('factoryName'), '/az_fun_delete_cosmos_record')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
 				"type": "AzureFunction",
 				"typeProperties": {
-					"functionAppUrl": "[parameters('az_func_update_objectprops_properties_typeProperties_functionAppUrl')]",
+					"functionAppUrl": "[parameters('az_fun_delete_cosmos_record_properties_typeProperties_functionAppUrl')]",
 					"functionKey": {
 						"type": "SecureString",
-						"value": "[parameters('az_func_update_objectprops_functionKey')]"
+						"value": "[parameters('az_fun_delete_cosmos_record_functionKey')]"
 					}
 				}
 			},

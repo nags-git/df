@@ -8,7 +8,7 @@
 		"az_cosmos_ls_connectionString": {
 			"value": ""
 		},
-		"az_func_update_objectprops_functionKey": {
+		"az_fun_delete_cosmos_record_functionKey": {
 			"value": ""
 		},
 		"az_sql_ls_connectionString": {
@@ -23,8 +23,8 @@
 		"sftp_capita_ls_password": {
 			"value": ""
 		},
-		"az_func_update_objectprops_properties_typeProperties_functionAppUrl": {
-			"value": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net"
+		"az_fun_delete_cosmos_record_properties_typeProperties_functionAppUrl": {
+			"value": "https://dev-capitatfl-deletecosmosrecord.azurewebsites.net"
 		},
 		"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
 			"value": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net"
