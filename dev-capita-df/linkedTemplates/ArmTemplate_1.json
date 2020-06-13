@@ -333,7 +333,7 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"storedProcedureName": "[[dbo].[USP_Get_ObjectsByStatus]"
+							"storedProcedureName": "[[dbo].[USP_Update_delta_purgedrecords]"
 						},
 						"linkedServiceName": {
 							"referenceName": "az_sql_ls",
