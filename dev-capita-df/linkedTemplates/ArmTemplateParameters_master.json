@@ -24,7 +24,7 @@
 			"value": ""
 		},
 		"az_fun_delete_cosmos_record_properties_typeProperties_functionAppUrl": {
-			"value": "https://dev-capita-pipelinedeletecosmosrecord.azurewebsites.net"
+			"value": "https://dev-capita-pipelinedeletecosmosrecord.azurewebsites.net/"
 		},
 		"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
 			"value": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net"

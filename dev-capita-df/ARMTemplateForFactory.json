@@ -33,7 +33,7 @@
 		},
 		"az_fun_delete_cosmos_record_properties_typeProperties_functionAppUrl": {
 			"type": "string",
-			"defaultValue": "https://dev-capita-pipelinedeletecosmosrecord.azurewebsites.net"
+			"defaultValue": "https://dev-capita-pipelinedeletecosmosrecord.azurewebsites.net/"
 		},
 		"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
 			"type": "string",
@@ -432,7 +432,7 @@
 						"type": "Lookup",
 						"dependsOn": [
 							{
-								"activity": "update_records_to_purge_operation",
+								"activity": "update_records_to_needtopurge_operation",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -544,11 +544,11 @@
 						}
 					},
 					{
-						"name": "update_records_to_purge_operation",
+						"name": "update_records_to_needtopurge_operation",
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "copy_sftp_files_azstore",
+								"activity": "copy_sftp_files_sql",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -563,7 +563,7 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"storedProcedureName": "[[dbo].[USP_Update_delta_purgedrecords]"
+							"storedProcedureName": "[[dbo].[USP_Update_delta_NeedToPurgeRecords]"
 						},
 						"linkedServiceName": {
 							"referenceName": "az_sql_ls",
@@ -571,7 +571,7 @@
 						}
 					},
 					{
-						"name": "copy_sftp_files_azstore",
+						"name": "copy_sftp_files_sql",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
@@ -638,6 +638,33 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "update_records_to_purge_operation",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "foreach_record",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_Update_delta_purgedrecords]"
+						},
+						"linkedServiceName": {
+							"referenceName": "az_sql_ls",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"parameters": {
