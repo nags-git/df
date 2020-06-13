@@ -358,7 +358,7 @@
 								"storeSettings": {
 									"type": "SftpReadSettings",
 									"recursive": true,
-									"wildcardFileName": "*.csv"
+									"wildcardFileName": "ERMS_*.csv"
 								},
 								"formatSettings": {
 									"type": "DelimitedTextReadSettings"
@@ -500,7 +500,7 @@
 									},
 									"userProperties": [],
 									"typeProperties": {
-										"functionName": "ProcessMetadataForPipeline",
+										"functionName": "hcpmetadataupdate",
 										"method": "POST",
 										"headers": {
 											"Content-Type": "application/json"
