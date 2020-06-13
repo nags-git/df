@@ -84,6 +84,10 @@
 									"value": "@concat('{\n\"filepath\": \"',pipeline().parameters.azurecontainer,'/',item().ObjectPath,'\",\n\"customMetadataExists\":\"',item().CustomMetadataExists,'\"\n}')",
 									"type": "Expression"
 								}
+							},
+							"linkedServiceName": {
+								"referenceName": "azure_pipeline_metadata_update_ls",
+								"type": "LinkedServiceReference"
 							}
 						},
 						{
