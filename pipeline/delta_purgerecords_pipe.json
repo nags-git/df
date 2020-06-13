@@ -80,7 +80,7 @@
 							}
 						},
 						{
-							"name": "fill_object_properties",
+							"name": "delete_cosmos_record",
 							"type": "AzureFunctionActivity",
 							"dependsOn": [
 								{
@@ -110,7 +110,7 @@
 								}
 							},
 							"linkedServiceName": {
-								"referenceName": "az_func_update_objectprops",
+								"referenceName": "az_fun_delete_cosmos_record",
 								"type": "LinkedServiceReference"
 							}
 						}
