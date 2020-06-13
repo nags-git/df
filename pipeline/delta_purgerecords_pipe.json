@@ -122,7 +122,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "copy_sftp_files_azstore",
+						"activity": "copy_sftp_files_sql",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -145,7 +145,7 @@
 				}
 			},
 			{
-				"name": "copy_sftp_files_azstore",
+				"name": "copy_sftp_files_sql",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
