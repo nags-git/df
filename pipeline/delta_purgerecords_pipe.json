@@ -7,7 +7,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "update_records_to_purge_operation",
+						"activity": "update_records_to_needtopurge_operation",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -118,7 +118,7 @@
 				}
 			},
 			{
-				"name": "update_records_to_purge_operation",
+				"name": "update_records_to_needtopurge_operation",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
@@ -212,7 +212,7 @@
 				]
 			},
 			{
-				"name": "update_records_to_purge_operation_copy1",
+				"name": "update_records_to_purge_operation",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
