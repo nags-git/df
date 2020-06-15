@@ -237,6 +237,37 @@
 					"referenceName": "az_sql_ls",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "delete_sftp_files",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "copy_sftp_files_sql",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "delete_sftp_files",
+						"type": "DatasetReference"
+					},
+					"enableLogging": true,
+					"storeSettings": {
+						"type": "SftpReadSettings",
+						"recursive": true
+					}
+				}
 			}
 		],
 		"parameters": {
