@@ -1,0 +1,518 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dev-capita-df"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/delta_purgerecords_pipe')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "getrecords_forpurge",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "update_records_to_needtopurge_operation",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_PurgedObject]",
+								"queryTimeout": "02:00:00"
+							},
+							"dataset": {
+								"referenceName": "az_sql_hcp_data",
+								"type": "DatasetReference"
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "foreach_record",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "getrecords_forpurge",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('getrecords_forpurge').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "delete_object",
+									"type": "Delete",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataset": {
+											"referenceName": "az_object_upload_prod_ds",
+											"type": "DatasetReference",
+											"parameters": {
+												"relativeURL": "@item().ObjectPath"
+											}
+										},
+										"enableLogging": false,
+										"storeSettings": {
+											"type": "AzureBlobStorageReadSettings",
+											"recursive": true
+										}
+									}
+								},
+								{
+									"name": "delete_cosmos_record",
+									"type": "AzureFunctionActivity",
+									"dependsOn": [
+										{
+											"activity": "delete_object",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"functionName": "deleterecord",
+										"method": "POST",
+										"headers": {
+											"Content-Type": "application/json"
+										},
+										"body": {
+											"value": "@item().Id",
+											"type": "Expression"
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_fun_delete_cosmos_record",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "error_delta_purge_delete_object",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "delete_object",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
+										"storedProcedureParameters": {
+											"errorAtStage": {
+												"value": "delta_purge_delete_object",
+												"type": "String"
+											},
+											"errorInPipeline": {
+												"value": {
+													"value": "@pipeline().Pipeline",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"errorMessage": {
+												"value": {
+													"value": "@activity('delete_object').error.message",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"referenceId": {
+												"value": "",
+												"type": "Guid"
+											},
+											"referenceTable": {
+												"value": "",
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "error_delta_purge_delete_cosmos_record",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "delete_cosmos_record",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
+										"storedProcedureParameters": {
+											"errorAtStage": {
+												"value": "delta_purge_delete_object",
+												"type": "String"
+											},
+											"errorInPipeline": {
+												"value": {
+													"value": "@pipeline().Pipeline",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"errorMessage": {
+												"value": {
+													"value": "@activity('delete_cosmos_record').error.message",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"referenceId": {
+												"value": "",
+												"type": "Guid"
+											},
+											"referenceTable": {
+												"value": "",
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "update_records_to_needtopurge_operation",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "copy_sftp_files_sql",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_Update_delta_NeedToPurgeRecords]"
+						},
+						"linkedServiceName": {
+							"referenceName": "az_sql_ls",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "copy_sftp_files_sql",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "SftpReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*.csv"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "EvidentialRecordID",
+											"type": "String"
+										},
+										"sink": {
+											"name": "EvidentialRecordId",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "EvidenceStoreID",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ObjectPath",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "sftp_csv_purged_ds",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "az_sql_hcp_delta_purge_data",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "update_records_to_purge_operation",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "foreach_record",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_Update_delta_purgedrecords]"
+						},
+						"linkedServiceName": {
+							"referenceName": "az_sql_ls",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "delete_sftp_files",
+						"type": "Delete",
+						"dependsOn": [
+							{
+								"activity": "copy_sftp_files_sql",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "delete_sftp_files",
+								"type": "DatasetReference"
+							},
+							"enableLogging": false,
+							"storeSettings": {
+								"type": "SftpReadSettings",
+								"recursive": true,
+								"wildcardFileName": "*.csv"
+							}
+						}
+					},
+					{
+						"name": "error_delete_sftp_file",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "delete_sftp_files",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
+							"storedProcedureParameters": {
+								"errorAtStage": {
+									"value": "delete_sftp_files",
+									"type": "String"
+								},
+								"errorInPipeline": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"errorMessage": {
+									"value": "",
+									"type": "String"
+								},
+								"referenceId": {
+									"value": null,
+									"type": "Guid"
+								},
+								"referenceTable": {
+									"value": "tblPurgedRecords",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "az_sql_ls",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "error_copy_sftp_file_copy",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "copy_sftp_files_sql",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
+							"storedProcedureParameters": {
+								"errorAtStage": {
+									"value": "delete_sftp_files",
+									"type": "String"
+								},
+								"errorInPipeline": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"errorMessage": {
+									"value": {
+										"value": "@activity('copy_sftp_files_sql').error.message",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"referenceId": {
+									"value": null,
+									"type": "Guid"
+								},
+								"referenceTable": {
+									"value": "tblPurgedRecords",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "az_sql_ls",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"parameters": {
+					"referenceTable": {
+						"type": "string",
+						"defaultValue": "tblpurgerecords"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		}
+	]
+}
