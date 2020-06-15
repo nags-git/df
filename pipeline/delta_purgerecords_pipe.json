@@ -262,7 +262,7 @@
 						"referenceName": "delete_sftp_files",
 						"type": "DatasetReference"
 					},
-					"enableLogging": true,
+					"enableLogging": false,
 					"storeSettings": {
 						"type": "SftpReadSettings",
 						"recursive": true
