@@ -10,7 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "SftpLocation",
-				"fileName": "ERMS_Deletion*.csv",
 				"folderPath": "/incoming"
 			}
 		}
