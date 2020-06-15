@@ -122,7 +122,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "copy_sftp_files_sql",
+						"activity": "delete_sftp_files",
 						"dependencyConditions": [
 							"Succeeded"
 						]
