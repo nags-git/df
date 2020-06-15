@@ -376,7 +376,7 @@
 					"storeSettings": {
 						"type": "SftpReadSettings",
 						"recursive": true,
-						"wildcardFileName": "ERMS_Deletion*.csv"
+						"wildcardFileName": "*.csv"
 					}
 				}
 			},
