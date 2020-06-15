@@ -113,6 +113,116 @@
 								"referenceName": "az_fun_delete_cosmos_record",
 								"type": "LinkedServiceReference"
 							}
+						},
+						{
+							"name": "error_delta_purge_delete_object",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "delete_object",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[USP_Insert_ErrorInformation]",
+								"storedProcedureParameters": {
+									"errorAtStage": {
+										"value": "delta_purge_delete_object",
+										"type": "String"
+									},
+									"errorInPipeline": {
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"errorMessage": {
+										"value": {
+											"value": "@activity('delete_object').error.message",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"referenceId": {
+										"value": "",
+										"type": "Guid"
+									},
+									"referenceTable": {
+										"value": "",
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sql_ls",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "error_delta_purge_delete_cosmos_record",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "delete_cosmos_record",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[USP_Insert_ErrorInformation]",
+								"storedProcedureParameters": {
+									"errorAtStage": {
+										"value": "delta_purge_delete_object",
+										"type": "String"
+									},
+									"errorInPipeline": {
+										"value": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"errorMessage": {
+										"value": {
+											"value": "@activity('delete_cosmos_record').error.message",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"referenceId": {
+										"value": "",
+										"type": "Guid"
+									},
+									"referenceTable": {
+										"value": "",
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sql_ls",
+								"type": "LinkedServiceReference"
+							}
 						}
 					]
 				}
