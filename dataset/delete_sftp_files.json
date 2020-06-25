@@ -13,5 +13,6 @@
 				"folderPath": "/incoming"
 			}
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }
