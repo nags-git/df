@@ -3351,9 +3351,15 @@
 					"url": "[parameters('hcp_http_ls_properties_typeProperties_url')]",
 					"enableServerCertificateValidation": false,
 					"authenticationType": "Anonymous"
+				},
+				"connectVia": {
+					"referenceName": "hcp-Ir",
+					"type": "IntegrationRuntimeReference"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/http_rest_ls')]",
@@ -3366,9 +3372,15 @@
 					"url": "[parameters('http_rest_ls_properties_typeProperties_url')]",
 					"enableServerCertificateValidation": false,
 					"authenticationType": "Anonymous"
+				},
+				"connectVia": {
+					"referenceName": "hcp-Ir",
+					"type": "IntegrationRuntimeReference"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/sftp_capita_ls')]",

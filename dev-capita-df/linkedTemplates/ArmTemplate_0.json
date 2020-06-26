@@ -39,14 +39,6 @@
 			"type": "string",
 			"defaultValue": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net"
 		},
-		"hcp_http_ls_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
-		},
-		"http_rest_ls_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://tenant01.coe-hcp01.hitachivantara.com/query"
-		},
 		"sftp_capita_ls_properties_typeProperties_host": {
 			"type": "string",
 			"defaultValue": "13.78.132.95"
@@ -54,6 +46,10 @@
 		"sftp_capita_ls_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "guestuser"
+		},
+		"hcp_http_ls_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
 		}
 	},
 	"variables": {
@@ -129,36 +125,6 @@
 						"type": "SecureString",
 						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
 					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/hcp_http_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "HttpServer",
-				"typeProperties": {
-					"url": "[parameters('hcp_http_ls_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Anonymous"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/http_rest_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "RestService",
-				"typeProperties": {
-					"url": "[parameters('http_rest_ls_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Anonymous"
 				}
 			},
 			"dependsOn": []
@@ -577,6 +543,59 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/sftp_capita_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_csv_purged_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sftp_capita_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "SftpLocation",
+						"folderPath": "/incoming"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "HCPID,RetentionDate,HoldStatus",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sftp_capita_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hcp_http_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('hcp_http_ls_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": false,
+					"authenticationType": "Anonymous"
+				},
+				"connectVia": {
+					"referenceName": "hcp-Ir",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
 			]
 		}
 	]
