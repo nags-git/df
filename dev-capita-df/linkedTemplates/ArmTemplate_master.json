@@ -118,9 +118,6 @@
 					},
 					"hcp_http_ls_properties_typeProperties_url": {
 						"value": "[parameters('hcp_http_ls_properties_typeProperties_url')]"
-					},
-					"http_rest_ls_properties_typeProperties_url": {
-						"value": "[parameters('http_rest_ls_properties_typeProperties_url')]"
 					}
 				}
 			},
@@ -139,6 +136,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"http_rest_ls_properties_typeProperties_url": {
+						"value": "[parameters('http_rest_ls_properties_typeProperties_url')]"
 					},
 					"on_query_csv_upload_properties_typeProperties_scope": {
 						"value": "[parameters('on_query_csv_upload_properties_typeProperties_scope')]"

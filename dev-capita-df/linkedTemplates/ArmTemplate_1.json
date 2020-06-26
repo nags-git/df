@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "dev-capita-df"
 		},
+		"http_rest_ls_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://tenant01.coe-hcp01.hitachivantara.com/query"
+		},
 		"on_query_csv_upload_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/2a3390b4-6a54-48b5-812a-35320c2fab9c/resourceGroups/dev-capita-rg/providers/Microsoft.Storage/storageAccounts/devcapitaevidentialst"
@@ -17,21 +21,20 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/delete_sftp_files')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/http_rest_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sftp_capita_ls",
-					"type": "LinkedServiceReference"
-				},
 				"annotations": [],
-				"type": "Binary",
+				"type": "RestService",
 				"typeProperties": {
-					"location": {
-						"type": "SftpLocation",
-						"folderPath": "/incoming"
-					}
+					"url": "[parameters('http_rest_ls_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": false,
+					"authenticationType": "Anonymous"
+				},
+				"connectVia": {
+					"referenceName": "hcp-Ir",
+					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": []
@@ -231,7 +234,7 @@
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
-							"retryIntervalInSeconds": 30,
+							"retryIntervalInSeconds": 31,
 							"secureOutput": false,
 							"secureInput": false
 						},
@@ -715,9 +718,7 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/delete_sftp_files')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/processor_azure_fillprops_pipe')]",
@@ -1572,7 +1573,9 @@
 				"typeProperties": {},
 				"schema": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/http_rest_ls')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/hcp_download_data_ds')]",
@@ -1588,7 +1591,9 @@
 				"typeProperties": {},
 				"schema": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/http_rest_ls')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/hcp_metadata_download_ls')]",

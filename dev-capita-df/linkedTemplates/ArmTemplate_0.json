@@ -50,10 +50,6 @@
 		"hcp_http_ls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
-		},
-		"http_rest_ls_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://tenant01.coe-hcp01.hitachivantara.com/query"
 		}
 	},
 	"variables": {
@@ -167,7 +163,7 @@
 					"recurrence": {
 						"frequency": "Minute",
 						"interval": 1,
-						"startTime": "2020-06-12T19:44:00.000Z",
+						"startTime": "2020-06-12T19:44:00Z",
 						"timeZone": "UTC"
 					}
 				}
@@ -528,6 +524,28 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/delete_sftp_files')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sftp_capita_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "SftpLocation",
+						"folderPath": "/incoming"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sftp_capita_ls')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/sftp_csv_purged_ds')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -568,27 +586,6 @@
 				"type": "HttpServer",
 				"typeProperties": {
 					"url": "[parameters('hcp_http_ls_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Anonymous"
-				},
-				"connectVia": {
-					"referenceName": "hcp-Ir",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/http_rest_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "RestService",
-				"typeProperties": {
-					"url": "[parameters('http_rest_ls_properties_typeProperties_url')]",
 					"enableServerCertificateValidation": false,
 					"authenticationType": "Anonymous"
 				},
