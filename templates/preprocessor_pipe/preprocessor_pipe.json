@@ -88,12 +88,12 @@
 									},
 									{
 										"source": {
-											"name": "CountOfRecordsToBeProcessedAtOnce",
-											"type": "String"
+											"name": "IncludePurgeRecords",
+											"type": "Boolean"
 										},
 										"sink": {
-											"name": "RecordsCount",
-											"type": "Int32"
+											"name": "IncludePurgeRecords",
+											"type": "Boolean"
 										}
 									}
 								]
