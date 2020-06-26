@@ -11,9 +11,9 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'az_cosmos_ls'"
 		},
-		"az_fun_delete_cosmos_record_functionKey": {
+		"az_func_update_objectprops_functionKey": {
 			"type": "secureString",
-			"metadata": "Secure string for 'functionKey' of 'az_fun_delete_cosmos_record'"
+			"metadata": "Secure string for 'functionKey' of 'az_func_update_objectprops'"
 		},
 		"az_sql_ls_connectionString": {
 			"type": "secureString",
@@ -27,18 +27,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
 		},
-		"sftp_capita_ls_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'sftp_capita_ls'"
-		},
-		"az_fun_delete_cosmos_record_properties_typeProperties_functionAppUrl": {
-			"type": "string",
-			"defaultValue": "https://dev-capita-pipelinedeletecosmosrecord.azurewebsites.net/"
-		},
-		"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
-			"type": "string",
-			"defaultValue": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net"
-		},
 		"hcp_http_ls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
@@ -46,14 +34,6 @@
 		"http_rest_ls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://tenant01.coe-hcp01.hitachivantara.com/query"
-		},
-		"sftp_capita_ls_properties_typeProperties_host": {
-			"type": "string",
-			"defaultValue": "13.78.132.95"
-		},
-		"sftp_capita_ls_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "guestuser"
 		},
 		"on_query_csv_upload_properties_typeProperties_scope": {
 			"type": "string",
@@ -422,520 +402,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/delta_purgerecords_pipe')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "getrecords_forpurge",
-						"type": "Lookup",
-						"dependsOn": [
-							{
-								"activity": "update_records_to_needtopurge_operation",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_PurgedObject]",
-								"queryTimeout": "02:00:00"
-							},
-							"dataset": {
-								"referenceName": "az_sql_hcp_data",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "foreach_record",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "getrecords_forpurge",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('getrecords_forpurge').output.value",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "delete_object",
-									"type": "Delete",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"dataset": {
-											"referenceName": "az_object_upload_prod_ds",
-											"type": "DatasetReference",
-											"parameters": {
-												"relativeURL": "@item().ObjectPath"
-											}
-										},
-										"enableLogging": false,
-										"storeSettings": {
-											"type": "AzureBlobStorageReadSettings",
-											"recursive": true
-										}
-									}
-								},
-								{
-									"name": "delete_cosmos_record",
-									"type": "AzureFunctionActivity",
-									"dependsOn": [
-										{
-											"activity": "delete_object",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"functionName": "deleterecord",
-										"method": "POST",
-										"headers": {
-											"Content-Type": "application/json"
-										},
-										"body": {
-											"value": "@item().Id",
-											"type": "Expression"
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "az_fun_delete_cosmos_record",
-										"type": "LinkedServiceReference"
-									}
-								},
-								{
-									"name": "error_delta_purge_delete_object",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [
-										{
-											"activity": "delete_object",
-											"dependencyConditions": [
-												"Failed"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
-										"storedProcedureParameters": {
-											"errorAtStage": {
-												"value": "delta_purge_delete_object",
-												"type": "String"
-											},
-											"errorInPipeline": {
-												"value": {
-													"value": "@pipeline().Pipeline",
-													"type": "Expression"
-												},
-												"type": "String"
-											},
-											"errorMessage": {
-												"value": {
-													"value": "@activity('delete_object').error.message",
-													"type": "Expression"
-												},
-												"type": "String"
-											},
-											"referenceId": {
-												"value": "",
-												"type": "Guid"
-											},
-											"referenceTable": {
-												"value": "",
-												"type": "String"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "az_sql_ls",
-										"type": "LinkedServiceReference"
-									}
-								},
-								{
-									"name": "error_delta_purge_delete_cosmos_record",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [
-										{
-											"activity": "delete_cosmos_record",
-											"dependencyConditions": [
-												"Failed"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
-										"storedProcedureParameters": {
-											"errorAtStage": {
-												"value": "delta_purge_delete_object",
-												"type": "String"
-											},
-											"errorInPipeline": {
-												"value": {
-													"value": "@pipeline().Pipeline",
-													"type": "Expression"
-												},
-												"type": "String"
-											},
-											"errorMessage": {
-												"value": {
-													"value": "@activity('delete_cosmos_record').error.message",
-													"type": "Expression"
-												},
-												"type": "String"
-											},
-											"referenceId": {
-												"value": "",
-												"type": "Guid"
-											},
-											"referenceTable": {
-												"value": "",
-												"type": "String"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "az_sql_ls",
-										"type": "LinkedServiceReference"
-									}
-								}
-							]
-						}
-					},
-					{
-						"name": "update_records_to_needtopurge_operation",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "copy_sftp_files_sql",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[USP_Update_delta_NeedToPurgeRecords]"
-						},
-						"linkedServiceName": {
-							"referenceName": "az_sql_ls",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "copy_sftp_files_sql",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "SftpReadSettings",
-									"recursive": true,
-									"wildcardFileName": "*.csv"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink"
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "EvidentialRecordID",
-											"type": "String"
-										},
-										"sink": {
-											"name": "EvidentialRecordId",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "EvidenceStoreID",
-											"type": "String"
-										},
-										"sink": {
-											"name": "ObjectPath",
-											"type": "String"
-										}
-									}
-								]
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "sftp_csv_purged_ds",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "az_sql_hcp_delta_purge_data",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "update_records_to_purge_operation",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "foreach_record",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[USP_Update_delta_purgedrecords]"
-						},
-						"linkedServiceName": {
-							"referenceName": "az_sql_ls",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "delete_sftp_files",
-						"type": "Delete",
-						"dependsOn": [
-							{
-								"activity": "copy_sftp_files_sql",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataset": {
-								"referenceName": "delete_sftp_files",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"enableLogging": false,
-							"storeSettings": {
-								"type": "SftpReadSettings",
-								"recursive": true,
-								"wildcardFileName": "*.csv"
-							}
-						}
-					},
-					{
-						"name": "error_delete_sftp_file",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "delete_sftp_files",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
-							"storedProcedureParameters": {
-								"errorAtStage": {
-									"value": "delete_sftp_files",
-									"type": "String"
-								},
-								"errorInPipeline": {
-									"value": {
-										"value": "@pipeline().Pipeline",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"errorMessage": {
-									"value": "",
-									"type": "String"
-								},
-								"referenceId": {
-									"value": null,
-									"type": "Guid"
-								},
-								"referenceTable": {
-									"value": "tblPurgedRecords",
-									"type": "String"
-								}
-							}
-						},
-						"linkedServiceName": {
-							"referenceName": "az_sql_ls",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "error_copy_sftp_file_copy",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "copy_sftp_files_sql",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
-							"storedProcedureParameters": {
-								"errorAtStage": {
-									"value": "delete_sftp_files",
-									"type": "String"
-								},
-								"errorInPipeline": {
-									"value": {
-										"value": "@pipeline().Pipeline",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"errorMessage": {
-									"value": {
-										"value": "@activity('copy_sftp_files_sql').error.message",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"referenceId": {
-									"value": null,
-									"type": "Guid"
-								},
-								"referenceTable": {
-									"value": "tblPurgedRecords",
-									"type": "String"
-								}
-							}
-						},
-						"linkedServiceName": {
-							"referenceName": "az_sql_ls",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"parameters": {
-					"referenceTable": {
-						"type": "string",
-						"defaultValue": "tblpurgerecords"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/az_sql_hcp_data')]",
-				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]",
-				"[concat(variables('factoryId'), '/datasets/sftp_csv_purged_ds')]",
-				"[concat(variables('factoryId'), '/datasets/az_sql_hcp_delta_purge_data')]",
-				"[concat(variables('factoryId'), '/datasets/delete_sftp_files')]",
-				"[concat(variables('factoryId'), '/datasets/az_object_upload_prod_ds')]",
-				"[concat(variables('factoryId'), '/linkedServices/az_fun_delete_cosmos_record')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/preprocessor_pipe')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -999,16 +465,6 @@
 										"sink": {
 											"name": "Namespace",
 											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "IncludePurgeRecords",
-											"type": "Boolean"
-										},
-										"sink": {
-											"name": "IncludePurgeRecords",
-											"type": "Boolean"
 										}
 									}
 								]
@@ -1574,7 +1030,7 @@
 										}
 									},
 									"linkedServiceName": {
-										"referenceName": "azure_pipeline_metadata_update_ls",
+										"referenceName": "az_func_update_objectprops",
 										"type": "LinkedServiceReference"
 									}
 								},
@@ -1729,7 +1185,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/azsql_csv_sql_ds')]",
-				"[concat(variables('factoryId'), '/linkedServices/azure_pipeline_metadata_update_ls')]",
+				"[concat(variables('factoryId'), '/linkedServices/az_func_update_objectprops')]",
 				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]"
 			]
 		},
@@ -2773,32 +2229,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/az_csv_purged_ls')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "az_strg_ls",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "purgedrecords"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/az_strg_ls')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/az_metadata_cosmos_ds')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2970,27 +2400,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/az_sql_hcp_delta_purge_data')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "az_sql_ls",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "tblPurgeRecords"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/azsql_csv_sql_ds')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -3041,50 +2450,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/csv_purgerecords_sql_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "az_strg_ls",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "purgedrecords"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "EvidentialRecordID",
-						"type": "String"
-					},
-					{
-						"name": "EvidenceStoreID",
-						"type": "String"
-					},
-					{
-						"name": "RetentionDate",
-						"type": "String"
-					},
-					{
-						"name": "DeletionDate",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/az_strg_ls')]"
 			]
 		},
 		{
@@ -3214,38 +2579,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/sftp_csv_purged_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sftp_capita_ls",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "SftpLocation",
-						"folderPath": "/incoming"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "HCPID,RetentionDate,HoldStatus",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sftp_capita_ls')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/az_cosmos_ls')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -3259,17 +2592,17 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/az_fun_delete_cosmos_record')]",
+			"name": "[concat(parameters('factoryName'), '/az_func_update_objectprops')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
 				"type": "AzureFunction",
 				"typeProperties": {
-					"functionAppUrl": "[parameters('az_fun_delete_cosmos_record_properties_typeProperties_functionAppUrl')]",
+					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net",
 					"functionKey": {
 						"type": "SecureString",
-						"value": "[parameters('az_fun_delete_cosmos_record_functionKey')]"
+						"value": "[parameters('az_func_update_objectprops_functionKey')]"
 					}
 				}
 			},
@@ -3309,7 +2642,7 @@
 				"annotations": [],
 				"type": "AzureFunction",
 				"typeProperties": {
-					"functionAppUrl": "[parameters('azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl')]",
+					"functionAppUrl": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net",
 					"functionKey": {
 						"type": "SecureString",
 						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
@@ -3361,27 +2694,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/sftp_capita_ls')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "Sftp",
-				"typeProperties": {
-					"host": "[parameters('sftp_capita_ls_properties_typeProperties_host')]",
-					"port": 22,
-					"skipHostKeyValidation": true,
-					"authenticationType": "Basic",
-					"userName": "[parameters('sftp_capita_ls_properties_typeProperties_userName')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('sftp_capita_ls_password')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/on_query_csv_upload')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -3410,58 +2722,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/Main')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/trigger1')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Minute",
-						"interval": 1,
-						"startTime": "2020-06-12T19:44:00.000Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/hcp-Ir')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "SelfHosted",
-				"typeProperties": {}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/delete_sftp_files')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sftp_capita_ls",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "SftpLocation",
-						"folderPath": "/incoming"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sftp_capita_ls')]"
 			]
 		}
 	]
