@@ -110,14 +110,17 @@
 					"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
 						"value": "[parameters('azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl')]"
 					},
+					"hcp_http_ls_properties_typeProperties_url": {
+						"value": "[parameters('hcp_http_ls_properties_typeProperties_url')]"
+					},
+					"http_rest_ls_properties_typeProperties_url": {
+						"value": "[parameters('http_rest_ls_properties_typeProperties_url')]"
+					},
 					"sftp_capita_ls_properties_typeProperties_host": {
 						"value": "[parameters('sftp_capita_ls_properties_typeProperties_host')]"
 					},
 					"sftp_capita_ls_properties_typeProperties_userName": {
 						"value": "[parameters('sftp_capita_ls_properties_typeProperties_userName')]"
-					},
-					"hcp_http_ls_properties_typeProperties_url": {
-						"value": "[parameters('hcp_http_ls_properties_typeProperties_url')]"
 					}
 				}
 			},
@@ -136,9 +139,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"http_rest_ls_properties_typeProperties_url": {
-						"value": "[parameters('http_rest_ls_properties_typeProperties_url')]"
 					},
 					"on_query_csv_upload_properties_typeProperties_scope": {
 						"value": "[parameters('on_query_csv_upload_properties_typeProperties_scope')]"
