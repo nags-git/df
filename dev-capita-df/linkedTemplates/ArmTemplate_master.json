@@ -11,9 +11,9 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'az_cosmos_ls'"
 		},
-		"az_func_update_objectprops_functionKey": {
+		"az_fun_delete_cosmos_record_functionKey": {
 			"type": "secureString",
-			"metadata": "Secure string for 'functionKey' of 'az_func_update_objectprops'"
+			"metadata": "Secure string for 'functionKey' of 'az_fun_delete_cosmos_record'"
 		},
 		"az_sql_ls_connectionString": {
 			"type": "secureString",
@@ -27,6 +27,18 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
 		},
+		"sftp_capita_ls_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'sftp_capita_ls'"
+		},
+		"az_fun_delete_cosmos_record_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://dev-capita-pipelinedeletecosmosrecord.azurewebsites.net/"
+		},
+		"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://dev-capita-pipelinemetadataupdate-func.azurewebsites.net"
+		},
 		"hcp_http_ls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
@@ -34,6 +46,14 @@
 		"http_rest_ls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://tenant01.coe-hcp01.hitachivantara.com/query"
+		},
+		"sftp_capita_ls_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "13.78.132.95"
+		},
+		"sftp_capita_ls_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "guestuser"
 		},
 		"on_query_csv_upload_properties_typeProperties_scope": {
 			"type": "string",
@@ -69,8 +89,8 @@
 					"az_cosmos_ls_connectionString": {
 						"value": "[parameters('az_cosmos_ls_connectionString')]"
 					},
-					"az_func_update_objectprops_functionKey": {
-						"value": "[parameters('az_func_update_objectprops_functionKey')]"
+					"az_fun_delete_cosmos_record_functionKey": {
+						"value": "[parameters('az_fun_delete_cosmos_record_functionKey')]"
 					},
 					"az_sql_ls_connectionString": {
 						"value": "[parameters('az_sql_ls_connectionString')]"
@@ -80,6 +100,21 @@
 					},
 					"azure_pipeline_metadata_update_ls_functionKey": {
 						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
+					},
+					"sftp_capita_ls_password": {
+						"value": "[parameters('sftp_capita_ls_password')]"
+					},
+					"az_fun_delete_cosmos_record_properties_typeProperties_functionAppUrl": {
+						"value": "[parameters('az_fun_delete_cosmos_record_properties_typeProperties_functionAppUrl')]"
+					},
+					"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
+						"value": "[parameters('azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl')]"
+					},
+					"sftp_capita_ls_properties_typeProperties_host": {
+						"value": "[parameters('sftp_capita_ls_properties_typeProperties_host')]"
+					},
+					"sftp_capita_ls_properties_typeProperties_userName": {
+						"value": "[parameters('sftp_capita_ls_properties_typeProperties_userName')]"
 					},
 					"hcp_http_ls_properties_typeProperties_url": {
 						"value": "[parameters('hcp_http_ls_properties_typeProperties_url')]"
