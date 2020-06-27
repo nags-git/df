@@ -4,13 +4,16 @@
 	"properties": {
 		"parameters": {
 			"cosmos_account_url": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "https://qa-capitatfl-evidentialcosmosdb.documents.azure.com:443/"
 			},
 			"cosmos_account_password": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "UdSfaXFebfsLhEwmsXVhhH8bCkJonEII9rxdWoXed69lxYSd2WBjDjNSnNNSRLWIeSDLtd03MgDKHXlnezXamw=="
 			},
 			"cosmos_database_name": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "qa-capitatfl-metadatastore"
 			}
 		},
 		"annotations": [],
