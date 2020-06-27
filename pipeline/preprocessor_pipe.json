@@ -68,7 +68,10 @@
 				"inputs": [
 					{
 						"referenceName": "csv_sql_ds",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"inputfile": "hcpqueryinput.csv"
+						}
 					}
 				],
 				"outputs": [
