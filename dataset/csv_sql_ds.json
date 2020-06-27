@@ -5,12 +5,20 @@
 			"referenceName": "az_strg_ls",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"inputfile": {
+				"type": "String"
+			}
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "samplequerydata.csv",
+				"fileName": {
+					"value": "@dataset().inputfile",
+					"type": "Expression"
+				},
 				"container": "inputquery"
 			},
 			"columnDelimiter": ",",
