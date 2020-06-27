@@ -4,16 +4,20 @@
 	"properties": {
 		"parameters": {
 			"sql_account_url": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "qacapitatflhcpdataserver.database.windows.net"
 			},
 			"sql_database_name": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "qa-capitatfl-db-hcpdata"
 			},
 			"sql_username": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "test"
 			},
 			"sql_password": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "Capita@123456789"
 			}
 		},
 		"annotations": [],
