@@ -353,7 +353,7 @@
 				"type": "Delete",
 				"dependsOn": [
 					{
-						"activity": "copy_sftp_files_sql",
+						"activity": "backup_purged_records",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -486,6 +486,88 @@
 					"referenceName": "az_sql_ls",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "backup_purged_records",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "copy_sftp_files_sql",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "SftpReadSettings",
+							"recursive": true,
+							"wildcardFileName": "*.csv"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "EvidentialRecordID",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 1
+								}
+							},
+							{
+								"source": {
+									"name": "EvidenceStoreID",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 2
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "sftp_csv_purged_ds",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "az_sftp_delta_purge_files_ds",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"parameters": {

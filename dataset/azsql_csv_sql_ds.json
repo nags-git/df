@@ -3,7 +3,13 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "az_sql_ls",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"sql_account_url": "qacapitatflhcpdataserver.database.windows.net",
+				"sql_database_name": "qa-capitatfl-db-hcpdata",
+				"sql_username": "test",
+				"sql_password": "Capita@123456789"
+			}
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",

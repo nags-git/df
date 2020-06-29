@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "SftpLocation",
-				"folderPath": "/incoming"
+				"folderPath": "/incoming/pipeline_purge_input"
 			}
 		}
 	},
