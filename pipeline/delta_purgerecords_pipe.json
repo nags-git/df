@@ -519,14 +519,14 @@
 						}
 					},
 					"sink": {
-						"type": "AvroSink",
+						"type": "DelimitedTextSink",
 						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings",
-							"copyBehavior": "FlattenHierarchy"
+							"type": "AzureBlobStorageWriteSettings"
 						},
 						"formatSettings": {
-							"type": "AvroWriteSettings",
-							"quoteAllText": true
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
 						}
 					},
 					"enableStaging": false,
@@ -539,8 +539,8 @@
 									"type": "String"
 								},
 								"sink": {
-									"name": "EvidentialRecordId",
-									"type": "String"
+									"type": "String",
+									"ordinal": 1
 								}
 							},
 							{
@@ -549,8 +549,8 @@
 									"type": "String"
 								},
 								"sink": {
-									"name": "ObjectPath",
-									"type": "String"
+									"type": "String",
+									"ordinal": 2
 								}
 							}
 						]
