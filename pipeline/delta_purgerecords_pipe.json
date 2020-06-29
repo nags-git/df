@@ -513,6 +513,7 @@
 						"storeSettings": {
 							"type": "SftpReadSettings",
 							"recursive": true,
+							"wildcardFolderPath": "/pipeline_purge_input",
 							"wildcardFileName": "*.csv"
 						},
 						"formatSettings": {
@@ -520,16 +521,14 @@
 						}
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
+						"type": "AvroSink",
 						"storeSettings": {
-							"type": "SftpWriteSettings",
-							"operationTimeout": "01:00:00",
-							"useTempFileRename": true
+							"type": "AzureBlobStorageWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
 						},
 						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
+							"type": "AvroWriteSettings",
+							"quoteAllText": true
 						}
 					},
 					"enableStaging": false,
@@ -567,7 +566,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "sftp_csv_purged_ds",
+						"referenceName": "az_sftp_delta_purge_files_ds",
 						"type": "DatasetReference"
 					}
 				]
