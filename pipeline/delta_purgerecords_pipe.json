@@ -428,7 +428,10 @@
 							"type": "Guid"
 						},
 						"referenceTable": {
-							"value": "tblPurgedRecords",
+							"value": {
+								"value": "@pipeline().parameters.referenceTable",
+								"type": "Expression"
+							},
 							"type": "String"
 						}
 					}
@@ -483,7 +486,10 @@
 							"type": "Guid"
 						},
 						"referenceTable": {
-							"value": "tblPurgedRecords",
+							"value": {
+								"value": "@pipeline().parameters.referenceTable",
+								"type": "Expression"
+							},
 							"type": "String"
 						}
 					}
