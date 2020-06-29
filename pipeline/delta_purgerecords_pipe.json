@@ -134,7 +134,7 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"storedProcedureName": "[dbo].[USP_Insert_ErrorInformation]",
+								"storedProcedureName": "[dbo].[USP_Insert_ErrorInformation_Delta_Purge]",
 								"storedProcedureParameters": {
 									"errorAtStage": {
 										"value": "delta_purge_delete_object",
@@ -155,7 +155,7 @@
 										"type": "String"
 									},
 									"referenceId": {
-										"value": "",
+										"value": "@item.Id",
 										"type": "Guid"
 									},
 									"referenceTable": {
@@ -400,7 +400,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[USP_Insert_ErrorInformation]",
+					"storedProcedureName": "[dbo].[USP_Insert_ErrorInformation_Delta_Purge]",
 					"storedProcedureParameters": {
 						"errorAtStage": {
 							"value": "delete_sftp_files",
@@ -452,7 +452,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[USP_Insert_ErrorInformation]",
+					"storedProcedureName": "[dbo].[USP_Insert_ErrorInformation_Delta_Purge]",
 					"storedProcedureParameters": {
 						"errorAtStage": {
 							"value": "delete_sftp_files",
