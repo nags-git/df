@@ -288,7 +288,7 @@
 							"type": "LinkedServiceReference"
 						},
 						"path": "delta-purge-records",
-						"enableCompression": false
+						"enableCompression": true
 					},
 					"translator": {
 						"type": "TabularTranslator",
