@@ -14,7 +14,6 @@
 		"type": "BlobEventsTrigger",
 		"typeProperties": {
 			"blobPathBeginsWith": "/inputquery/blobs/",
-			"blobPathEndsWith": "samplequerydata.csv",
 			"ignoreEmptyBlobs": true,
 			"scope": "/subscriptions/2a3390b4-6a54-48b5-812a-35320c2fab9c/resourceGroups/dev-capita-rg/providers/Microsoft.Storage/storageAccounts/devcapitaevidentialst",
 			"events": [
