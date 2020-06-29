@@ -512,7 +512,6 @@
 						"storeSettings": {
 							"type": "SftpReadSettings",
 							"recursive": true,
-							"wildcardFolderPath": "/pipeline_purge_input",
 							"wildcardFileName": "*.csv"
 						},
 						"formatSettings": {
