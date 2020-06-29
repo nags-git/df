@@ -155,7 +155,7 @@
 										"type": "String"
 									},
 									"referenceId": {
-										"value": "@item.Id",
+										"value": "@item().id",
 										"type": "Guid"
 									},
 									"referenceTable": {
@@ -213,7 +213,7 @@
 										"type": "String"
 									},
 									"referenceId": {
-										"value": "@item.Id",
+										"value": "@item().id",
 										"type": "Guid"
 									},
 									"referenceTable": {
