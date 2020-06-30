@@ -1,0 +1,17 @@
+{
+	"name": "schedule_sftp_get_files_trigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 5,
+				"startTime": "2020-06-30T16:31:00.000Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}
