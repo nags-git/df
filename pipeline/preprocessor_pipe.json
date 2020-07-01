@@ -19,7 +19,9 @@
 						"type": "DelimitedTextSource",
 						"storeSettings": {
 							"type": "AzureBlobStorageReadSettings",
-							"recursive": true
+							"recursive": true,
+							"wildcardFileName": "*.csv",
+							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
 							"type": "DelimitedTextReadSettings"
@@ -68,10 +70,7 @@
 				"inputs": [
 					{
 						"referenceName": "csv_sql_ds",
-						"type": "DatasetReference",
-						"parameters": {
-							"inputfile": "hcpqueryinput.csv"
-						}
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
@@ -513,6 +512,38 @@
 				"linkedServiceName": {
 					"referenceName": "az_sql_ls",
 					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "delete_input_query",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "copy_query_sql",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "csv_sql_ds",
+						"type": "DatasetReference"
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"wildcardFileName": "*.csv"
+					}
 				}
 			}
 		],

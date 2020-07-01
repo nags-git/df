@@ -1,5 +1,5 @@
 {
-	"name": "csv_sql_ds",
+	"name": "csv_backup_inputquries_ds",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "az_strg_ls",
@@ -14,10 +14,18 @@
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
-			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": []
-	},
-	"type": "Microsoft.DataFactory/factories/datasets"
+		"schema": [
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			}
+		]
+	}
 }

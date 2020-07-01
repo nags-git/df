@@ -1,5 +1,5 @@
 {
-	"name": "csv_sql_ds",
+	"name": "csv_backup_queries",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "az_strg_ls",
@@ -10,14 +10,24 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": "*.csv",
+				"folderPath": "processedqueries",
 				"container": "inputquery"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
-			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": []
-	},
-	"type": "Microsoft.DataFactory/factories/datasets"
+		"schema": [
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			}
+		]
+	}
 }
