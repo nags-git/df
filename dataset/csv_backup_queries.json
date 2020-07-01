@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "*.csv",
+				"fileName": "back_up_all_q.csv",
 				"folderPath": "processedqueries",
 				"container": "inputquery"
 			},
