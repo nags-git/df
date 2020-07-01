@@ -589,32 +589,7 @@
 							"fileExtension": ".csv"
 						}
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"name": "EvidentialRecordID",
-									"type": "String"
-								},
-								"sink": {
-									"type": "String",
-									"ordinal": 1
-								}
-							},
-							{
-								"source": {
-									"name": "EvidenceStoreID",
-									"type": "String"
-								},
-								"sink": {
-									"type": "String",
-									"ordinal": 2
-								}
-							}
-						]
-					}
+					"enableStaging": false
 				},
 				"inputs": [
 					{
