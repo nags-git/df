@@ -5,11 +5,6 @@
 			"referenceName": "az_strg_ls",
 			"type": "LinkedServiceReference"
 		},
-		"parameters": {
-			"inputfile": {
-				"type": "String"
-			}
-		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {

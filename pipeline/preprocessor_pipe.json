@@ -20,6 +20,7 @@
 						"storeSettings": {
 							"type": "AzureBlobStorageReadSettings",
 							"recursive": true,
+							"wildcardFileName": "*.csv",
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
@@ -69,10 +70,7 @@
 				"inputs": [
 					{
 						"referenceName": "csv_sql_ds",
-						"type": "DatasetReference",
-						"parameters": {
-							"inputfile": "hcpqueryinput.csv"
-						}
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
