@@ -1,0 +1,576 @@
+{
+	"name": "pipeline1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "SftpReadSettings",
+							"recursive": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "CosmosDbSqlApiSink",
+						"writeBehavior": "upsert",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"sink": {
+									"path": "$['FilePath']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['SystemMetadata']['Hold']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['SystemMetadata']['Index']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['SystemMetadata']['Shred']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['SystemMetadata']['Retention']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['CorrespondenceID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['Version']['@key']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['Version']['@val']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['Version']['#text']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['Contract']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['RepositoryID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['SourceSystemID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['FileName']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['Submitter']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['Comment']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['CategoryID']['@rm']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['CategoryID']['#text']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['SubCategoryID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['AccountNumber']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['PCNNumber']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['SelfID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['Batched']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['Posted']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['BatchType']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['BatchNumber']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['RelatedDocumentID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['Created']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['DocumentOutbound']['Modified']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['CorrespondenceID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['Version']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['Contract']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['RepositoryID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['SourceSystemID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['FileName']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['Submitter']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['Comment']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['CategoryID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['SubCategoryID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['AccountNumber']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['PCNNumber']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['SelfID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['Batched']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['Posted']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['BatchType']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['BatchNumber']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['RelatedDocumentID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['Created']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['EmailOutbound']['Modified']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['CorrespondenceID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['Version']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['Contract']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['RepositoryID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['SourceSystemID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['FileName']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['Submitter']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['Comment']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['CategoryID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['SubCategoryID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['AccountNumber']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['PCNNumber']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['SelfID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['Batched']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['Posted']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['BatchType']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['BatchNumber']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['RelatedDocumentID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['Created']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['Root']['Test']['Modified']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['CorrespondenceID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['Version']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['Contract']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['RepositoryID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['SourceSystemID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['FileName']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['Submitter']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['Comment']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['CategoryID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['SubCategoryID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['AccountNumber']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['PCNNumber']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['SelfID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['Batched']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['Posted']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['BatchType']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['BatchNumber']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['RelatedDocumentID']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['Created']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadata']['DocumentOutbound']['Modified']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['DocumentSize']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['LastModifiedDate']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['FileName']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadataAnnotation']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['FileType']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['Status']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['QueueRequestType']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['ContentMD5']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['LeaseId']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CreatedDate']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['ETag']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['_rid']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['_self']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['_etag']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['_attachments']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['_ts']"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DelimitedText1",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "az_metadata_cosmos_ds",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}
