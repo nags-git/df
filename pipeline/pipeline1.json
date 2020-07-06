@@ -46,7 +46,7 @@
 							{
 								"source": {
 									"name": "HoldStatus",
-									"type": "DateTimeOffset"
+									"type": "Boolean"
 								},
 								"sink": {
 									"path": "$['SystemMetadata']['Hold']"
