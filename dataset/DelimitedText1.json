@@ -10,6 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "SftpLocation",
+				"fileName": "HCP_Update_List_20200630_deepak.csv",
 				"folderPath": "/incoming/updatemetadata"
 			},
 			"columnDelimiter": ",",
