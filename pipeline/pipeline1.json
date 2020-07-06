@@ -35,23 +35,30 @@
 						"type": "TabularTranslator",
 						"mappings": [
 							{
+								"source": {
+									"name": "HCPID",
+									"type": "String"
+								},
 								"sink": {
 									"path": "$['FilePath']"
 								}
 							},
 							{
+								"source": {
+									"name": "HoldStatus",
+									"type": "DateTimeOffset"
+								},
 								"sink": {
 									"path": "$['SystemMetadata']['Hold']"
 								}
 							},
 							{
+								"source": {
+									"name": "RetentionDate",
+									"type": "String"
+								},
 								"sink": {
 									"path": "$['SystemMetadata']['Retention']"
-								}
-							},
-							{
-								"sink": {
-									"path": "$['LastModifiedDate']"
 								}
 							}
 						]
