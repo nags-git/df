@@ -31,7 +31,48 @@
 						"writeBehavior": "upsert",
 						"disableMetricsCollection": false
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ID",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['id']"
+								}
+							},
+							{
+								"source": {
+									"name": "HCPID",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['FilePath']"
+								}
+							},
+							{
+								"source": {
+									"name": "HoldFlag",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['SystemMetadata']['Hold']"
+								}
+							},
+							{
+								"source": {
+									"name": "RetentionDate",
+									"type": "Int64"
+								},
+								"sink": {
+									"path": "$['SystemMetadata']['Retention']"
+								}
+							}
+						]
+					}
 				},
 				"inputs": [
 					{
