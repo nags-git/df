@@ -46,29 +46,149 @@
 							},
 							{
 								"source": {
-									"name": "HCPID",
+									"name": "application",
 									"type": "String"
 								},
+								"sink": {
+									"path": "$['application']"
+								}
+							},
+							{
 								"sink": {
 									"path": "$['FilePath']"
 								}
 							},
 							{
+								"sink": {
+									"path": "$['SnapshotPath']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['IsSnapshot']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['Version']"
+								}
+							},
+							{
 								"source": {
 									"name": "HoldFlag",
-									"type": "String"
+									"type": "Boolean"
 								},
 								"sink": {
 									"path": "$['SystemMetadata']['Hold']"
 								}
 							},
 							{
+								"sink": {
+									"path": "$['SystemMetadata']['Index']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['SystemMetadata']['Shred']"
+								}
+							},
+							{
 								"source": {
 									"name": "RetentionDate",
-									"type": "Int64"
+									"type": "Int32"
 								},
 								"sink": {
 									"path": "$['SystemMetadata']['Retention']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['DocumentSize']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['LastModifiedDate']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['FileName']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CustomMetadataAnnotation']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['FileType']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['Status']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['QueueRequestType']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['ContentMD5']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['LeaseId']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['CreatedDate']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['ETag']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['_rid']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['_self']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['_etag']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['_attachments']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['_ts']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['BatchId']"
+								}
+							},
+							{
+								"sink": {
+									"path": "$['ClientId']"
 								}
 							}
 						]
