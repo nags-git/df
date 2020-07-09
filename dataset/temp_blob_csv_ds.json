@@ -1,0 +1,28 @@
+{
+	"name": "temp_blob_csv_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "temp_azure_blobstrg",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "HCP_Update_List_20200414.csv",
+				"container": "inputquery"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "ID,HCPID,RetentionDate,HoldStatus",
+				"type": "String"
+			}
+		]
+	}
+}

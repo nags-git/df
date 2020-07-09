@@ -1,0 +1,11 @@
+{
+	"name": "temp_cosmos",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "CosmosDb1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "CosmosDbSqlApiCollection"
+	}
+}
