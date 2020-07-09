@@ -13,7 +13,7 @@
 				"fileName": "HCP_Update_List_20200630_deepak.csv",
 				"container": "inputquery"
 			},
-			"columnDelimiter": ",",
+			"columnDelimiter": "\t",
 			"escapeChar": "\\",
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
