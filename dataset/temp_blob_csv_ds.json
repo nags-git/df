@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "HCP_Update_List_20200414.csv",
+				"fileName": "HCP_Update_List_20200630_deepak.csv",
 				"container": "inputquery"
 			},
 			"columnDelimiter": ",",
