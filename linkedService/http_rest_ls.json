@@ -1,5 +1,6 @@
 {
 	"name": "http_rest_ls",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
 		"type": "RestService",
@@ -12,6 +13,5 @@
 			"referenceName": "hcp-Ir",
 			"type": "IntegrationRuntimeReference"
 		}
-	},
-	"type": "Microsoft.DataFactory/factories/linkedservices"
+	}
 }
