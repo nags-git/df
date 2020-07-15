@@ -1,0 +1,6 @@
+{
+	"name": "hcp-ir",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}
