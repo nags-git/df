@@ -9,15 +9,15 @@
 			},
 			"sql_database_name": {
 				"type": "String",
-				"defaultValue": "qa-capitatfl-db-hcpdata"
+				"defaultValue": "qa-capitatfl-sql-db"
 			},
 			"sql_username": {
 				"type": "String",
-				"defaultValue": "test"
+				"defaultValue": "4dm1n"
 			},
 			"sql_password": {
 				"type": "String",
-				"defaultValue": "Capita@123456789"
+				"defaultValue": "capita@2020"
 			}
 		},
 		"annotations": [],
