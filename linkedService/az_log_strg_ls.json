@@ -1,0 +1,11 @@
+{
+	"name": "az_log_strg_ls",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"serviceEndpoint": "https://qaevidentiallogsst.blob.core.windows.net",
+			"accountKind": "StorageV2"
+		}
+	}
+}
