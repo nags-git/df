@@ -5,7 +5,7 @@
 		"parameters": {
 			"sql_account_url": {
 				"type": "String",
-				"defaultValue": "qacapitatflhcpdataserver.database.windows.net"
+				"defaultValue": "qa-capitatfl-sql-server.database.windows.net"
 			},
 			"sql_database_name": {
 				"type": "String",
