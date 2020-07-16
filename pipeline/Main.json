@@ -34,7 +34,7 @@
 							}
 						},
 						{
-							"name": "processor_copy_db_pipe",
+							"name": "processor_sql_cosmos_pipe",
 							"type": "ExecutePipeline",
 							"dependsOn": [
 								{
@@ -131,7 +131,7 @@
 							"type": "ExecutePipeline",
 							"dependsOn": [
 								{
-									"activity": "processor_copy_db_pipe",
+									"activity": "processor_sql_cosmos_pipe",
 									"dependencyConditions": [
 										"Succeeded"
 									]
