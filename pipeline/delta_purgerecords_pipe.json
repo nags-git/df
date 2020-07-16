@@ -195,7 +195,7 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"storedProcedureName": "[dbo].[tblerrorinformation]",
+								"storedProcedureName": "[dbo].[USP_Insert_ErrorInformation]",
 								"storedProcedureParameters": {
 									"errorAtStage": {
 										"value": "delta_purge_delete_object",
