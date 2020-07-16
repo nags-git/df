@@ -155,7 +155,10 @@
 										"type": "String"
 									},
 									"referenceId": {
-										"value": "@item().id",
+										"value": {
+											"value": "@item().id",
+											"type": "Expression"
+										},
 										"type": "Guid"
 									},
 									"referenceTable": {
@@ -213,7 +216,10 @@
 										"type": "String"
 									},
 									"referenceId": {
-										"value": "@item().id",
+										"value": {
+											"value": "@item().id",
+											"type": "Expression"
+										},
 										"type": "Guid"
 									},
 									"referenceTable": {
@@ -227,7 +233,13 @@
 							},
 							"linkedServiceName": {
 								"referenceName": "az_sql_ls",
-								"type": "LinkedServiceReference"
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"sql_account_url": "qa-capitatfl-sql-server.database.windows.net",
+									"sql_database_name": "qa-capitatfl-sql-db",
+									"sql_username": "4dm1n",
+									"sql_password": "capita@2020"
+								}
 							}
 						}
 					]
