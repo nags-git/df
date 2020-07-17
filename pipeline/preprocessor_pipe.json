@@ -319,14 +319,6 @@
 										},
 										{
 											"source": {
-												"path": "['customMetadataAnnotation']"
-											},
-											"sink": {
-												"name": "Namespace"
-											}
-										},
-										{
-											"source": {
 												"path": "$['BatchId']"
 											},
 											"sink": {
