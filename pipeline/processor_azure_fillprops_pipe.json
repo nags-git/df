@@ -81,7 +81,7 @@
 									"Content-Type": "application/json"
 								},
 								"body": {
-									"value": "@concat('{\n\"filepath\": \"',pipeline().parameters.azurecontainer,'/',item().ObjectPath,'\",\n\"customMetadataExists\":\"',item().CustomMetadataExists,'\"\n}')",
+									"value": "@concat('{\n\"filepath\": \"',item().Container,'/',item().ObjectPath,'\",\n\"customMetadataExists\":\"',item().CustomMetadataExists,'\"\n}')",
 									"type": "Expression"
 								}
 							},
