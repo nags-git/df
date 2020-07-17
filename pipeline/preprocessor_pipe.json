@@ -322,7 +322,7 @@
 												"path": "$['BatchId']"
 											},
 											"sink": {
-												"name": "BatchI"
+												"name": "BatchID"
 											}
 										},
 										{
