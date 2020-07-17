@@ -152,13 +152,6 @@
 												"value": "@item().Id",
 												"type": "Expression"
 											}
-										},
-										{
-											"name": "Container",
-											"value": {
-												"value": "@concat('evidential')",
-												"type": "Expression"
-											}
 										}
 									],
 									"httpRequestTimeout": "00:01:40",
@@ -339,14 +332,6 @@
 											"sink": {
 												"name": "BatchID",
 												"type": "Guid"
-											}
-										},
-										{
-											"source": {
-												"path": "$['Container']"
-											},
-											"sink": {
-												"name": "Container"
 											}
 										}
 									],
