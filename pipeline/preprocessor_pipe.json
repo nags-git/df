@@ -333,6 +333,14 @@
 												"name": "BatchID",
 												"type": "Guid"
 											}
+										},
+										{
+											"source": {
+												"path": "$['Container']"
+											},
+											"sink": {
+												"name": "Container"
+											}
 										}
 									],
 									"collectionReference": "$['queryResult']['resultSet']"
