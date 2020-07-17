@@ -241,6 +241,56 @@
 									"sql_password": "capita@2020"
 								}
 							}
+						},
+						{
+							"name": "update_inventory_db",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "delete_cosmos_record",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[USP_DF_Save_ObjectInventoryInfo]",
+								"storedProcedureParameters": {
+									"container": {
+										"value": {
+											"value": "@pipeline().parameters.azurecontainer",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"id": {
+										"value": "@item().Id",
+										"type": "Guid"
+									},
+									"operation": {
+										"value": "Delete",
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sql_ls",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"sql_account_url": "qa-capitatfl-sql-server.database.windows.net",
+									"sql_database_name": "qa-capitatfl-sql-db",
+									"sql_username": "4dm1n",
+									"sql_password": "capita@2020"
+								}
+							}
 						}
 					]
 				}
