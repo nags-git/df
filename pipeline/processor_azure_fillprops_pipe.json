@@ -214,6 +214,53 @@
 								"referenceName": "az_sql_ls",
 								"type": "LinkedServiceReference"
 							}
+						},
+						{
+							"name": "update_inventory_db",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "update_metadata_and_integrity_check",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[USP_DF_Save_ObjectInventoryInfo]",
+								"storedProcedureParameters": {
+									"container": {
+										"value": "",
+										"type": "String"
+									},
+									"id": {
+										"value": "item().id",
+										"type": "Guid"
+									},
+									"operation": {
+										"value": "Create",
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sql_ls",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"sql_account_url": "qa-capitatfl-sql-server.database.windows.net",
+									"sql_database_name": "qa-capitatfl-sql-db",
+									"sql_username": "4dm1n",
+									"sql_password": "capita@2020"
+								}
+							}
 						}
 					]
 				}
