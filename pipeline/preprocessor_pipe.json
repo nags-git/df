@@ -188,14 +188,6 @@
 										},
 										{
 											"source": {
-												"path": "['customMetadataAnnotation']"
-											},
-											"sink": {
-												"name": "CustomMetadataAnnotation"
-											}
-										},
-										{
-											"source": {
 												"path": "['operation']"
 											},
 											"sink": {
