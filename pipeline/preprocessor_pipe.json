@@ -266,7 +266,8 @@
 												"path": "['owner']"
 											},
 											"sink": {
-												"name": "Owner"
+												"name": "Owner",
+												"type": "String"
 											}
 										},
 										{
@@ -274,7 +275,8 @@
 												"path": "['ingestTime']"
 											},
 											"sink": {
-												"name": "IngestTime"
+												"name": "IngestTime",
+												"type": "String"
 											}
 										},
 										{
@@ -282,7 +284,8 @@
 												"path": "['customMetadata']"
 											},
 											"sink": {
-												"name": "CustomMetadataExists"
+												"name": "CustomMetadataExists",
+												"type": "String"
 											}
 										},
 										{
@@ -290,7 +293,17 @@
 												"path": "['index']"
 											},
 											"sink": {
-												"name": "Index"
+												"name": "Index",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['updateTime']"
+											},
+											"sink": {
+												"name": "UpdateTime",
+												"type": "String"
 											}
 										},
 										{
@@ -298,15 +311,8 @@
 												"path": "['hash']"
 											},
 											"sink": {
-												"name": "Hash"
-											}
-										},
-										{
-											"source": {
-												"path": "['namespace']"
-											},
-											"sink": {
-												"name": "Namespace"
+												"name": "Hash",
+												"type": "String"
 											}
 										},
 										{
@@ -314,7 +320,8 @@
 												"path": "['customMetadataAnnotation']"
 											},
 											"sink": {
-												"name": "CustomMetadataAnnotation"
+												"name": "CustomMetadataAnnotation",
+												"type": "String"
 											}
 										},
 										{
@@ -322,7 +329,8 @@
 												"path": "$['BatchId']"
 											},
 											"sink": {
-												"name": "BatchID"
+												"name": "BatchID",
+												"type": "Guid"
 											}
 										},
 										{
