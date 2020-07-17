@@ -245,20 +245,6 @@
 										},
 										{
 											"source": {
-												"path": "['retentionString']"
-											}
-										},
-										{
-											"source": {
-												"path": "['ingestTimeString']"
-											},
-											"sink": {
-												"name": "IngestTime",
-												"type": "String"
-											}
-										},
-										{
-											"source": {
 												"path": "['hold']"
 											},
 											"sink": {
@@ -277,127 +263,66 @@
 										},
 										{
 											"source": {
-												"path": "['replicated']"
-											}
-										},
-										{
-											"source": {
-												"path": "['changeTimeString']"
-											}
-										},
-										{
-											"source": {
-												"path": "['updateTimeString']"
-											}
-										},
-										{
-											"source": {
-												"path": "['accessTimeString']"
-											}
-										},
-										{
-											"source": {
-												"path": "['uid']"
-											}
-										},
-										{
-											"source": {
-												"path": "['gid']"
-											}
-										},
-										{
-											"source": {
-												"path": "['permissions']"
-											}
-										},
-										{
-											"source": {
 												"path": "['owner']"
-											}
-										},
-										{
-											"source": {
-												"path": "['replicationCollision']"
+											},
+											"sink": {
+												"name": "Owner"
 											}
 										},
 										{
 											"source": {
 												"path": "['ingestTime']"
-											}
-										},
-										{
-											"source": {
-												"path": "['changeTimeMilliseconds']"
+											},
+											"sink": {
+												"name": "IngestTime"
 											}
 										},
 										{
 											"source": {
 												"path": "['customMetadata']"
-											}
-										},
-										{
-											"source": {
-												"path": "['acl']"
+											},
+											"sink": {
+												"name": "CustomMetadataExists"
 											}
 										},
 										{
 											"source": {
 												"path": "['index']"
-											}
-										},
-										{
-											"source": {
-												"path": "['updateTime']"
-											}
-										},
-										{
-											"source": {
-												"path": "['accessTime']"
+											},
+											"sink": {
+												"name": "Index"
 											}
 										},
 										{
 											"source": {
 												"path": "['hash']"
-											}
-										},
-										{
-											"source": {
-												"path": "['retentionClass']"
+											},
+											"sink": {
+												"name": "Hash"
 											}
 										},
 										{
 											"source": {
 												"path": "['namespace']"
+											},
+											"sink": {
+												"name": "Namespace"
 											}
 										},
 										{
 											"source": {
 												"path": "['customMetadataAnnotation']"
-											}
-										},
-										{
-											"source": {
-												"path": "$['queryResult']['status']['code']"
-											}
-										},
-										{
-											"source": {
-												"path": "$['queryResult']['status']['message']"
-											}
-										},
-										{
-											"source": {
-												"path": "$['queryResult']['status']['totalResults']"
-											}
-										},
-										{
-											"source": {
-												"path": "$['queryResult']['status']['results']"
+											},
+											"sink": {
+												"name": "CustomMetadataAnnotation"
 											}
 										},
 										{
 											"source": {
 												"path": "$['BatchId']"
+											},
+											"sink": {
+												"name": "BatchI"
 											}
 										},
 										{
