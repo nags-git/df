@@ -322,7 +322,7 @@
 												"path": "['customMetadataAnnotation']"
 											},
 											"sink": {
-												"name": "CustomMetadataAnnotation"
+												"name": "Namespace"
 											}
 										},
 										{
