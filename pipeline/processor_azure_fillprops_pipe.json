@@ -242,7 +242,7 @@
 										"type": "String"
 									},
 									"id": {
-										"value": "item().id",
+										"value": "@item().Id",
 										"type": "Guid"
 									},
 									"operation": {
