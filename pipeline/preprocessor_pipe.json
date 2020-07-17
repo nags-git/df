@@ -156,7 +156,7 @@
 										{
 											"name": "Container",
 											"value": {
-												"value": "@concat('evidential')",
+												"value": "@string('evidential')",
 												"type": "Expression"
 											}
 										}
@@ -245,6 +245,20 @@
 										},
 										{
 											"source": {
+												"path": "['retentionString']"
+											}
+										},
+										{
+											"source": {
+												"path": "['ingestTimeString']"
+											},
+											"sink": {
+												"name": "IngestTime",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
 												"path": "['hold']"
 											},
 											"sink": {
@@ -263,74 +277,127 @@
 										},
 										{
 											"source": {
+												"path": "['replicated']"
+											}
+										},
+										{
+											"source": {
+												"path": "['changeTimeString']"
+											}
+										},
+										{
+											"source": {
+												"path": "['updateTimeString']"
+											}
+										},
+										{
+											"source": {
+												"path": "['accessTimeString']"
+											}
+										},
+										{
+											"source": {
+												"path": "['uid']"
+											}
+										},
+										{
+											"source": {
+												"path": "['gid']"
+											}
+										},
+										{
+											"source": {
+												"path": "['permissions']"
+											}
+										},
+										{
+											"source": {
 												"path": "['owner']"
-											},
-											"sink": {
-												"name": "Owner",
-												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['replicationCollision']"
 											}
 										},
 										{
 											"source": {
 												"path": "['ingestTime']"
-											},
-											"sink": {
-												"name": "IngestTime",
-												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['changeTimeMilliseconds']"
 											}
 										},
 										{
 											"source": {
 												"path": "['customMetadata']"
-											},
-											"sink": {
-												"name": "CustomMetadataExists",
-												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['acl']"
 											}
 										},
 										{
 											"source": {
 												"path": "['index']"
-											},
-											"sink": {
-												"name": "Index",
-												"type": "String"
-											}
-										},
-										{
-											"source": {
-												"path": "['hash']"
-											},
-											"sink": {
-												"name": "Hash",
-												"type": "String"
 											}
 										},
 										{
 											"source": {
 												"path": "['updateTime']"
-											},
-											"sink": {
-												"name": "UpdateTime",
-												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['accessTime']"
+											}
+										},
+										{
+											"source": {
+												"path": "['hash']"
+											}
+										},
+										{
+											"source": {
+												"path": "['retentionClass']"
 											}
 										},
 										{
 											"source": {
 												"path": "['namespace']"
-											},
-											"sink": {
-												"name": "Namespace",
-												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['customMetadataAnnotation']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['queryResult']['status']['code']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['queryResult']['status']['message']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['queryResult']['status']['totalResults']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['queryResult']['status']['results']"
 											}
 										},
 										{
 											"source": {
 												"path": "$['BatchId']"
-											},
-											"sink": {
-												"name": "BatchID",
-												"type": "Guid"
 											}
 										},
 										{
@@ -338,7 +405,8 @@
 												"path": "$['Container']"
 											},
 											"sink": {
-												"name": "Container"
+												"name": "Container",
+												"type": "String"
 											}
 										}
 									],
