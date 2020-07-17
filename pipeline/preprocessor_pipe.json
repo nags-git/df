@@ -155,7 +155,10 @@
 										},
 										{
 											"name": "Container",
-											"value": "evidential"
+											"value": {
+												"value": "@concat('evidential')",
+												"type": "Expression"
+											}
 										}
 									],
 									"httpRequestTimeout": "00:01:40",
