@@ -238,7 +238,10 @@
 								"storedProcedureName": "[dbo].[USP_DF_Save_ObjectInventoryInfo]",
 								"storedProcedureParameters": {
 									"container": {
-										"value": "",
+										"value": {
+											"value": "@pipeline().parameters.azurecontainer",
+											"type": "Expression"
+										},
 										"type": "String"
 									},
 									"id": {
