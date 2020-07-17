@@ -152,6 +152,10 @@
 												"value": "@item().Id",
 												"type": "Expression"
 											}
+										},
+										{
+											"name": "Container",
+											"value": "evidential"
 										}
 									],
 									"httpRequestTimeout": "00:01:40",
@@ -322,8 +326,7 @@
 												"path": "['customMetadataAnnotation']"
 											},
 											"sink": {
-												"name": "CustomMetadataAnnotation",
-												"type": "String"
+												"name": "CustomMetadataAnnotation"
 											}
 										},
 										{
