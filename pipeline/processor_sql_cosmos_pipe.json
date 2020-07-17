@@ -332,10 +332,6 @@
 			"referencetable": {
 				"type": "string",
 				"defaultValue": "tblhcpdata"
-			},
-			"azurecontainer": {
-				"type": "string",
-				"defaultValue": "evidential"
 			}
 		},
 		"annotations": []

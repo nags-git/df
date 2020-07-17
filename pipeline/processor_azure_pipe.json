@@ -223,10 +223,6 @@
 				"type": "string",
 				"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
 			},
-			"azurecontainer": {
-				"type": "string",
-				"defaultValue": "evidential"
-			},
 			"azurestagecontainer": {
 				"type": "string",
 				"defaultValue": "hcpstage"
