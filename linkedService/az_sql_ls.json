@@ -5,11 +5,11 @@
 		"parameters": {
 			"sql_account_url": {
 				"type": "String",
-				"defaultValue": "qa-capitatfl-sql-server.database.windows.net"
+				"defaultValue": "test-capitatfl-sql-server.database.windows.net"
 			},
 			"sql_database_name": {
 				"type": "String",
-				"defaultValue": "qa-capitatfl-sql-db"
+				"defaultValue": "test-capitatfl-sql-db"
 			},
 			"sql_username": {
 				"type": "String",
