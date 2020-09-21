@@ -35,7 +35,8 @@
 								"value": "ObjectStaged"
 							}
 						},
-						"queryTimeout": "02:00:00"
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"dataset": {
 						"referenceName": "azsql_csv_sql_ds",
@@ -88,8 +89,7 @@
 										"type": "AzureBlobStorageWriteSettings"
 									},
 									"formatSettings": {
-										"type": "AvroWriteSettings",
-										"quoteAllText": true
+										"type": "AvroWriteSettings"
 									}
 								},
 								"enableStaging": false
@@ -108,7 +108,8 @@
 									"referenceName": "az_object_upload_prod_ds",
 									"type": "DatasetReference",
 									"parameters": {
-										"relativeURL": "@item().ObjectPath"
+										"relativeURL": "@item().ObjectPath",
+										"container": "@item().Container"
 									}
 								}
 							]
