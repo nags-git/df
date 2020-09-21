@@ -8,6 +8,9 @@
 		"parameters": {
 			"relativeURL": {
 				"type": "string"
+			},
+			"container": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
@@ -19,7 +22,10 @@
 					"value": "@dataset().relativeURL",
 					"type": "Expression"
 				},
-				"container": "evidential"
+				"container": {
+					"value": "@dataset().container",
+					"type": "Expression"
+				}
 			}
 		}
 	},
