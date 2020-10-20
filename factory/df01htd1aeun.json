@@ -21,6 +21,10 @@
 			"authheader": {
 				"type": "string",
 				"value": "Authorization: HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492"
+			},
+			"sql_account_url": {
+				"type": "string",
+				"value": "sadf"
 			}
 		}
 	},
