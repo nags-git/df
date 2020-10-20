@@ -5,11 +5,11 @@
 		"parameters": {
 			"sql_account_url": {
 				"type": "String",
-				"defaultValue": "test-capitatfl-sql-server.database.windows.net"
+				"defaultValue": "ss01htd1aeun.database.windows.net"
 			},
 			"sql_database_name": {
 				"type": "String",
-				"defaultValue": "test-capitatfl-sql-db"
+				"defaultValue": "sdb01htd1a-inventory"
 			},
 			"sql_username": {
 				"type": "String",
@@ -23,7 +23,7 @@
 		"annotations": [],
 		"type": "AzureSqlDatabase",
 		"typeProperties": {
-			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=@{linkedService().sql_account_url};Initial Catalog=@{linkedService().sql_database_name};User ID=@{linkedService().sql_username};Password=@{linkedService().sql_password}"
+			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=@{linkedService().sql_account_url};Initial Catalog=@{linkedService().sql_database_name}"
 		}
 	}
 }
