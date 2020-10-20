@@ -29,6 +29,10 @@
 			"sql_database_name": {
 				"type": "string",
 				"value": "dsf"
+			},
+			"sql_username": {
+				"type": "string",
+				"value": "sdfa"
 			}
 		}
 	},
