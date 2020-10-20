@@ -33,6 +33,10 @@
 			"sql_username": {
 				"type": "string",
 				"value": "sdfa"
+			},
+			"sql_password": {
+				"type": "string",
+				"value": "asdf"
 			}
 		}
 	},
