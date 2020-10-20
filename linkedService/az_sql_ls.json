@@ -24,6 +24,10 @@
 		"type": "AzureSqlDatabase",
 		"typeProperties": {
 			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=@{linkedService().sql_account_url};Initial Catalog=@{linkedService().sql_database_name};User ID=@{linkedService().sql_username};Password=@{linkedService().sql_password}"
+		},
+		"connectVia": {
+			"referenceName": "hcp-Ir",
+			"type": "IntegrationRuntimeReference"
 		}
 	}
 }
