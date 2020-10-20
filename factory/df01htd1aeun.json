@@ -24,7 +24,7 @@
 			},
 			"sql_account_url": {
 				"type": "string",
-				"value": "sadf"
+				"value": "ss01htd1aeun.database.windows.net"
 			},
 			"sql_database_name": {
 				"type": "string",
