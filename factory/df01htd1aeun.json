@@ -32,7 +32,7 @@
 			},
 			"sql_username": {
 				"type": "string",
-				"value": "sdfa"
+				"value": "sqlsa"
 			},
 			"sql_password": {
 				"type": "string",
