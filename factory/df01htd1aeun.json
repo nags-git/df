@@ -1,4 +1,24 @@
 {
 	"name": "df01htd1aeun",
+	"properties": {
+		"globalParameters": {
+			"baseURL": {
+				"type": "string",
+				"value": "https://evidential.systemtest.tflpfarcshc001.hcp.internal/rest/"
+			},
+			"azurestagecontainer": {
+				"type": "string",
+				"value": "hcpstage"
+			},
+			"referencetable": {
+				"type": "string",
+				"value": "tblhcpdata"
+			},
+			"hcpsearchurl": {
+				"type": "string",
+				"value": "https://systemtest.tflpfarcshc001.hcp.internal:8888/"
+			}
+		}
+	},
 	"location": "northeurope"
 }

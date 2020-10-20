@@ -35,7 +35,8 @@
 								"value": null
 							}
 						},
-						"queryTimeout": "02:00:00"
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"dataset": {
 						"referenceName": "azsql_csv_sql_ds",
@@ -90,8 +91,7 @@
 										"type": "AzureBlobStorageWriteSettings"
 									},
 									"formatSettings": {
-										"type": "AvroWriteSettings",
-										"quoteAllText": true
+										"type": "AvroWriteSettings"
 									}
 								},
 								"enableStaging": false
@@ -115,6 +115,10 @@
 									"parameters": {
 										"relativeURL": {
 											"value": "@item().ObjectPath",
+											"type": "Expression"
+										},
+										"stagecontainer": {
+											"value": "@pipeline().parameters.azurestagecontainer",
 											"type": "Expression"
 										}
 									}
@@ -207,8 +211,7 @@
 													"type": "AzureBlobStorageWriteSettings"
 												},
 												"formatSettings": {
-													"type": "AvroWriteSettings",
-													"quoteAllText": true
+													"type": "AvroWriteSettings"
 												}
 											},
 											"enableStaging": false
@@ -230,7 +233,11 @@
 												"referenceName": "az_object_upload_stg_ds",
 												"type": "DatasetReference",
 												"parameters": {
-													"relativeURL": "@concat('metadata/',item().ObjectPath,'.txt')"
+													"relativeURL": "@concat('metadata/',item().ObjectPath,'.txt')",
+													"stagecontainer": {
+														"value": "@pipeline().parameters.azurestagecontainer",
+														"type": "Expression"
+													}
 												}
 											}
 										]
@@ -418,7 +425,8 @@
 				"defaultValue": "tblhcpdata"
 			}
 		},
-		"annotations": []
+		"annotations": [],
+		"lastPublishTime": "2020-10-20T07:10:28Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }

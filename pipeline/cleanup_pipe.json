@@ -18,7 +18,8 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderStoredProcedureName": "[dbo].[USP_Get_ObjectsToCleanUp]",
-						"queryTimeout": "02:00:00"
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"dataset": {
 						"referenceName": "az_sql_hcp_data",
@@ -76,6 +77,10 @@
 													"relativeURL": {
 														"value": "@concat('metadata\\',item().ObjectPath,'.txt')",
 														"type": "Expression"
+													},
+													"stagecontainer": {
+														"value": "@pipeline().globalParameters.azurestagecontainer",
+														"type": "Expression"
 													}
 												}
 											},
@@ -115,6 +120,10 @@
 									"parameters": {
 										"relativeURL": {
 											"value": "@item().ObjectPath",
+											"type": "Expression"
+										},
+										"stagecontainer": {
+											"value": "@pipeline().globalParameters.azurestagecontainer",
 											"type": "Expression"
 										}
 									}
@@ -166,7 +175,8 @@
 				}
 			}
 		],
-		"annotations": []
+		"annotations": [],
+		"lastPublishTime": "2020-10-20T07:10:28Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }

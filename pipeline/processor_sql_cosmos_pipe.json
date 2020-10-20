@@ -102,7 +102,8 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderStoredProcedureName": "[dbo].[USP_Get_ObjectsToBeProcessedForCosmos]",
-						"queryTimeout": "02:00:00"
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"sink": {
 						"type": "CosmosDbSqlApiSink",
@@ -325,7 +326,8 @@
 				"defaultValue": "tblhcpdata"
 			}
 		},
-		"annotations": []
+		"annotations": [],
+		"lastPublishTime": "2020-10-20T05:50:21Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }

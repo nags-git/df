@@ -1,10 +1,17 @@
 {
 	"name": "hcp_http_ls",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
+		"parameters": {
+			"namespaceurl": {
+				"type": "string",
+				"defaultValue": "https://evidential.systemtest.tflpfarcshc001.hcp.internal/rest/"
+			}
+		},
 		"annotations": [],
 		"type": "HttpServer",
 		"typeProperties": {
-			"url": "https://evidential.systemtest.tflpfarcshc001.hcp.internal/rest/",
+			"url": "@{linkedService().namespaceurl}",
 			"enableServerCertificateValidation": false,
 			"authenticationType": "Anonymous"
 		},
@@ -12,6 +19,5 @@
 			"referenceName": "hcp-Ir",
 			"type": "IntegrationRuntimeReference"
 		}
-	},
-	"type": "Microsoft.DataFactory/factories/linkedservices"
+	}
 }

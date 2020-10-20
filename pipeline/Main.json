@@ -118,7 +118,8 @@
 											}
 										}
 									},
-									"queryTimeout": "02:00:00"
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
 								},
 								"dataset": {
 									"referenceName": "az_sql_hcp_data",
@@ -157,7 +158,8 @@
 				"defaultValue": 1
 			}
 		},
-		"annotations": []
+		"annotations": [],
+		"lastPublishTime": "2020-10-20T06:32:44Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }

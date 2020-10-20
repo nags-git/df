@@ -3,7 +3,18 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "http_rest_ls",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"hcpsearchurl": {
+					"value": "@dataset().hcpqueryurl",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"hcpqueryurl": {
+				"type": "string"
+			}
 		},
 		"annotations": [],
 		"type": "RestResource",

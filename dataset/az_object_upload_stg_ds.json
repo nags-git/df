@@ -8,6 +8,9 @@
 		"parameters": {
 			"relativeURL": {
 				"type": "string"
+			},
+			"stagecontainer": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
@@ -19,7 +22,10 @@
 					"value": "@dataset().relativeURL",
 					"type": "Expression"
 				},
-				"container": "hcpstage"
+				"container": {
+					"value": "@dataset().stagecontainer",
+					"type": "Expression"
+				}
 			}
 		}
 	},

@@ -22,7 +22,7 @@
 							"baseURL": {
 								"type": "String",
 								"value": {
-									"value": "@pipeline().parameters.baseURL",
+									"value": "@pipeline().globalParameters.baseURL",
 									"type": "Expression"
 								}
 							},
@@ -99,7 +99,11 @@
 									"referenceName": "az_object_upload_stg_ds",
 									"type": "DatasetReference",
 									"parameters": {
-										"relativeURL": "@item().ObjectPath"
+										"relativeURL": "@item().ObjectPath",
+										"stagecontainer": {
+											"value": "@pipeline().globalParameters.azurestagecontainer",
+											"type": "Expression"
+										}
 									}
 								}
 							],
@@ -203,7 +207,7 @@
 									},
 									"referenceTable": {
 										"value": {
-											"value": "@pipeline().parameters.referencetable",
+											"value": "@pipeline().globalParameters.referencetable",
 											"type": "Expression"
 										},
 										"type": "String"
@@ -219,21 +223,8 @@
 				}
 			}
 		],
-		"parameters": {
-			"baseURL": {
-				"type": "string",
-				"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
-			},
-			"azurestagecontainer": {
-				"type": "string",
-				"defaultValue": "hcpstage"
-			},
-			"referencetable": {
-				"type": "string",
-				"defaultValue": "tblhcpdata"
-			}
-		},
-		"annotations": []
+		"annotations": [],
+		"lastPublishTime": "2020-10-20T07:10:28Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }

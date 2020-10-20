@@ -648,7 +648,8 @@
 				"defaultValue": "tblpurgerecords"
 			}
 		},
-		"annotations": []
+		"annotations": [],
+		"lastPublishTime": "2020-10-20T05:50:21Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }
