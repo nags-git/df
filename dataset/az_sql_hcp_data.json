@@ -11,6 +11,20 @@
 				"sql_password": "capita@2020"
 			}
 		},
+		"parameters": {
+			"sql_account_url": {
+				"type": "string"
+			},
+			"sql_database_name": {
+				"type": "string"
+			},
+			"sql_username": {
+				"type": "string"
+			},
+			"sql_password": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
