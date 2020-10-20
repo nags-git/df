@@ -107,6 +107,10 @@
 										"relativeURL": {
 											"value": "@item().ObjectPath",
 											"type": "Expression"
+										},
+										"namespaceurl": {
+											"value": "@item().namespace",
+											"type": "Expression"
 										}
 									}
 								}
