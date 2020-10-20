@@ -25,6 +25,10 @@
 			"sql_account_url": {
 				"type": "string",
 				"value": "sadf"
+			},
+			"sql_database_name": {
+				"type": "string",
+				"value": "dsf"
 			}
 		}
 	},
