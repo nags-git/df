@@ -70,7 +70,8 @@
 									"referenceName": "az_object_upload_prod_ds",
 									"type": "DatasetReference",
 									"parameters": {
-										"relativeURL": "@item().ObjectPath"
+										"relativeURL": "@item().ObjectPath",
+										"container": "@item().Container"
 									}
 								},
 								"enableLogging": false,
