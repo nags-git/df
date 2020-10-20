@@ -210,7 +210,10 @@
 										"type": "Expression"
 									},
 									"additionalHeaders": {
-										"Authorization": "HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492",
+										"Authorization": {
+											"value": "@pipeline().globalParameters.authkey",
+											"type": "Expression"
+										},
 										"Content-Type": "application/xml"
 									}
 								},
