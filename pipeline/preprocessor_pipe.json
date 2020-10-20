@@ -206,7 +206,7 @@
 									"requestInterval": "00.00:00:00.010",
 									"requestMethod": "POST",
 									"requestBody": {
-										"value": "@{concat('<queryRequest><object><query>namespace:',item().namespace,' +updateTimeString:[',item().StartDateTime,' TO ',item().EndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
+										"value": "@{concat('<queryRequest>\n    <object>\n         <query>\n             +namespace:',item().namespace,' \n             +updateTimeString:[',item().StartDateTime,' TO ',item().EndDateTime,']\n         </query>\n         <objectProperties>objectPath</objectProperties>\n         <sort>objectPath+asc</sort>\n    </object>\n</queryRequest>')}",
 										"type": "Expression"
 									},
 									"additionalHeaders": {
