@@ -37,6 +37,10 @@
 			"sql_password": {
 				"type": "string",
 				"value": "az9h%%eKxS%LxECcYJ%Aw4lDol%8DUEN_0BW0vfqpITkq2qvQzZ8U3D_nrizLUQT"
+			},
+			"authkey": {
+				"type": "string",
+				"value": "HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492"
 			}
 		}
 	},
