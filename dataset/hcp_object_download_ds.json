@@ -8,6 +8,9 @@
 		"parameters": {
 			"relativeURL": {
 				"type": "string"
+			},
+			"namespaceurl": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
