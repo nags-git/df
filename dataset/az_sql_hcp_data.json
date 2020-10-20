@@ -6,9 +6,18 @@
 			"type": "LinkedServiceReference",
 			"parameters": {
 				"sql_account_url": "test-capitatfl-sql-server.database.windows.net",
-				"sql_database_name": "test-capitatfl-sql-db",
-				"sql_username": "4dm1n",
-				"sql_password": "capita@2020"
+				"sql_database_name": {
+					"value": "@dataset().sql_database_name",
+					"type": "Expression"
+				},
+				"sql_username": {
+					"value": "@dataset().sql_username",
+					"type": "Expression"
+				},
+				"sql_password": {
+					"value": "@dataset().sql_password",
+					"type": "Expression"
+				}
 			}
 		},
 		"parameters": {
