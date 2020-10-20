@@ -28,7 +28,7 @@
 			},
 			"sql_database_name": {
 				"type": "string",
-				"value": "dsf"
+				"value": "sdb01htd1a-inventory"
 			},
 			"sql_username": {
 				"type": "string",
