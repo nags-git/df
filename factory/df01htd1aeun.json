@@ -20,7 +20,7 @@
 			},
 			"authheader": {
 				"type": "string",
-				"value": "Authorization: HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492"
+				"value": "Authorization: HCP YXJzaGFrb3Rhaw==:42f749ade7f9e195bf475f37a44cafcb"
 			},
 			"sql_account_url": {
 				"type": "string",
