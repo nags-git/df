@@ -123,7 +123,25 @@
 								},
 								"dataset": {
 									"referenceName": "az_sql_hcp_data",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"sql_account_url": {
+											"value": "@pipeline().globalParameters.sql_account_url",
+											"type": "Expression"
+										},
+										"sql_database_name": {
+											"value": "@pipeline().globalParameters.sql_database_name",
+											"type": "Expression"
+										},
+										"sql_username": {
+											"value": "@pipeline().globalParameters.sql_username",
+											"type": "Expression"
+										},
+										"sql_password": {
+											"value": "@pipeline().globalParameters.sql_password",
+											"type": "Expression"
+										}
+									}
 								}
 							}
 						},
