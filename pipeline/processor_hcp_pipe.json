@@ -26,6 +26,10 @@
 							"previousStatus": {
 								"type": "String",
 								"value": null
+							},
+							"baseURL": {
+								"type": "String",
+								"value": "test"
 							}
 						},
 						"queryTimeout": "02:00:00",
