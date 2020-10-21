@@ -209,7 +209,7 @@
 									"requestInterval": "00.00:00:00.010",
 									"requestMethod": "POST",
 									"requestBody": {
-										"value": "@{concat('<queryRequest>\n    <operation>\n         <systemMetadata>\n             <namespaces>\n                 <namespace>',item().Namespace,'</namespace>\n             </namespaces>\n         </systemMetadata>\n         <verbose>true</verbose>\n    </operation>\n</queryRequest>')}",
+										"value": "@{concat('<queryRequest><object><query>+',item().namespace,' +updateTimeString:[',item().StartDateTime,' TO ',item().EndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
 										"type": "Expression"
 									},
 									"additionalHeaders": {
@@ -392,6 +392,9 @@
 										{
 											"source": {
 												"path": "$['Namespace']"
+											},
+											"sink": {
+												"name": "Namespace"
 											}
 										}
 									],
