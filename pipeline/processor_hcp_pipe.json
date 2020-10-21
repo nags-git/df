@@ -119,10 +119,6 @@
 									"referenceName": "hcp_object_download_ds",
 									"type": "DatasetReference",
 									"parameters": {
-										"relativeURL": {
-											"value": "@item().ObjectPath",
-											"type": "Expression"
-										},
 										"namespaceurl": {
 											"value": "@item().ObjectFullPath",
 											"type": "Expression"
