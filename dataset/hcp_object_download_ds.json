@@ -14,20 +14,13 @@
 		"parameters": {
 			"namespaceurl": {
 				"type": "string"
-			},
-			"relativeurl": {
-				"type": "string"
 			}
 		},
 		"annotations": [],
 		"type": "Avro",
 		"typeProperties": {
 			"location": {
-				"type": "HttpServerLocation",
-				"relativeUrl": {
-					"value": "@dataset().relativeurl",
-					"type": "Expression"
-				}
+				"type": "HttpServerLocation"
 			}
 		}
 	},
