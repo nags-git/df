@@ -199,7 +199,10 @@
 										},
 										{
 											"name": "Namespace",
-											"value": "@item().Namespace"
+											"value": {
+												"value": "@item().Namespace",
+												"type": "Expression"
+											}
 										}
 									],
 									"httpRequestTimeout": "00:01:40",
@@ -371,14 +374,6 @@
 										},
 										{
 											"source": {
-												"path": "['namespace']"
-											},
-											"sink": {
-												"name": "Namespace"
-											}
-										},
-										{
-											"source": {
 												"path": "$['BatchId']"
 											},
 											"sink": {
@@ -392,6 +387,11 @@
 											},
 											"sink": {
 												"name": "Container"
+											}
+										},
+										{
+											"source": {
+												"path": "$['Namespace']"
 											}
 										}
 									],
