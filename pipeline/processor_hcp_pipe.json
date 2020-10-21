@@ -29,7 +29,7 @@
 							},
 							"baseURL": {
 								"type": "String",
-								"value": "test"
+								"value": ""
 							}
 						},
 						"queryTimeout": "02:00:00",
