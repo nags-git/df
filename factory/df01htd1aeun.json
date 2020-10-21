@@ -16,7 +16,7 @@
 			},
 			"hcpsearchurl": {
 				"type": "string",
-				"value": "https://systemtest.tflpfarcshc001.hcp.internal/"
+				"value": "https://systemtest.tflpfarcshc001.hcp.internal/query"
 			},
 			"sql_account_url": {
 				"type": "string",
