@@ -40,7 +40,7 @@
 			},
 			"countofrecordstobeprocessedatonce": {
 				"type": "string",
-				"value": "100"
+				"value": "5"
 			}
 		}
 	},
