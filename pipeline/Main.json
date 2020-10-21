@@ -180,11 +180,6 @@
 				}
 			}
 		],
-		"parameters": {
-			"CountofRecordsToProcess": {
-				"type": "int"
-			}
-		},
 		"annotations": [],
 		"lastPublishTime": "2020-10-20T14:00:09Z"
 	},
