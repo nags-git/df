@@ -206,7 +206,7 @@
 									"requestInterval": "00.00:00:00.010",
 									"requestMethod": "POST",
 									"requestBody": {
-										"value": "@{concat('<queryRequest><object><query>namespace:',item().namespace,' +updateTimeString:[',item().StartDateTime,' TO ',item().EndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
+										"value": "<queryRequest>\n    <operation>\n         <systemMetadata>\n             <namespaces>\n                 <namespace>bops.systemtest.tflpfarcshc001</namespace>\n             </namespaces>\n         </systemMetadata>\n         <verbose>true</verbose>\n    </operation>\n</queryRequest>",
 										"type": "Expression"
 									},
 									"additionalHeaders": {
