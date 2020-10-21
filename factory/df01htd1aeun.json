@@ -16,7 +16,7 @@
 			},
 			"hcpsearchurl": {
 				"type": "string",
-				"value": "https://systemtest.tflpfarcshc001.hcp.internal/query"
+				"value": "https://systemtest.tflpfarcshc001.hcp.internal:8888/"
 			},
 			"authheader": {
 				"type": "string",

@@ -206,7 +206,7 @@
 									"requestInterval": "00.00:00:00.010",
 									"requestMethod": "POST",
 									"requestBody": {
-										"value": "'<queryRequest>\n    <object>\n         <query>\n             +namespace:',item().namespace,' \n             +updateTimeString:[',item().StartDateTime,' TO ',item().EndDateTime,']\n         </query>\n         <objectProperties>objectPath</objectProperties>\n         <sort>objectPath+asc</sort>\n    </object>\n</queryRequest>'",
+										"value": "@{concat('<queryRequest><object><query>namespace:',item().namespace,' +updateTimeString:[',item().StartDateTime,' TO ',item().EndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
 										"type": "Expression"
 									},
 									"additionalHeaders": {
@@ -214,8 +214,7 @@
 											"value": "@pipeline().globalParameters.authkey",
 											"type": "Expression"
 										},
-										"Content-Type": "application/xml",
-										"Accept": "application/xml"
+										"Content-Type": "application/xml"
 									}
 								},
 								"sink": {
@@ -637,7 +636,7 @@
 			}
 		},
 		"annotations": [],
-		"lastPublishTime": "2020-10-20T10:09:53Z"
+		"lastPublishTime": "2020-10-20T14:00:08Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }
