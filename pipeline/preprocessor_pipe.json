@@ -372,6 +372,9 @@
 										{
 											"source": {
 												"path": "['namespace']"
+											},
+											"sink": {
+												"name": "Namespace"
 											}
 										},
 										{
