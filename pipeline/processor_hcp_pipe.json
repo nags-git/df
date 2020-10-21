@@ -122,7 +122,8 @@
 										"namespaceurl": {
 											"value": "@item().ObjectFullPath",
 											"type": "Expression"
-										}
+										},
+										"relativeurl": "@item().ObjectPath"
 									}
 								}
 							],
