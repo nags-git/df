@@ -206,7 +206,7 @@
 									"requestInterval": "00.00:00:00.010",
 									"requestMethod": "POST",
 									"requestBody": {
-										"value": "<queryRequest>\n    <operation>\n         <systemMetadata>\n             <namespaces>\n                 <namespace>bops.systemtest.tflpfarcshc001</namespace>\n             </namespaces>\n         </systemMetadata>\n         <verbose>true</verbose>\n    </operation>\n</queryRequest>",
+										"value": "<queryRequest>\n    <operation>\n         <systemMetadata>\n             <namespaces>\n                 <namespace>evidential.systemtest.tflpfarcshc001</namespace>\n             </namespaces>\n         </systemMetadata>\n         <verbose>true</verbose>\n    </operation>\n</queryRequest>",
 										"type": "Expression"
 									},
 									"additionalHeaders": {
@@ -214,7 +214,8 @@
 											"value": "@pipeline().globalParameters.authkey",
 											"type": "Expression"
 										},
-										"Content-Type": "application/xml"
+										"Content-Type": "application/xml",
+										"Accept": "application/xml"
 									}
 								},
 								"sink": {
