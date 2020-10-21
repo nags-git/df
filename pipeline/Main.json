@@ -30,7 +30,17 @@
 									"referenceName": "processor_hcp_pipe",
 									"type": "PipelineReference"
 								},
-								"waitOnCompletion": true
+								"waitOnCompletion": true,
+								"parameters": {
+									"azurestagecontainer": {
+										"value": "@pipeline().globalParameters.azurestagecontainer",
+										"type": "Expression"
+									},
+									"referencetable": {
+										"value": "@pipeline().globalParameters.referencetable",
+										"type": "Expression"
+									}
+								}
 							}
 						},
 						{
