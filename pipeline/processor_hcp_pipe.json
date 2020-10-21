@@ -100,7 +100,7 @@
 										"type": "HttpReadSettings",
 										"requestMethod": "GET",
 										"additionalHeaders": {
-											"value": "@{pipeline().globalParameters.authheader}",
+											"value": "@{concat('Authorization: ',pipeline().globalParameters.authkey)}",
 											"type": "Expression"
 										},
 										"requestTimeout": ""
