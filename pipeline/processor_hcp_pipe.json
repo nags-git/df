@@ -124,7 +124,7 @@
 											"type": "Expression"
 										},
 										"namespaceurl": {
-											"value": "@item().namespace",
+											"value": "@item().ObjectFullPath",
 											"type": "Expression"
 										}
 									}
