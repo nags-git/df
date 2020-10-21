@@ -123,7 +123,7 @@
 										"count": {
 											"type": "Int32",
 											"value": {
-												"value": "@pipeline().parameters.CountOfRecordsToProcess",
+												"value": "@pipeline().globalParameters.countofrecordstobeprocessedatonce",
 												"type": "Expression"
 											}
 										}
@@ -182,8 +182,7 @@
 		],
 		"parameters": {
 			"CountofRecordsToProcess": {
-				"type": "int",
-				"defaultValue": 1
+				"type": "int"
 			}
 		},
 		"annotations": [],
