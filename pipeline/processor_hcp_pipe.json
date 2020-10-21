@@ -215,7 +215,7 @@
 												"storeSettings": {
 													"type": "HttpReadSettings",
 													"requestMethod": "GET",
-													"additionalHeaders": "Authorization: HCP ZGF0YWFjY2Vzc3VzZXIwMQ==:2b1130feb9e66aed8403dea732c16492",
+													"additionalHeaders": "@{concat('Authorization: ',pipeline().globalParameters.authkey)}",
 													"requestTimeout": ""
 												}
 											},
