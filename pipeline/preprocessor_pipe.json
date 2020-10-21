@@ -196,13 +196,17 @@
 												"value": "@string('evidential')",
 												"type": "Expression"
 											}
+										},
+										{
+											"name": "Namespace",
+											"value": "@item().Namespace"
 										}
 									],
 									"httpRequestTimeout": "00:01:40",
 									"requestInterval": "00.00:00:00.010",
 									"requestMethod": "POST",
 									"requestBody": {
-										"value": "<queryRequest>\n    <operation>\n         <systemMetadata>\n             <namespaces>\n                 <namespace>evidential.systemtest.tflpfarcshc001</namespace>\n             </namespaces>\n         </systemMetadata>\n         <verbose>true</verbose>\n    </operation>\n</queryRequest>",
+										"value": "<queryRequest>\n    <operation>\n         <systemMetadata>\n             <namespaces>\n                 <namespace>@item().namespace</namespace>\n             </namespaces>\n         </systemMetadata>\n         <verbose>true</verbose>\n    </operation>\n</queryRequest>",
 										"type": "Expression"
 									},
 									"additionalHeaders": {
@@ -363,6 +367,11 @@
 											"sink": {
 												"name": "CustomMetadataAnnotation",
 												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['namespace']"
 											}
 										},
 										{
