@@ -193,7 +193,7 @@
 										{
 											"name": "Container",
 											"value": {
-												"value": "@string('evidential')",
+												"value": "@split(item().namespace,'.')[0]\n",
 												"type": "Expression"
 											}
 										},
