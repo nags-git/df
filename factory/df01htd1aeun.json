@@ -37,6 +37,10 @@
 			"authkey": {
 				"type": "string",
 				"value": "HCP YXJzaGFrb3Rhaw==:42f749ade7f9e195bf475f37a44cafcb"
+			},
+			"countofrecordstobeprocessedatonce": {
+				"type": "string",
+				"value": "100"
 			}
 		}
 	},
