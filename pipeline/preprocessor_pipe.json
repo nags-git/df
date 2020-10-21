@@ -206,7 +206,7 @@
 									"requestInterval": "00.00:00:00.010",
 									"requestMethod": "POST",
 									"requestBody": {
-										"value": "<queryRequest>\n    <operation>\n         <systemMetadata>\n             <namespaces>\n                 <namespace>@item().namespace</namespace>\n             </namespaces>\n         </systemMetadata>\n         <verbose>true</verbose>\n    </operation>\n</queryRequest>",
+										"value": "<queryRequest>\n    <operation>\n         <systemMetadata>\n             <namespaces>\n                 <namespace>@item().Namespace</namespace>\n             </namespaces>\n         </systemMetadata>\n         <verbose>true</verbose>\n    </operation>\n</queryRequest>",
 										"type": "Expression"
 									},
 									"additionalHeaders": {
