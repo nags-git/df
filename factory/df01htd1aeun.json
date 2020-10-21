@@ -18,10 +18,6 @@
 				"type": "string",
 				"value": "https://systemtest.tflpfarcshc001.hcp.internal:8888/"
 			},
-			"authheader": {
-				"type": "string",
-				"value": "Authorization: HCP YXJzaGFrb3Rhaw==:42f749ade7f9e195bf475f37a44cafcb"
-			},
 			"sql_account_url": {
 				"type": "string",
 				"value": "ss01htd1aeun.database.windows.net"
