@@ -19,13 +19,6 @@
 						"type": "AzureSqlSource",
 						"sqlReaderStoredProcedureName": "[dbo].[USP_Get_ObjectsByStatus]",
 						"storedProcedureParameters": {
-							"baseURL": {
-								"type": "String",
-								"value": {
-									"value": "@pipeline().parameters.baseURL",
-									"type": "Expression"
-								}
-							},
 							"currentStatus": {
 								"type": "String",
 								"value": "ObjectStagingInProgress..."
