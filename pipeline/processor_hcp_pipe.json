@@ -128,7 +128,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"relativeURL": {
-											"value": "@item().ObjectPath",
+											"value": "@substring(item().ObjectPath,2,length(item().ObjectPath))",
 											"type": "Expression"
 										},
 										"stagecontainer": {
