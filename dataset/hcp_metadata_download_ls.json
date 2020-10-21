@@ -3,10 +3,19 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "hcp_http_ls",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"namespaceurl": {
+					"value": "@dataset().namespaceurl",
+					"type": "Expression"
+				}
+			}
 		},
 		"parameters": {
 			"relativeURL": {
+				"type": "string"
+			},
+			"namespaceurl": {
 				"type": "string"
 			}
 		},
