@@ -1,4 +1,12 @@
 {
 	"name": "dfht01d1aeun",
+	"properties": {
+		"globalParameters": {
+			"hcpsearchurl": {
+				"type": "string",
+				"value": "sdf"
+			}
+		}
+	},
 	"location": "northeurope"
 }
