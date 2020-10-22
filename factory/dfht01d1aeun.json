@@ -25,6 +25,10 @@
 			"azurestagecontainer": {
 				"type": "string",
 				"value": "hcpstage"
+			},
+			"referencetable": {
+				"type": "string",
+				"value": "tblhcpquires"
 			}
 		}
 	},
