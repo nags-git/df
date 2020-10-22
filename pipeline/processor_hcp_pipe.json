@@ -32,7 +32,7 @@
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "azsql_csv_sql_ds",
+						"referenceName": "azsql_csv_sql_dataset",
 						"type": "DatasetReference",
 						"parameters": {
 							"sql_account_url": {
