@@ -29,6 +29,10 @@
 			"referencetable": {
 				"type": "string",
 				"value": "tblhcpquires"
+			},
+			"authkey": {
+				"type": "string",
+				"value": "dsfad"
 			}
 		}
 	},
