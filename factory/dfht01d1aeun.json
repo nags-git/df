@@ -9,6 +9,10 @@
 			"sql_account_url": {
 				"type": "string",
 				"value": "sdfa"
+			},
+			"sql_database_name": {
+				"type": "string",
+				"value": "dfas"
 			}
 		}
 	},
