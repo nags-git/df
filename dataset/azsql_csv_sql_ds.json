@@ -42,7 +42,7 @@
 		"schema": [],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "tblhcpquries"
+			"table": "tblhcpqueries"
 		}
 	}
 }
