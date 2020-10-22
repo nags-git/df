@@ -8,7 +8,7 @@
 			},
 			"sql_account_url": {
 				"type": "string",
-				"value": "ss01htd1aeun.database.windows.net"
+				"value": "ssht01d1aeun.database.windows.net"
 			},
 			"sql_database_name": {
 				"type": "string",
