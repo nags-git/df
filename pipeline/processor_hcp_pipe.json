@@ -251,7 +251,8 @@
 													"stagecontainer": {
 														"value": "@pipeline().parameters.azurestagecontainer",
 														"type": "Expression"
-													}
+													},
+													"container": "@item().Container"
 												}
 											}
 										]
