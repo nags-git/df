@@ -28,7 +28,7 @@
 			},
 			"referencetable": {
 				"type": "string",
-				"value": "tblhcpquires"
+				"value": "tblhcpqueries"
 			},
 			"authkey": {
 				"type": "string",
