@@ -4,39 +4,39 @@
 		"globalParameters": {
 			"hcpsearchurl": {
 				"type": "string",
-				"value": "changeme"
+				"value": "https://systemtest.tflpfarcshc001.hcp.internal/query"
 			},
 			"sql_account_url": {
 				"type": "string",
-				"value": "changeme"
+				"value": "sdfa"
 			},
 			"sql_database_name": {
 				"type": "string",
-				"value": "changeme"
+				"value": "dfas"
 			},
 			"sql_username": {
 				"type": "string",
-				"value": "changeme"
+				"value": "dfsdf"
 			},
 			"sql_password": {
 				"type": "string",
-				"value": "changeme"
+				"value": "asdfd"
 			},
 			"azurestagecontainer": {
 				"type": "string",
-				"value": "changeme"
+				"value": "hcpstage"
 			},
 			"referencetable": {
 				"type": "string",
-				"value": "changeme"
+				"value": "tblhcpquires"
 			},
 			"authkey": {
 				"type": "string",
-				"value": "changeme"
+				"value": "dsfad"
 			},
 			"countofrecordstobeprocessedatonce": {
-				"type": "int",
-				"value": 1
+				"type": "string",
+				"value": "1"
 			}
 		}
 	},
