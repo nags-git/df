@@ -4,7 +4,7 @@
 		"globalParameters": {
 			"hcpsearchurl": {
 				"type": "string",
-				"value": "sdf"
+				"value": "https://systemtest.tflpfarcshc001.hcp.internal/query"
 			},
 			"sql_account_url": {
 				"type": "string",
