@@ -17,6 +17,10 @@
 			"sql_username": {
 				"type": "string",
 				"value": "dfsdf"
+			},
+			"sql_password": {
+				"type": "string",
+				"value": "asdfd"
 			}
 		}
 	},
