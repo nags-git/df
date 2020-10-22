@@ -5,6 +5,10 @@
 			"hcpsearchurl": {
 				"type": "string",
 				"value": "sdf"
+			},
+			"sql_account_url": {
+				"type": "string",
+				"value": "sdfa"
 			}
 		}
 	},
