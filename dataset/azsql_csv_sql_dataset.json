@@ -44,5 +44,6 @@
 			"schema": "dbo",
 			"table": "tblhcpqueries"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }
