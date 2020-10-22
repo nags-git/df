@@ -5,15 +5,15 @@
 		"parameters": {
 			"cosmos_account_url": {
 				"type": "String",
-				"defaultValue": "https://cm01htd1aeun-metadata.documents.azure.com:443/"
+				"defaultValue": "https://cmht01d1aeun-metadata.documents.azure.com:443/"
 			},
 			"cosmos_account_password": {
 				"type": "String",
-				"defaultValue": "0Xhq3Wd0h0CppZNjaN2fADYeENosMtnMmrarfYpjV3o1buxkmiJhqY5qNdHcqHv6KaRnlZiMsAYrXpoPZRwNaQ=="
+				"defaultValue": "tBQASDdq6YE27fCH95OrB769CnUFq1WGPYdsumKNNO2jxl4jMgbX8vAubXk646nfQQVb8Nfapnfnm1R0N8JDWA=="
 			},
 			"cosmos_database_name": {
 				"type": "String",
-				"defaultValue": "cm01htd1aeun-metadata-sql"
+				"defaultValue": "cmht01d1aeun-metadata-sql"
 			}
 		},
 		"annotations": [],
