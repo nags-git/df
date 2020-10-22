@@ -13,6 +13,10 @@
 			"sql_database_name": {
 				"type": "string",
 				"value": "dfas"
+			},
+			"sql_username": {
+				"type": "string",
+				"value": "dfsdf"
 			}
 		}
 	},
