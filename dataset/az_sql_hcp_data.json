@@ -3,7 +3,25 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "az_sql_ls",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"sql_account_url": {
+					"value": "@dataset().sql_account_url",
+					"type": "Expression"
+				},
+				"sql_database_name": {
+					"value": "@dataset().sql_database_name",
+					"type": "Expression"
+				},
+				"sql_username": {
+					"value": "@dataset().sql_username",
+					"type": "Expression"
+				},
+				"sql_password": {
+					"value": "@dataset().sql_password",
+					"type": "Expression"
+				}
+			}
 		},
 		"parameters": {
 			"sql_account_url": {

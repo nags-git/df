@@ -217,8 +217,7 @@
 											"value": "@pipeline().globalParameters.authkey",
 											"type": "Expression"
 										},
-										"Content-Type": "application/xml",
-										"Accept": "application/xml"
+										"Content-Type": "application/xml"
 									}
 								},
 								"sink": {
