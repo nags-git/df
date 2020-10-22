@@ -11,6 +11,9 @@
 			},
 			"stagecontainer": {
 				"type": "string"
+			},
+			"container": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
@@ -18,13 +21,21 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "@dataset().relativeURL",
+				"fileName": {
+					"value": "@dataset().relativeURL",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().stagecontainer",
+					"type": "Expression"
+				},
 				"container": {
 					"value": "@dataset().stagecontainer",
 					"type": "Expression"
 				}
 			}
-		}
+		},
+		"schema": {}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
 }
