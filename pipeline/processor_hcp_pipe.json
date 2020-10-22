@@ -215,7 +215,10 @@
 												"storeSettings": {
 													"type": "HttpReadSettings",
 													"requestMethod": "GET",
-													"additionalHeaders": "@{concat('Authorization: ',pipeline().globalParameters.authkey)}",
+													"additionalHeaders": {
+														"value": "@{concat('Authorization: ',pipeline().globalParameters.authkey)}",
+														"type": "Expression"
+													},
 													"requestTimeout": ""
 												}
 											},
