@@ -16,7 +16,7 @@
 			},
 			"sql_username": {
 				"type": "string",
-				"value": "dfsdf"
+				"value": "sqlsa"
 			},
 			"sql_password": {
 				"type": "string",
