@@ -124,6 +124,28 @@
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
+					"dataset": {
+						"referenceName": "azsql_csv_sql_ds",
+						"type": "DatasetReference",
+						"parameters": {
+							"sql_account_url": {
+								"value": "@pipeline().globalParameters.sql_account_url",
+								"type": "Expression"
+							},
+							"sql_database_name": {
+								"value": "@pipeline().globalParameters.sql_database_name",
+								"type": "Expression"
+							},
+							"sql_username": {
+								"value": "@pipeline().globalParameters.sql_username",
+								"type": "Expression"
+							},
+							"sql_password": {
+								"value": "@pipeline().globalParameters.sql_password",
+								"type": "Expression"
+							}
+						}
+					},
 					"firstRowOnly": false
 				}
 			},
