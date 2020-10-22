@@ -1,11 +1,10 @@
 {
 	"name": "http_rest_ls",
-	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"parameters": {
 			"hcpsearchurl": {
 				"type": "string",
-				"defaultValue": "https://systemtest.tflpfarcshc001.hcp.internal:8888/"
+				"defaultValue": "https://systemtest.tflpfarcshc001.hcp.internal/rest"
 			}
 		},
 		"annotations": [],
@@ -19,5 +18,6 @@
 			"referenceName": "hcp-Ir",
 			"type": "IntegrationRuntimeReference"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
 }
