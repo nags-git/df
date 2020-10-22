@@ -87,7 +87,7 @@
 								"type": "Expression"
 							},
 							"sql_username": {
-								"value": "@pipeline().globalParameters.sql_database_name",
+								"value": "@pipeline().globalParameters.sql_username",
 								"type": "Expression"
 							},
 							"sql_password": {
