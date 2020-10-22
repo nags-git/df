@@ -33,6 +33,10 @@
 			"authkey": {
 				"type": "string",
 				"value": "dsfad"
+			},
+			"countofrecordstobeprocessedatonce": {
+				"type": "string",
+				"value": "1"
 			}
 		}
 	},
