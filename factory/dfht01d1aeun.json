@@ -35,8 +35,8 @@
 				"value": "dsfad"
 			},
 			"countofrecordstobeprocessedatonce": {
-				"type": "int",
-				"value": 1
+				"type": "string",
+				"value": "1"
 			}
 		}
 	},
