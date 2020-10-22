@@ -21,6 +21,10 @@
 			"sql_password": {
 				"type": "string",
 				"value": "asdfd"
+			},
+			"azurestagecontainer": {
+				"type": "string",
+				"value": "hcpstage"
 			}
 		}
 	},
