@@ -4,35 +4,35 @@
 		"globalParameters": {
 			"hcpsearchurl": {
 				"type": "string",
-				"value": "https://systemtest.tflpfarcshc001.hcp.internal/query"
+				"value": "changeme"
 			},
 			"sql_account_url": {
 				"type": "string",
-				"value": "ss01htd1aeun.database.windows.net"
+				"value": "changeme"
 			},
 			"sql_database_name": {
 				"type": "string",
-				"value": "sdb01htd1a-inventory"
+				"value": "changeme"
 			},
 			"sql_username": {
 				"type": "string",
-				"value": "sqlsa"
+				"value": "changeme"
 			},
 			"sql_password": {
 				"type": "string",
-				"value": "az9h%%eKxS%LxECcYJ%Aw4lDol%8DUEN_0BW0vfqpITkq2qvQzZ8U3D_nrizLUQT"
+				"value": "changemeDUEN_0BW0vfqpITkq2qvQzZ8U3D_nrizLUQT"
 			},
 			"azurestagecontainer": {
 				"type": "string",
-				"value": "hcpstage"
+				"value": "changeme"
 			},
 			"referencetable": {
 				"type": "string",
-				"value": "tblhcpqueries"
+				"value": "changeme"
 			},
 			"authkey": {
 				"type": "string",
-				"value": "HCP c3VkYXJzaGFuag==:f4418a63dfc0dc12abaa30a62a8388c7"
+				"value": "changeme"
 			},
 			"countofrecordstobeprocessedatonce": {
 				"type": "int",
