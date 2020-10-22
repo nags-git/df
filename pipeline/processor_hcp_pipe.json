@@ -173,10 +173,6 @@
 										"type": "String"
 									}
 								}
-							},
-							"linkedServiceName": {
-								"referenceName": "az_sql_ls",
-								"type": "LinkedServiceReference"
 							}
 						},
 						{
@@ -290,10 +286,6 @@
 													"type": "String"
 												}
 											}
-										},
-										"linkedServiceName": {
-											"referenceName": "az_sql_ls",
-											"type": "LinkedServiceReference"
 										}
 									},
 									{
@@ -351,10 +343,6 @@
 													"type": "String"
 												}
 											}
-										},
-										"linkedServiceName": {
-											"referenceName": "az_sql_ls",
-											"type": "LinkedServiceReference"
 										}
 									}
 								]
@@ -415,10 +403,6 @@
 										"type": "String"
 									}
 								}
-							},
-							"linkedServiceName": {
-								"referenceName": "az_sql_ls",
-								"type": "LinkedServiceReference"
 							}
 						}
 					]

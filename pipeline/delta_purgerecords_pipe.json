@@ -189,10 +189,6 @@
 										"type": "String"
 									}
 								}
-							},
-							"linkedServiceName": {
-								"referenceName": "az_sql_ls",
-								"type": "LinkedServiceReference"
 							}
 						},
 						{
@@ -250,16 +246,6 @@
 										"type": "String"
 									}
 								}
-							},
-							"linkedServiceName": {
-								"referenceName": "az_sql_ls",
-								"type": "LinkedServiceReference",
-								"parameters": {
-									"sql_account_url": "qa-capitatfl-sql-server.database.windows.net",
-									"sql_database_name": "qa-capitatfl-sql-db",
-									"sql_username": "4dm1n",
-									"sql_password": "capita@2020"
-								}
 							}
 						},
 						{
@@ -296,16 +282,6 @@
 										"type": "String"
 									}
 								}
-							},
-							"linkedServiceName": {
-								"referenceName": "az_sql_ls",
-								"type": "LinkedServiceReference",
-								"parameters": {
-									"sql_account_url": "qa-capitatfl-sql-server.database.windows.net",
-									"sql_database_name": "qa-capitatfl-sql-db",
-									"sql_username": "4dm1n",
-									"sql_password": "capita@2020"
-								}
 							}
 						}
 					]
@@ -332,10 +308,6 @@
 				"userProperties": [],
 				"typeProperties": {
 					"storedProcedureName": "[dbo].[USP_Update_delta_NeedToPurgeRecords]"
-				},
-				"linkedServiceName": {
-					"referenceName": "az_sql_ls",
-					"type": "LinkedServiceReference"
 				}
 			},
 			{
@@ -426,10 +398,6 @@
 				"userProperties": [],
 				"typeProperties": {
 					"storedProcedureName": "[dbo].[USP_Update_delta_purgedrecords]"
-				},
-				"linkedServiceName": {
-					"referenceName": "az_sql_ls",
-					"type": "LinkedServiceReference"
 				}
 			},
 			{
@@ -513,10 +481,6 @@
 							"type": "String"
 						}
 					}
-				},
-				"linkedServiceName": {
-					"referenceName": "az_sql_ls",
-					"type": "LinkedServiceReference"
 				}
 			},
 			{
@@ -571,10 +535,6 @@
 							"type": "String"
 						}
 					}
-				},
-				"linkedServiceName": {
-					"referenceName": "az_sql_ls",
-					"type": "LinkedServiceReference"
 				}
 			},
 			{

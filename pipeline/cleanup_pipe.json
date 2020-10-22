@@ -183,10 +183,6 @@
 										"type": "Guid"
 									}
 								}
-							},
-							"linkedServiceName": {
-								"referenceName": "az_sql_ls",
-								"type": "LinkedServiceReference"
 							}
 						}
 					]

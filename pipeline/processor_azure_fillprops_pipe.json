@@ -167,10 +167,6 @@
 										"type": "String"
 									}
 								}
-							},
-							"linkedServiceName": {
-								"referenceName": "az_sql_ls",
-								"type": "LinkedServiceReference"
 							}
 						},
 						{
@@ -228,10 +224,6 @@
 										"type": "String"
 									}
 								}
-							},
-							"linkedServiceName": {
-								"referenceName": "az_sql_ls",
-								"type": "LinkedServiceReference"
 							}
 						},
 						{
@@ -267,16 +259,6 @@
 										"value": "Create",
 										"type": "String"
 									}
-								}
-							},
-							"linkedServiceName": {
-								"referenceName": "az_sql_ls",
-								"type": "LinkedServiceReference",
-								"parameters": {
-									"sql_account_url": "qa-capitatfl-sql-server.database.windows.net",
-									"sql_database_name": "qa-capitatfl-sql-db",
-									"sql_username": "4dm1n",
-									"sql_password": "capita@2020"
 								}
 							}
 						}
