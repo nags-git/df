@@ -20,7 +20,7 @@
 			},
 			"sql_password": {
 				"type": "string",
-				"value": "changemeDUEN_0BW0vfqpITkq2qvQzZ8U3D_nrizLUQT"
+				"value": "changeme"
 			},
 			"azurestagecontainer": {
 				"type": "string",
