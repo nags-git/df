@@ -144,7 +144,8 @@
 										"stagecontainer": {
 											"value": "@pipeline().globalParameters.azurestagecontainer",
 											"type": "Expression"
-										}
+										},
+										"container": "@item().Container"
 									}
 								},
 								"enableLogging": false,
