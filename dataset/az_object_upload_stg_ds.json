@@ -25,10 +25,6 @@
 					"value": "@dataset().relativeURL",
 					"type": "Expression"
 				},
-				"folderPath": {
-					"value": "@dataset().stagecontainer",
-					"type": "Expression"
-				},
 				"container": {
 					"value": "@dataset().stagecontainer",
 					"type": "Expression"
