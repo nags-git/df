@@ -1,0 +1,174 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dfds01d1aeun"
+		},
+		"az_cosmos_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az_cosmos_ls'"
+		},
+		"az_fun_delete_cosmos_record_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'az_fun_delete_cosmos_record'"
+		},
+		"az_log_strg_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az_log_strg_ls'"
+		},
+		"az_sql_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az_sql_ls'"
+		},
+		"az_strg_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az_strg_ls'"
+		},
+		"azure_pipeline_metadata_update_ls_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
+		},
+		"sftp_capita_ls_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'sftp_capita_ls'"
+		},
+		"az_fun_delete_cosmos_record_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://test-capitatfl-delete-cosmosrecord.azurewebsites.net"
+		},
+		"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://test-capitatfl-pipelinemetadataupdate-func.azurewebsites.net"
+		},
+		"hcp_http_ls_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "@{linkedService().namespaceurl}"
+		},
+		"http_rest_ls_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "@{linkedService().hcpsearchurl}"
+		},
+		"sftp_capita_ls_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "13.78.132.95"
+		},
+		"sftp_capita_ls_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "guestuser"
+		},
+		"on_query_csv_upload_properties_preprocessor_pipe_parameters_referenceTable": {
+			"type": "string",
+			"defaultValue": "tblhcpqueries"
+		},
+		"on_query_csv_upload_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/2a3390b4-6a54-48b5-812a-35320c2fab9c/resourceGroups/dev-capita-rg/providers/Microsoft.Storage/storageAccounts/devcapitaevidentialst"
+		},
+		"schedule_sftp_get_files_trigger_properties_delta_purgerecords_pipe_parameters_referenceTable": {
+			"type": "string",
+			"defaultValue": "tblPurgeRecords"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "dfds01d1aeun_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"sftp_capita_ls_password": {
+						"value": "[parameters('sftp_capita_ls_password')]"
+					},
+					"az_cosmos_ls_connectionString": {
+						"value": "[parameters('az_cosmos_ls_connectionString')]"
+					},
+					"az_fun_delete_cosmos_record_functionKey": {
+						"value": "[parameters('az_fun_delete_cosmos_record_functionKey')]"
+					},
+					"az_log_strg_ls_connectionString": {
+						"value": "[parameters('az_log_strg_ls_connectionString')]"
+					},
+					"az_sql_ls_connectionString": {
+						"value": "[parameters('az_sql_ls_connectionString')]"
+					},
+					"az_strg_ls_connectionString": {
+						"value": "[parameters('az_strg_ls_connectionString')]"
+					},
+					"azure_pipeline_metadata_update_ls_functionKey": {
+						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
+					},
+					"sftp_capita_ls_properties_typeProperties_host": {
+						"value": "[parameters('sftp_capita_ls_properties_typeProperties_host')]"
+					},
+					"sftp_capita_ls_properties_typeProperties_userName": {
+						"value": "[parameters('sftp_capita_ls_properties_typeProperties_userName')]"
+					},
+					"az_fun_delete_cosmos_record_properties_typeProperties_functionAppUrl": {
+						"value": "[parameters('az_fun_delete_cosmos_record_properties_typeProperties_functionAppUrl')]"
+					},
+					"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
+						"value": "[parameters('azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl')]"
+					},
+					"hcp_http_ls_properties_typeProperties_url": {
+						"value": "[parameters('hcp_http_ls_properties_typeProperties_url')]"
+					},
+					"http_rest_ls_properties_typeProperties_url": {
+						"value": "[parameters('http_rest_ls_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "dfds01d1aeun_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"schedule_sftp_get_files_trigger_properties_delta_purgerecords_pipe_parameters_referenceTable": {
+						"value": "[parameters('schedule_sftp_get_files_trigger_properties_delta_purgerecords_pipe_parameters_referenceTable')]"
+					},
+					"on_query_csv_upload_properties_preprocessor_pipe_parameters_referenceTable": {
+						"value": "[parameters('on_query_csv_upload_properties_preprocessor_pipe_parameters_referenceTable')]"
+					},
+					"on_query_csv_upload_properties_typeProperties_scope": {
+						"value": "[parameters('on_query_csv_upload_properties_typeProperties_scope')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'dfds01d1aeun_ArmTemplate_0')]"
+			]
+		}
+	]
+}

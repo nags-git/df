@@ -1,0 +1,845 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dfds01d1aeun"
+		},
+		"sftp_capita_ls_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'sftp_capita_ls'"
+		},
+		"az_cosmos_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az_cosmos_ls'"
+		},
+		"az_fun_delete_cosmos_record_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'az_fun_delete_cosmos_record'"
+		},
+		"az_log_strg_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az_log_strg_ls'"
+		},
+		"az_sql_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az_sql_ls'"
+		},
+		"az_strg_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az_strg_ls'"
+		},
+		"azure_pipeline_metadata_update_ls_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'azure_pipeline_metadata_update_ls'"
+		},
+		"sftp_capita_ls_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "13.78.132.95"
+		},
+		"sftp_capita_ls_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "guestuser"
+		},
+		"az_fun_delete_cosmos_record_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://test-capitatfl-delete-cosmosrecord.azurewebsites.net"
+		},
+		"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://test-capitatfl-pipelinemetadataupdate-func.azurewebsites.net"
+		},
+		"hcp_http_ls_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "@{linkedService().namespaceurl}"
+		},
+		"http_rest_ls_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "@{linkedService().hcpsearchurl}"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_capita_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "Sftp",
+				"typeProperties": {
+					"host": "[parameters('sftp_capita_ls_properties_typeProperties_host')]",
+					"port": 22,
+					"skipHostKeyValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('sftp_capita_ls_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('sftp_capita_ls_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hcp-Ir')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/delete_sftp_files')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sftp_capita_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "SftpLocation",
+						"folderPath": "/incoming/pipeline_purge_input"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sftp_capita_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sftp_csv_purged_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sftp_capita_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "SftpLocation",
+						"folderPath": "/incoming/pipeline_purge_input"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "HCPID,RetentionDate,HoldStatus",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sftp_capita_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_cosmos_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"cosmos_account_url": {
+						"type": "String",
+						"defaultValue": "https://cmht01d1aeun-metadata.documents.azure.com:443/"
+					},
+					"cosmos_account_password": {
+						"type": "String",
+						"defaultValue": "tBQASDdq6YE27fCH95OrB769CnUFq1WGPYdsumKNNO2jxl4jMgbX8vAubXk646nfQQVb8Nfapnfnm1R0N8JDWA=="
+					},
+					"cosmos_database_name": {
+						"type": "String",
+						"defaultValue": "cmht01d1aeun-metadata-sql"
+					}
+				},
+				"annotations": [],
+				"type": "CosmosDb",
+				"typeProperties": {
+					"connectionString": "[parameters('az_cosmos_ls_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "hcp-Ir",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_fun_delete_cosmos_record')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureFunction",
+				"typeProperties": {
+					"functionAppUrl": "[parameters('az_fun_delete_cosmos_record_properties_typeProperties_functionAppUrl')]",
+					"functionKey": {
+						"type": "SecureString",
+						"value": "[parameters('az_fun_delete_cosmos_record_functionKey')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "hcp-Ir",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_log_strg_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('az_log_strg_ls_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "hcp-Ir",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_sql_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"sql_account_url": {
+						"type": "string"
+					},
+					"sql_database_name": {
+						"type": "string"
+					},
+					"sql_username": {
+						"type": "string"
+					},
+					"sql_password": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('az_sql_ls_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "hcp-Ir",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_strg_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('az_strg_ls_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "hcp-Ir",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/azure_pipeline_metadata_update_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureFunction",
+				"typeProperties": {
+					"functionAppUrl": "[parameters('azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl')]",
+					"functionKey": {
+						"type": "SecureString",
+						"value": "[parameters('azure_pipeline_metadata_update_ls_functionKey')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "hcp-Ir",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hcp_http_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"namespaceurl": {
+						"type": "string",
+						"defaultValue": "https://evidential.systemtest.tflpfarcshc001.hcp.internal/rest/"
+					}
+				},
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('hcp_http_ls_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": false,
+					"authenticationType": "Anonymous"
+				},
+				"connectVia": {
+					"referenceName": "hcp-Ir",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/http_rest_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"hcpsearchurl": {
+						"type": "string",
+						"defaultValue": "https://systemtest.tflpfarcshc001.hcp.internal/rest"
+					}
+				},
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('http_rest_ls_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": false,
+					"authenticationType": "Anonymous"
+				},
+				"connectVia": {
+					"referenceName": "hcp-Ir",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/hcp-Ir')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_csv_purged_ls')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_strg_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "purgedrecords"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_strg_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_metadata_cosmos_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_cosmos_ls",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"cosmos_account_url": "https://test-capitatfl-evidentialcosmosdb.documents.azure.com:443/",
+						"cosmos_account_password": "eUNS4S8vff5KCaESa8RdqsxbPktB8vRCljNUMhodp8PRZRircDtOBMgVAkZlI3ahDzGqUk8UtMbtItUs1USjgQ==",
+						"cosmos_database_name": "test-capitatfl-metadatastore"
+					}
+				},
+				"annotations": [],
+				"type": "CosmosDbSqlApiCollection",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"application": {
+							"type": "string"
+						},
+						"FilePath": {
+							"type": "string"
+						},
+						"SnapshotPath": {
+							"type": "string"
+						},
+						"IsSnapshot": {
+							"type": "boolean"
+						},
+						"Version": {
+							"type": "string"
+						},
+						"SystemMetadata": {
+							"type": "object",
+							"properties": {
+								"Hold": {
+									"type": "boolean"
+								},
+								"Index": {
+									"type": "boolean"
+								},
+								"Shred": {
+									"type": "boolean"
+								},
+								"Retention": {
+									"type": "integer"
+								}
+							}
+						},
+						"CustomMetadata": {
+							"type": "null"
+						},
+						"DocumentSize": {
+							"type": "integer"
+						},
+						"ClientId": {
+							"type": "string"
+						},
+						"LastModifiedDate": {
+							"type": "integer"
+						},
+						"Status": {
+							"type": "string"
+						},
+						"QueueRequestType": {
+							"type": "string"
+						},
+						"ContentMD5": {
+							"type": "string"
+						},
+						"LeaseId": {
+							"type": "string"
+						},
+						"CreatedDate": {
+							"type": "integer"
+						},
+						"ETag": {
+							"type": "string"
+						}
+					}
+				},
+				"typeProperties": {
+					"collectionName": "metadata"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_cosmos_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_object_upload_prod_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_strg_ls",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"relativeURL": {
+						"type": "string"
+					},
+					"container": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Avro",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().relativeURL",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().container",
+							"type": "Expression"
+						}
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_strg_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_object_upload_stg_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_log_strg_ls",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"relativeURL": {
+						"type": "string"
+					},
+					"stagecontainer": {
+						"type": "string"
+					},
+					"container": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Avro",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().relativeURL",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().stagecontainer",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().stagecontainer",
+							"type": "Expression"
+						}
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_log_strg_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_sftp_delta_purge_files_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_log_strg_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "delta-purge-records"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_log_strg_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_sql_hcp_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_sql_ls",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"sql_account_url": {
+							"value": "@dataset().sql_account_url",
+							"type": "Expression"
+						},
+						"sql_database_name": {
+							"value": "@dataset().sql_database_name",
+							"type": "Expression"
+						},
+						"sql_username": {
+							"value": "@dataset().sql_username",
+							"type": "Expression"
+						},
+						"sql_password": {
+							"value": "@dataset().sql_password",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"sql_account_url": {
+						"type": "string"
+					},
+					"sql_database_name": {
+						"type": "string"
+					},
+					"sql_username": {
+						"type": "string"
+					},
+					"sql_password": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "BatchID",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "ObjectFullPath",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Operation",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Version",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ObjectPath",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Type",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ObjectSize",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Retention",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Hold",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Shred",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Owner",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Index",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Hash",
+						"type": "nvarchar"
+					},
+					{
+						"name": "AzureHash",
+						"type": "nvarchar"
+					},
+					{
+						"name": "IngestTime",
+						"type": "nvarchar"
+					},
+					{
+						"name": "UpdateTime",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Namespace",
+						"type": "nvarchar"
+					},
+					{
+						"name": "CustomMetadataExists",
+						"type": "nvarchar"
+					},
+					{
+						"name": "CustomMetadata",
+						"type": "xml"
+					},
+					{
+						"name": "CustomMetadataAnnotation",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MD5",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LeaseId",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Container",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ETag",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Status",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RetryCount",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "ErrorAtStage",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ErrorInformation",
+						"type": "nvarchar"
+					},
+					{
+						"name": "IsObjectCleanedUp",
+						"type": "bit"
+					},
+					{
+						"name": "CreatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "tblhcpdata"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_sql_hcp_delta_purge_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_sql_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "tblPurgeRecords"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/azsql_csv_sql_dataset')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_sql_ls",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"sql_account_url": {
+							"value": "@dataset().sql_account_url",
+							"type": "Expression"
+						},
+						"sql_database_name": {
+							"value": "@dataset().sql_database_name",
+							"type": "Expression"
+						},
+						"sql_username": {
+							"value": "@dataset().sql_username",
+							"type": "Expression"
+						},
+						"sql_password": {
+							"value": "@dataset().sql_password",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"sql_account_url": {
+						"type": "string"
+					},
+					"sql_database_name": {
+						"type": "string"
+					},
+					"sql_username": {
+						"type": "string"
+					},
+					"sql_password": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "tblhcpqueries"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_sql_ls')]"
+			]
+		}
+	]
+}

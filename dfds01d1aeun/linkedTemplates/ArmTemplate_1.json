@@ -1,0 +1,3259 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dfds01d1aeun"
+		},
+		"schedule_sftp_get_files_trigger_properties_delta_purgerecords_pipe_parameters_referenceTable": {
+			"type": "string",
+			"defaultValue": "tblPurgeRecords"
+		},
+		"on_query_csv_upload_properties_preprocessor_pipe_parameters_referenceTable": {
+			"type": "string",
+			"defaultValue": "tblhcpqueries"
+		},
+		"on_query_csv_upload_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/2a3390b4-6a54-48b5-812a-35320c2fab9c/resourceGroups/dev-capita-rg/providers/Microsoft.Storage/storageAccounts/devcapitaevidentialst"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/csv_purgerecords_sql_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_strg_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "purgedrecords"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "EvidentialRecordID",
+						"type": "String"
+					},
+					{
+						"name": "EvidenceStoreID",
+						"type": "String"
+					},
+					{
+						"name": "RetentionDate",
+						"type": "String"
+					},
+					{
+						"name": "DeletionDate",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/csv_sql_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_log_strg_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "inputquery"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hcp_data_download_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "http_rest_ls",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"hcpsearchurl": {
+							"value": "@dataset().hcpqueryurl",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"hcpqueryurl": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hcp_download_data_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "http_rest_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hcp_metadata_download_ls')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "hcp_http_ls",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"namespaceurl": {
+							"value": "@dataset().namespaceurl",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"namespaceurl": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Avro",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/hcp_object_download_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "hcp_http_ls",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"namespaceurl": {
+							"value": "@dataset().namespaceurl",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"namespaceurl": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Avro",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/cleanup_pipe')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "get_objects_cleanup",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_ObjectsToCleanUp]",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "az_sql_hcp_data",
+								"type": "DatasetReference",
+								"parameters": {
+									"sql_account_url": {
+										"value": "@pipeline().globalParameters.sql_account_url",
+										"type": "Expression"
+									},
+									"sql_database_name": {
+										"value": "@pipeline().globalParameters.sql_database_name",
+										"type": "Expression"
+									},
+									"sql_username": {
+										"value": "@pipeline().globalParameters.sql_username",
+										"type": "Expression"
+									},
+									"sql_password": {
+										"value": "@pipeline().globalParameters.sql_password",
+										"type": "Expression"
+									}
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "foreach_object",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "get_objects_cleanup",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('get_objects_cleanup').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "check_if_custommetadata_exists",
+									"type": "IfCondition",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@bool(equals(item().CustomMetadataExists,'True'))",
+											"type": "Expression"
+										},
+										"ifTrueActivities": [
+											{
+												"name": "delete_metadata_from_stage",
+												"type": "Delete",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"dataset": {
+														"referenceName": "az_object_upload_stg_ds",
+														"type": "DatasetReference",
+														"parameters": {
+															"relativeURL": {
+																"value": "@concat('metadata\\',item().ObjectPath,'.txt')",
+																"type": "Expression"
+															},
+															"stagecontainer": {
+																"value": "@pipeline().globalParameters.azurestagecontainer",
+																"type": "Expression"
+															},
+															"container": "@item().Container"
+														}
+													},
+													"enableLogging": false,
+													"storeSettings": {
+														"type": "AzureBlobStorageReadSettings",
+														"recursive": true
+													}
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "delete_staged_object",
+									"type": "Delete",
+									"dependsOn": [
+										{
+											"activity": "check_if_custommetadata_exists",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataset": {
+											"referenceName": "az_object_upload_stg_ds",
+											"type": "DatasetReference",
+											"parameters": {
+												"relativeURL": {
+													"value": "@item().ObjectPath",
+													"type": "Expression"
+												},
+												"stagecontainer": {
+													"value": "@pipeline().globalParameters.azurestagecontainer",
+													"type": "Expression"
+												},
+												"container": "@item().Container"
+											}
+										},
+										"enableLogging": false,
+										"storeSettings": {
+											"type": "AzureBlobStorageReadSettings",
+											"recursive": true
+										}
+									}
+								},
+								{
+									"name": "update_cleanup_flag",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "delete_staged_object",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_UpdateCleanUp_FlagToTrue]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": {
+													"value": "@item().id",
+													"type": "Expression"
+												},
+												"type": "Guid"
+											}
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2020-10-20T14:00:08Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/delta_purgerecords_pipe')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "getrecords_forpurge",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "update_records_to_needtopurge_operation",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 31,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_PurgedObject]",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "az_sql_hcp_data",
+								"type": "DatasetReference",
+								"parameters": {
+									"sql_account_url": {
+										"value": "@pipeline().globalParameters.sql_account_url",
+										"type": "Expression"
+									},
+									"sql_database_name": {
+										"value": "@pipeline().globalParameters.sql_database_name",
+										"type": "Expression"
+									},
+									"sql_username": {
+										"value": "@pipeline().globalParameters.sql_username",
+										"type": "Expression"
+									},
+									"sql_password": {
+										"value": "@pipeline().globalParameters.sql_password",
+										"type": "Expression"
+									}
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "foreach_record",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "getrecords_forpurge",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('getrecords_forpurge').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "delete_object",
+									"type": "Delete",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataset": {
+											"referenceName": "az_object_upload_prod_ds",
+											"type": "DatasetReference",
+											"parameters": {
+												"relativeURL": "@item().ObjectPath",
+												"container": "@item().Container"
+											}
+										},
+										"enableLogging": false,
+										"storeSettings": {
+											"type": "AzureBlobStorageReadSettings",
+											"recursive": true
+										}
+									}
+								},
+								{
+									"name": "delete_cosmos_record",
+									"type": "AzureFunctionActivity",
+									"dependsOn": [
+										{
+											"activity": "delete_object",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"functionName": "deleterecord",
+										"method": "POST",
+										"headers": {
+											"Content-Type": "application/json"
+										},
+										"body": {
+											"value": "@item().Id",
+											"type": "Expression"
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_fun_delete_cosmos_record",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "error_delta_purge_delete_object",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "delete_object",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation_Delta_Purge]",
+										"storedProcedureParameters": {
+											"errorAtStage": {
+												"value": "delta_purge_delete_object",
+												"type": "String"
+											},
+											"errorInPipeline": {
+												"value": {
+													"value": "@pipeline().Pipeline",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"errorMessage": {
+												"value": {
+													"value": "@activity('delete_object').error.message",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"referenceId": {
+												"value": {
+													"value": "@item().id",
+													"type": "Expression"
+												},
+												"type": "Guid"
+											},
+											"referenceTable": {
+												"value": {
+													"value": "@pipeline().parameters.referenceTable",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									}
+								},
+								{
+									"name": "error_delta_purge_delete_cosmos_record",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "delete_cosmos_record",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
+										"storedProcedureParameters": {
+											"errorAtStage": {
+												"value": "delta_purge_delete_object",
+												"type": "String"
+											},
+											"errorInPipeline": {
+												"value": {
+													"value": "@pipeline().Pipeline",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"errorMessage": {
+												"value": {
+													"value": "@activity('delete_cosmos_record').error.message",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"referenceId": {
+												"value": {
+													"value": "@item().id",
+													"type": "Expression"
+												},
+												"type": "Guid"
+											},
+											"referenceTable": {
+												"value": {
+													"value": "@pipeline().parameters.referenceTable",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									}
+								},
+								{
+									"name": "update_inventory_db",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "delete_cosmos_record",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_DF_Save_ObjectInventoryInfo]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": {
+													"value": "@item().Id",
+													"type": "Expression"
+												},
+												"type": "Guid"
+											},
+											"operation": {
+												"value": "Delete",
+												"type": "String"
+											}
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "update_records_to_needtopurge_operation",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "copy_sftp_files_sql",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_Update_delta_NeedToPurgeRecords]"
+						}
+					},
+					{
+						"name": "copy_sftp_files_sql",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "SftpReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*.csv"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "EvidentialRecordID",
+											"type": "String"
+										},
+										"sink": {
+											"name": "EvidentialRecordId",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "EvidenceStoreID",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ObjectPath",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "sftp_csv_purged_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "az_sql_hcp_delta_purge_data",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "update_records_to_purge_operation",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "foreach_record",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_Update_delta_purgedrecords]"
+						}
+					},
+					{
+						"name": "delete_sftp_files",
+						"type": "Delete",
+						"dependsOn": [
+							{
+								"activity": "backup_purged_records",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "delete_sftp_files",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"enableLogging": false,
+							"storeSettings": {
+								"type": "SftpReadSettings",
+								"recursive": true,
+								"wildcardFileName": "*.csv"
+							}
+						}
+					},
+					{
+						"name": "error_delete_sftp_file",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "delete_sftp_files",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation_Delta_Purge]",
+							"storedProcedureParameters": {
+								"errorAtStage": {
+									"value": "delete_sftp_files",
+									"type": "String"
+								},
+								"errorInPipeline": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"errorMessage": {
+									"value": "",
+									"type": "String"
+								},
+								"referenceId": {
+									"value": null,
+									"type": "Guid"
+								},
+								"referenceTable": {
+									"value": {
+										"value": "@pipeline().parameters.referenceTable",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						}
+					},
+					{
+						"name": "error_copy_sftp_file_copy",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "copy_sftp_files_sql",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation_Delta_Purge]",
+							"storedProcedureParameters": {
+								"errorAtStage": {
+									"value": "delete_sftp_files",
+									"type": "String"
+								},
+								"errorInPipeline": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"errorMessage": {
+									"value": {
+										"value": "@activity('copy_sftp_files_sql').error.message",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"referenceId": {
+									"value": null,
+									"type": "Guid"
+								},
+								"referenceTable": {
+									"value": {
+										"value": "@pipeline().parameters.referenceTable",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						}
+					},
+					{
+						"name": "backup_purged_records",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "copy_sftp_files_sql",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "SftpReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*.csv"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".csv"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "EvidentialRecordID",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 1
+										}
+									},
+									{
+										"source": {
+											"name": "EvidenceStoreID",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 2
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "sftp_csv_purged_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "az_sftp_delta_purge_files_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"parameters": {
+					"referenceTable": {
+						"type": "string",
+						"defaultValue": "tblpurgerecords"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2020-10-20T14:00:08Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/preprocessor_pipe')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_query_sql",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*.csv",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "StartDateTime",
+											"type": "String"
+										},
+										"sink": {
+											"name": "StartDateTime",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "EndDateTime",
+											"type": "String"
+										},
+										"sink": {
+											"name": "EndDateTime",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "NameSpace",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Namespace",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "csv_sql_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azsql_csv_sql_dataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"sql_account_url": {
+										"value": "@pipeline().globalParameters.sql_account_url",
+										"type": "Expression"
+									},
+									"sql_database_name": {
+										"value": "@pipeline().globalParameters.sql_database_name",
+										"type": "Expression"
+									},
+									"sql_username": {
+										"value": "@pipeline().globalParameters.sql_username",
+										"type": "Expression"
+									},
+									"sql_password": {
+										"value": "@pipeline().globalParameters.sql_password",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "get_queries_to_process_lkup",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "copy_query_sql",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "select * from tblhcpqueries where status='initial'",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "azsql_csv_sql_dataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"sql_account_url": {
+										"value": "@pipeline().globalParameters.sql_account_url",
+										"type": "Expression"
+									},
+									"sql_database_name": {
+										"value": "@pipeline().globalParameters.sql_database_name",
+										"type": "Expression"
+									},
+									"sql_username": {
+										"value": "@pipeline().globalParameters.sql_username",
+										"type": "Expression"
+									},
+									"sql_password": {
+										"value": "@pipeline().globalParameters.sql_password",
+										"type": "Expression"
+									}
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "foreach_query",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "get_queries_to_process_lkup",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('get_queries_to_process_lkup').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "upload_hcpdata_to_sql",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "RestSource",
+											"additionalColumns": [
+												{
+													"name": "BatchId",
+													"value": {
+														"value": "@item().Id",
+														"type": "Expression"
+													}
+												},
+												{
+													"name": "Container",
+													"value": {
+														"value": "@split(item().namespace,'.')[0]\n",
+														"type": "Expression"
+													}
+												},
+												{
+													"name": "Namespace",
+													"value": {
+														"value": "@item().Namespace",
+														"type": "Expression"
+													}
+												}
+											],
+											"httpRequestTimeout": "00:01:40",
+											"requestInterval": "00.00:00:00.010",
+											"requestMethod": "POST",
+											"requestBody": {
+												"value": "@{concat('<queryRequest><object><query>+',item().namespace,' +updateTimeString:[',item().StartDateTime,' TO ',item().EndDateTime,']</query><verbose>true</verbose></object></queryRequest>')}",
+												"type": "Expression"
+											},
+											"additionalHeaders": {
+												"Authorization": {
+													"value": "@pipeline().globalParameters.authkey",
+													"type": "Expression"
+												},
+												"Content-Type": "application/xml"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink"
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"path": "[['urlName']"
+													},
+													"sink": {
+														"name": "ObjectFullPath",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['operation']"
+													},
+													"sink": {
+														"name": "Operation",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['version']"
+													},
+													"sink": {
+														"name": "Version",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['objectPath']"
+													},
+													"sink": {
+														"name": "ObjectPath",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['type']"
+													},
+													"sink": {
+														"name": "Type",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['size']"
+													},
+													"sink": {
+														"name": "ObjectSize",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "[['retention']"
+													},
+													"sink": {
+														"name": "Retention",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['hold']"
+													},
+													"sink": {
+														"name": "Hold",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['shred']"
+													},
+													"sink": {
+														"name": "Shred",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['owner']"
+													},
+													"sink": {
+														"name": "Owner",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ingestTime']"
+													},
+													"sink": {
+														"name": "IngestTime",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['customMetadata']"
+													},
+													"sink": {
+														"name": "CustomMetadataExists",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['index']"
+													},
+													"sink": {
+														"name": "Index",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['updateTime']"
+													},
+													"sink": {
+														"name": "UpdateTime",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['hash']"
+													},
+													"sink": {
+														"name": "Hash",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['customMetadataAnnotation']"
+													},
+													"sink": {
+														"name": "CustomMetadataAnnotation",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['BatchId']"
+													},
+													"sink": {
+														"name": "BatchID",
+														"type": "Guid"
+													}
+												},
+												{
+													"source": {
+														"path": "$['Container']"
+													},
+													"sink": {
+														"name": "Container"
+													}
+												},
+												{
+													"source": {
+														"path": "$['Namespace']"
+													},
+													"sink": {
+														"name": "Namespace"
+													}
+												}
+											],
+											"collectionReference": "$['queryResult']['resultSet']"
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "hcp_data_download_ds",
+											"type": "DatasetReference",
+											"parameters": {
+												"hcpqueryurl": {
+													"value": "@pipeline().globalParameters.hcpsearchurl",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "az_sql_hcp_data",
+											"type": "DatasetReference",
+											"parameters": {
+												"sql_account_url": {
+													"value": "@pipeline().globalParameters.sql_account_url",
+													"type": "Expression"
+												},
+												"sql_database_name": {
+													"value": "@pipeline().globalParameters.sql_database_name",
+													"type": "Expression"
+												},
+												"sql_username": {
+													"value": "@pipeline().globalParameters.sql_username",
+													"type": "Expression"
+												},
+												"sql_password": {
+													"value": "@pipeline().globalParameters.sql_password",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "usp_update_query_status",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "upload_hcpdata_to_sql",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_UpdateQuery_Status]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": {
+													"value": "@item().Id",
+													"type": "Expression"
+												},
+												"type": "Guid"
+											},
+											"status": {
+												"value": "Complete",
+												"type": "String"
+											}
+										}
+									}
+								},
+								{
+									"name": "update_error_upload_hcpdata_to_sql",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "upload_hcpdata_to_sql",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
+										"storedProcedureParameters": {
+											"errorAtStage": {
+												"value": "upload hcp data to sql",
+												"type": "String"
+											},
+											"errorInPipeline": {
+												"value": {
+													"value": "@pipeline().Pipeline",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"errorMessage": {
+												"value": {
+													"value": "@activity('upload_hcpdata_to_sql').error.message",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"referenceId": {
+												"value": {
+													"value": "@item().id",
+													"type": "Expression"
+												},
+												"type": "Guid"
+											},
+											"referenceTable": {
+												"value": {
+													"value": "@pipeline().parameters.referencetable",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "update_error_copy_query_sql",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "copy_query_sql",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
+							"storedProcedureParameters": {
+								"errorAtStage": {
+									"value": "copy query information to sql",
+									"type": "String"
+								},
+								"errorInPipeline": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"errorMessage": {
+									"value": {
+										"value": "@activity('copy_query_sql').error.message",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"referenceId": {
+									"value": "",
+									"type": "Guid"
+								},
+								"referenceTable": {
+									"value": {
+										"value": "@pipeline().parameters.referencetable",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						}
+					},
+					{
+						"name": "delete_input_query",
+						"type": "Delete",
+						"dependsOn": [
+							{
+								"activity": "copy_query_sql",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "csv_sql_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"enableLogging": false,
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true,
+								"wildcardFileName": "*.csv"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"referenceTable": {
+						"type": "string",
+						"defaultValue": "tblhcpqueries"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2020-10-20T14:00:08Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/csv_sql_ds')]",
+				"[concat(variables('factoryId'), '/datasets/hcp_data_download_ds')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/processor_azure_fillprops_pipe')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "get_objects_to_process_lkup",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_ObjectsByStatus]",
+								"storedProcedureParameters": {
+									"baseURL": {
+										"type": "String",
+										"value": {
+											"value": "@pipeline().parameters.baseURL",
+											"type": "Expression"
+										}
+									},
+									"currentStatus": {
+										"type": "String",
+										"value": "IntegrityCheckInProgress... "
+									},
+									"previousStatus": {
+										"type": "String",
+										"value": "ObjectLoaded"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "azsql_csv_sql_dataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"sql_account_url": {
+										"value": "@pipeline().globalParameters.sql_account_url",
+										"type": "Expression"
+									},
+									"sql_database_name": {
+										"value": "@pipeline().globalParameters.sql_database_name",
+										"type": "Expression"
+									},
+									"sql_username": {
+										"value": "@pipeline().globalParameters.sql_username",
+										"type": "Expression"
+									},
+									"sql_password": {
+										"value": "@pipeline().globalParameters.sql_password",
+										"type": "Expression"
+									}
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "foreach_object",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "get_objects_to_process_lkup",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('get_objects_to_process_lkup').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "fill_object_properties",
+									"type": "AzureFunctionActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"functionName": "hcpmetadataupdate",
+										"method": "POST",
+										"headers": {
+											"Content-Type": "application/json"
+										},
+										"body": {
+											"value": "@concat('{\n\"filepath\": \"',item().Container,'/',item().ObjectPath,'\",\n\"customMetadataExists\":\"',item().CustomMetadataExists,'\"\n}')",
+											"type": "Expression"
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "azure_pipeline_metadata_update_ls",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "update_metadata_and_integrity_check",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "fill_object_properties",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_Update_Metadata]",
+										"storedProcedureParameters": {
+											"azureHash": {
+												"value": {
+													"value": "@activity('fill_object_properties').output.sha256",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"customMetadata": {
+												"value": {
+													"value": "@activity('fill_object_properties').output.customMetadata",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"eTag": {
+												"value": {
+													"value": "@activity('fill_object_properties').output.eTag",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"id": {
+												"value": {
+													"value": "@item().Id",
+													"type": "Expression"
+												},
+												"type": "Guid"
+											},
+											"MD5": {
+												"value": {
+													"value": "@activity('fill_object_properties').output.contentMD5",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									}
+								},
+								{
+									"name": "update_error_fill_object_props",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "fill_object_properties",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
+										"storedProcedureParameters": {
+											"errorAtStage": {
+												"value": "fill object properties",
+												"type": "String"
+											},
+											"errorInPipeline": {
+												"value": {
+													"value": "@pipeline().Pipeline",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"errorMessage": {
+												"value": {
+													"value": "@activity('fill_object_properties').error.message",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"referenceId": {
+												"value": {
+													"value": "@item().id",
+													"type": "Expression"
+												},
+												"type": "Guid"
+											},
+											"referenceTable": {
+												"value": {
+													"value": "@pipeline().parameters.referencetable",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									}
+								},
+								{
+									"name": "update_inventory_db",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "update_metadata_and_integrity_check",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_DF_Save_ObjectInventoryInfo]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": {
+													"value": "@item().Id",
+													"type": "Expression"
+												},
+												"type": "Guid"
+											},
+											"operation": {
+												"value": "Create",
+												"type": "String"
+											}
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"parameters": {
+					"baseURL": {
+						"type": "string",
+						"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
+					},
+					"azurestagecontainer": {
+						"type": "string",
+						"defaultValue": "hcpstage"
+					},
+					"referencetable": {
+						"type": "string",
+						"defaultValue": "tblhcpdata"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2020-10-20T14:00:08Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/processor_azure_pipe')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "get_objects_to_process_lkup",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_ObjectsByStatus]",
+								"storedProcedureParameters": {
+									"currentStatus": {
+										"type": "String",
+										"value": "ObjectLoadingInProgress...."
+									},
+									"previousStatus": {
+										"type": "String",
+										"value": "ObjectStaged"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "azsql_csv_sql_dataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"sql_account_url": {
+										"value": "@pipeline().globalParameters.sql_account_url",
+										"type": "Expression"
+									},
+									"sql_database_name": {
+										"value": "@pipeline().globalParameters.sql_database_name",
+										"type": "Expression"
+									},
+									"sql_username": {
+										"value": "@pipeline().globalParameters.sql_username",
+										"type": "Expression"
+									},
+									"sql_password": {
+										"value": "@pipeline().globalParameters.sql_password",
+										"type": "Expression"
+									}
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "foreach_object",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "get_objects_to_process_lkup",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('get_objects_to_process_lkup').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "copy_objects_stage_main",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AvroSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true
+											}
+										},
+										"sink": {
+											"type": "AvroSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "AvroWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "az_object_upload_stg_ds",
+											"type": "DatasetReference",
+											"parameters": {
+												"relativeURL": "@item().ObjectPath",
+												"stagecontainer": {
+													"value": "@pipeline().globalParameters.azurestagecontainer",
+													"type": "Expression"
+												},
+												"container": "@item().Container"
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "az_object_upload_prod_ds",
+											"type": "DatasetReference",
+											"parameters": {
+												"relativeURL": "@item().ObjectPath",
+												"container": "@item().ActualContainer"
+											}
+										}
+									]
+								},
+								{
+									"name": "update_status_objectloaded",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "copy_objects_stage_main",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_UpdateHcpData_Status]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": {
+													"value": "@item().Id",
+													"type": "Expression"
+												},
+												"type": "Guid"
+											},
+											"status": {
+												"value": "ObjectLoaded",
+												"type": "String"
+											}
+										}
+									}
+								},
+								{
+									"name": "update_error_copy_objects_stage_main",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "copy_objects_stage_main",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
+										"storedProcedureParameters": {
+											"errorAtStage": {
+												"value": "fill object properties",
+												"type": "String"
+											},
+											"errorInPipeline": {
+												"value": {
+													"value": "@pipeline().Pipeline",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"errorMessage": {
+												"value": {
+													"value": "@activity('copy_objects_stage_main').error.message",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"referenceId": {
+												"value": {
+													"value": "@item().id",
+													"type": "Expression"
+												},
+												"type": "Guid"
+											},
+											"referenceTable": {
+												"value": {
+													"value": "@pipeline().globalParameters.referencetable",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2020-10-20T14:00:08Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/processor_hcp_pipe')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "get_objects_to_process_lkup",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_ObjectsByStatus]",
+								"storedProcedureParameters": {
+									"currentStatus": {
+										"type": "String",
+										"value": "ObjectStagingInProgress..."
+									},
+									"previousStatus": {
+										"type": "String",
+										"value": null
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "azsql_csv_sql_dataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"sql_account_url": {
+										"value": "@pipeline().globalParameters.sql_account_url",
+										"type": "Expression"
+									},
+									"sql_database_name": {
+										"value": "@pipeline().globalParameters.sql_database_name",
+										"type": "Expression"
+									},
+									"sql_username": {
+										"value": "@pipeline().globalParameters.sql_username",
+										"type": "Expression"
+									},
+									"sql_password": {
+										"value": "@pipeline().globalParameters.sql_password",
+										"type": "Expression"
+									}
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "foreach_object",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "get_objects_to_process_lkup",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('get_objects_to_process_lkup').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "download_object",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AvroSource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "GET",
+												"additionalHeaders": {
+													"value": "@{concat('Authorization: ',pipeline().globalParameters.authkey)}",
+													"type": "Expression"
+												},
+												"requestTimeout": ""
+											}
+										},
+										"sink": {
+											"type": "AvroSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "AvroWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "hcp_object_download_ds",
+											"type": "DatasetReference",
+											"parameters": {
+												"namespaceurl": {
+													"value": "@item().ObjectFullPath",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "az_object_upload_stg_ds",
+											"type": "DatasetReference",
+											"parameters": {
+												"relativeURL": {
+													"value": "@item().ObjectPath",
+													"type": "Expression"
+												},
+												"stagecontainer": {
+													"value": "@pipeline().parameters.azurestagecontainer",
+													"type": "Expression"
+												},
+												"container": {
+													"value": "@item().Container",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "update_status_objectstaged",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "check_custommetadata_exists",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_UpdateHcpData_Status]",
+										"storedProcedureParameters": {
+											"id": {
+												"value": {
+													"value": "@item().Id",
+													"type": "Expression"
+												},
+												"type": "Guid"
+											},
+											"status": {
+												"value": "ObjectStaged",
+												"type": "String"
+											}
+										}
+									}
+								},
+								{
+									"name": "check_custommetadata_exists",
+									"type": "IfCondition",
+									"dependsOn": [
+										{
+											"activity": "download_object",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@bool(equals(item().CustomMetadataExists,'True'))",
+											"type": "Expression"
+										},
+										"ifTrueActivities": [
+											{
+												"name": "download_metadata_object",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "AvroSource",
+														"storeSettings": {
+															"type": "HttpReadSettings",
+															"requestMethod": "GET",
+															"additionalHeaders": {
+																"value": "@{concat('Authorization: ',pipeline().globalParameters.authkey)}",
+																"type": "Expression"
+															},
+															"requestTimeout": ""
+														}
+													},
+													"sink": {
+														"type": "AvroSink",
+														"storeSettings": {
+															"type": "AzureBlobStorageWriteSettings"
+														},
+														"formatSettings": {
+															"type": "AvroWriteSettings"
+														}
+													},
+													"enableStaging": false
+												},
+												"inputs": [
+													{
+														"referenceName": "hcp_metadata_download_ls",
+														"type": "DatasetReference",
+														"parameters": {
+															"namespaceurl": "@concat(item().ObjectFullPath,'?type=custom-metadata&annotation=',item().CustomMetadataAnnotation)"
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "az_object_upload_stg_ds",
+														"type": "DatasetReference",
+														"parameters": {
+															"relativeURL": "@concat('metadata/',item().ObjectPath,'.txt')",
+															"stagecontainer": {
+																"value": "@pipeline().parameters.azurestagecontainer",
+																"type": "Expression"
+															},
+															"container": "@item().Container"
+														}
+													}
+												]
+											},
+											{
+												"name": "update_status_metadata_downloaded",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "download_metadata_object",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[[dbo].[USP_UpdateHcpData_Status]",
+													"storedProcedureParameters": {
+														"id": {
+															"value": {
+																"value": "@item().Id",
+																"type": "Expression"
+															},
+															"type": "Guid"
+														},
+														"status": {
+															"value": "Metadata Downloaded",
+															"type": "String"
+														}
+													}
+												}
+											},
+											{
+												"name": "update_error_download_metadata",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "download_metadata_object",
+														"dependencyConditions": [
+															"Failed"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
+													"storedProcedureParameters": {
+														"errorAtStage": {
+															"value": "download metadata object",
+															"type": "String"
+														},
+														"errorInPipeline": {
+															"value": {
+																"value": "@pipeline().Pipeline",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"errorMessage": {
+															"value": {
+																"value": "@activity('download_metadata_object').error.message",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"referenceId": {
+															"value": {
+																"value": "@item().id",
+																"type": "Expression"
+															},
+															"type": "Guid"
+														},
+														"referenceTable": {
+															"value": {
+																"value": "@pipeline().parameters.referencetable",
+																"type": "Expression"
+															},
+															"type": "String"
+														}
+													}
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "update_error_download_object",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "download_object",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
+										"storedProcedureParameters": {
+											"errorAtStage": {
+												"value": "download object",
+												"type": "String"
+											},
+											"errorInPipeline": {
+												"value": {
+													"value": "@pipeline().Pipeline",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"errorMessage": {
+												"value": {
+													"value": "@activity('download_object').error.message",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"referenceId": {
+												"value": {
+													"value": "@item().id",
+													"type": "Expression"
+												},
+												"type": "Guid"
+											},
+											"referenceTable": {
+												"value": {
+													"value": "@pipeline().parameters.referencetable",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"parameters": {
+					"azurestagecontainer": {
+						"type": "string",
+						"defaultValue": "hcpstage"
+					},
+					"referencetable": {
+						"type": "string",
+						"defaultValue": "tblhcpdata"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2020-10-20T14:00:08Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/hcp_object_download_ds')]",
+				"[concat(variables('factoryId'), '/datasets/hcp_metadata_download_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/processor_sql_cosmos_pipe')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "update_error_copy_data_to_cosmos",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "copy_data_to_cosmos",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
+							"storedProcedureParameters": {
+								"errorAtStage": {
+									"value": "download object",
+									"type": "String"
+								},
+								"errorInPipeline": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"errorMessage": {
+									"value": {
+										"value": "@activity('copy_data_to_cosmos').error.message",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"referenceId": {
+									"type": "Guid"
+								},
+								"referenceTable": {
+									"value": {
+										"value": "@pipeline().parameters.referencetable",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						}
+					},
+					{
+						"name": "save_status_of_processor",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "copy_data_to_cosmos",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[USP_UpdateProcessor_Pipe_Status]"
+						}
+					},
+					{
+						"name": "copy_data_to_cosmos",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_ObjectsToBeProcessedForCosmos]",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "CosmosDbSqlApiSink",
+								"writeBehavior": "upsert",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "ID",
+											"type": "Guid"
+										},
+										"sink": {
+											"path": "$['id']"
+										}
+									},
+									{
+										"source": {
+											"name": "Application",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['application']"
+										}
+									},
+									{
+										"source": {
+											"name": "FilePath",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['FilePath']"
+										}
+									},
+									{
+										"source": {
+											"name": "SnapshotPath",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['SnapshotPath']"
+										}
+									},
+									{
+										"source": {
+											"name": "IsSnapshot",
+											"type": "Boolean"
+										},
+										"sink": {
+											"path": "$['IsSnapshot']"
+										}
+									},
+									{
+										"source": {
+											"name": "Version",
+											"type": "Int64"
+										},
+										"sink": {
+											"path": "$['Version']"
+										}
+									},
+									{
+										"source": {
+											"name": "Hold",
+											"type": "Boolean"
+										},
+										"sink": {
+											"path": "$['SystemMetadata']['Hold']"
+										}
+									},
+									{
+										"source": {
+											"name": "Index",
+											"type": "Boolean"
+										},
+										"sink": {
+											"path": "$['SystemMetadata']['Index']"
+										}
+									},
+									{
+										"source": {
+											"name": "Shred",
+											"type": "Boolean"
+										},
+										"sink": {
+											"path": "$['SystemMetadata']['Shred']"
+										}
+									},
+									{
+										"source": {
+											"name": "Retention",
+											"type": "Int64"
+										},
+										"sink": {
+											"path": "$['SystemMetadata']['Retention']"
+										}
+									},
+									{
+										"source": {
+											"name": "CustomMetadata",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['CustomMetadata']"
+										}
+									},
+									{
+										"source": {
+											"name": "DocumentSize",
+											"type": "Int32"
+										},
+										"sink": {
+											"path": "$['DocumentSize']"
+										}
+									},
+									{
+										"source": {
+											"name": "LastModifiedDate",
+											"type": "Int32"
+										},
+										"sink": {
+											"path": "$['LastModifiedDate']"
+										}
+									},
+									{
+										"source": {
+											"name": "Status",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Status']"
+										}
+									},
+									{
+										"source": {
+											"name": "QueueRequestType",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['QueueRequestType']"
+										}
+									},
+									{
+										"source": {
+											"name": "ContentMD5",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['ContentMD5']"
+										}
+									},
+									{
+										"source": {
+											"name": "LeaseId",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['LeaseId']"
+										}
+									},
+									{
+										"source": {
+											"name": "CreatedDate",
+											"type": "Int32"
+										},
+										"sink": {
+											"path": "$['CreatedDate']"
+										}
+									},
+									{
+										"source": {
+											"name": "ETag",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['ETag']"
+										}
+									},
+									{
+										"source": {
+											"name": "FileName",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['FileName']"
+										}
+									},
+									{
+										"source": {
+											"name": "FileType",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['FileType']"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "az_sql_hcp_data",
+								"type": "DatasetReference",
+								"parameters": {
+									"sql_account_url": {
+										"value": "@pipeline().globalParameters.sql_account_url",
+										"type": "Expression"
+									},
+									"sql_database_name": {
+										"value": "@pipeline().globalParameters.sql_database_name",
+										"type": "Expression"
+									},
+									"sql_username": {
+										"value": "@pipeline().globalParameters.sql_username",
+										"type": "Expression"
+									},
+									"sql_password": {
+										"value": "@pipeline().globalParameters.sql_password",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "az_metadata_cosmos_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"parameters": {
+					"referencetable": {
+						"type": "string",
+						"defaultValue": "tblhcpdata"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2020-10-20T14:00:08Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Main')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "until_records_processed",
+						"type": "Until",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@lessOrEquals(activity('get_records_from_initialstatus').output.firstRow.recordsCount,0)",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "processor_hcp_pipe",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "get_records_from_initialstatus",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "processor_hcp_pipe",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"azurestagecontainer": {
+												"value": "@pipeline().globalParameters.azurestagecontainer",
+												"type": "Expression"
+											},
+											"referencetable": {
+												"value": "@pipeline().globalParameters.referencetable",
+												"type": "Expression"
+											}
+										}
+									}
+								},
+								{
+									"name": "processor_sql_cosmos_pipe",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "processor_azure_fillprops_pipe",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "processor_sql_cosmos_pipe",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {}
+									}
+								},
+								{
+									"name": "processor_azure_pipe",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "processor_hcp_pipe",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "processor_azure_pipe",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {}
+									}
+								},
+								{
+									"name": "processor_azure_fillprops_pipe",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "processor_azure_pipe",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "processor_azure_fillprops_pipe",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {}
+									}
+								},
+								{
+									"name": "get_records_from_initialstatus",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_ObjectsWithInitialStatus]",
+											"storedProcedureParameters": {
+												"count": {
+													"type": "Int32",
+													"value": {
+														"value": "@pipeline().globalParameters.countofrecordstobeprocessedatonce",
+														"type": "Expression"
+													}
+												}
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "az_sql_hcp_data",
+											"type": "DatasetReference",
+											"parameters": {
+												"sql_account_url": {
+													"value": "@pipeline().globalParameters.sql_account_url",
+													"type": "Expression"
+												},
+												"sql_database_name": {
+													"value": "@pipeline().globalParameters.sql_database_name",
+													"type": "Expression"
+												},
+												"sql_username": {
+													"value": "@pipeline().globalParameters.sql_username",
+													"type": "Expression"
+												},
+												"sql_password": {
+													"value": "@pipeline().globalParameters.sql_password",
+													"type": "Expression"
+												}
+											}
+										}
+									}
+								},
+								{
+									"name": "cleanup_pipe",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "processor_sql_cosmos_pipe",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "cleanup_pipe",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {}
+									}
+								}
+							],
+							"timeout": "7.00:00:00"
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2020-10-20T14:00:09Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/processor_hcp_pipe')]",
+				"[concat(variables('factoryId'), '/pipelines/processor_sql_cosmos_pipe')]",
+				"[concat(variables('factoryId'), '/pipelines/processor_azure_pipe')]",
+				"[concat(variables('factoryId'), '/pipelines/processor_azure_fillprops_pipe')]",
+				"[concat(variables('factoryId'), '/pipelines/cleanup_pipe')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/schedule_sftp_get_files_trigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "delta_purgerecords_pipe",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"referenceTable": "[parameters('schedule_sftp_get_files_trigger_properties_delta_purgerecords_pipe_parameters_referenceTable')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 1,
+						"startTime": "2020-06-30T16:31:00Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/delta_purgerecords_pipe')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/on_query_csv_upload')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "Main",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					},
+					{
+						"pipelineReference": {
+							"referenceName": "preprocessor_pipe",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"referenceTable": "[parameters('on_query_csv_upload_properties_preprocessor_pipe_parameters_referenceTable')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/inputquery/blobs/",
+					"blobPathEndsWith": ".csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('on_query_csv_upload_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Main')]",
+				"[concat(variables('factoryId'), '/pipelines/preprocessor_pipe')]"
+			]
+		}
+	]
+}

@@ -1,0 +1,63 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "dfds01d1aeun"
+		},
+		"az_cosmos_ls_connectionString": {
+			"value": ""
+		},
+		"az_fun_delete_cosmos_record_functionKey": {
+			"value": ""
+		},
+		"az_log_strg_ls_connectionString": {
+			"value": ""
+		},
+		"az_sql_ls_connectionString": {
+			"value": ""
+		},
+		"az_strg_ls_connectionString": {
+			"value": ""
+		},
+		"azure_pipeline_metadata_update_ls_functionKey": {
+			"value": ""
+		},
+		"sftp_capita_ls_password": {
+			"value": ""
+		},
+		"az_fun_delete_cosmos_record_properties_typeProperties_functionAppUrl": {
+			"value": "https://test-capitatfl-delete-cosmosrecord.azurewebsites.net"
+		},
+		"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
+			"value": "https://test-capitatfl-pipelinemetadataupdate-func.azurewebsites.net"
+		},
+		"hcp_http_ls_properties_typeProperties_url": {
+			"value": "@{linkedService().namespaceurl}"
+		},
+		"http_rest_ls_properties_typeProperties_url": {
+			"value": "@{linkedService().hcpsearchurl}"
+		},
+		"sftp_capita_ls_properties_typeProperties_host": {
+			"value": "13.78.132.95"
+		},
+		"sftp_capita_ls_properties_typeProperties_userName": {
+			"value": "guestuser"
+		},
+		"on_query_csv_upload_properties_preprocessor_pipe_parameters_referenceTable": {
+			"value": "tblhcpqueries"
+		},
+		"on_query_csv_upload_properties_typeProperties_scope": {
+			"value": "/subscriptions/2a3390b4-6a54-48b5-812a-35320c2fab9c/resourceGroups/dev-capita-rg/providers/Microsoft.Storage/storageAccounts/devcapitaevidentialst"
+		},
+		"schedule_sftp_get_files_trigger_properties_delta_purgerecords_pipe_parameters_referenceTable": {
+			"value": "tblPurgeRecords"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

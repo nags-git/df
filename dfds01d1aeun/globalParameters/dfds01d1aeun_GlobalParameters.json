@@ -1,0 +1,38 @@
+{
+	"hcpsearchurl": {
+		"type": "string",
+		"value": "https://systemtest.tflpfarcshc001.hcp.internal/query"
+	},
+	"sql_account_url": {
+		"type": "string",
+		"value": "ssds01d1aeun.database.windows.net"
+	},
+	"sql_database_name": {
+		"type": "string",
+		"value": "sdbds01d1a-inventory"
+	},
+	"sql_username": {
+		"type": "string",
+		"value": "sqlsa"
+	},
+	"sql_password": {
+		"type": "string",
+		"value": "az9h%%eKxS%LxECcYJ%Aw4lDol%8DUEN_0BW0vfqpITkq2qvQzZ8U3D_nrizLUQT"
+	},
+	"azurestagecontainer": {
+		"type": "string",
+		"value": "hcpstage"
+	},
+	"referencetable": {
+		"type": "string",
+		"value": "tblhcpqueries"
+	},
+	"authkey": {
+		"type": "string",
+		"value": "HCP c3VkYXJzaGFuag==:f4418a63dfc0dc12abaa30a62a8388c7"
+	},
+	"countofrecordstobeprocessedatonce": {
+		"type": "int",
+		"value": 1
+	}
+}
