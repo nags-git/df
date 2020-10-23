@@ -238,7 +238,8 @@
 												"referenceName": "hcp_metadata_download_ls",
 												"type": "DatasetReference",
 												"parameters": {
-													"namespaceurl": "@concat(item().ObjectFullPath,'?type=custom-metadata&annotation=',item().CustomMetadataAnnotation)"
+													"namespaceurl": "item().ObjectFullPath",
+													"relativeurl": "@concat('?type=custom-metadata&annotation=',item().CustomMetadataAnnotation)"
 												}
 											}
 										],
