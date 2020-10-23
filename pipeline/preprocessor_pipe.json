@@ -457,7 +457,7 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"storedProcedureName": "update_query_status",
+								"storedProcedureName": "USP_UpdateQuery_Status",
 								"storedProcedureParameters": {
 									"id": {
 										"value": {
