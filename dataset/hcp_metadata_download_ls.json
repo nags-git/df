@@ -14,15 +14,23 @@
 		"parameters": {
 			"namespaceurl": {
 				"type": "string"
+			},
+			"relativeurl": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
 		"type": "Avro",
 		"typeProperties": {
 			"location": {
-				"type": "HttpServerLocation"
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "@dataset().relativeurl",
+					"type": "Expression"
+				}
 			}
-		}
+		},
+		"schema": {}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
 }
