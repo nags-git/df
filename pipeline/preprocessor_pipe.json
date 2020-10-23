@@ -503,6 +503,7 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
+								"storedProcedureName": "USP_Insert_ErrorInformation",
 								"storedProcedureParameters": {
 									"errorAtStage": {
 										"value": "upload hcp data to sql",
