@@ -1,6 +1,5 @@
 {
 	"name": "hcp_http_ls",
-	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"parameters": {
 			"namespaceurl": {
@@ -19,5 +18,6 @@
 			"referenceName": "hcp-Ir",
 			"type": "IntegrationRuntimeReference"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
 }
