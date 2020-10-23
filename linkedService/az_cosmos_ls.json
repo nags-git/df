@@ -20,6 +20,10 @@
 		"type": "CosmosDb",
 		"typeProperties": {
 			"connectionString": "AccountEndpoint=@{linkedService().cosmos_account_url};Database=@{linkedService().cosmos_database_name};AccountKey=@{linkedService().cosmos_account_password}"
+		},
+		"connectVia": {
+			"referenceName": "hcp-Ir",
+			"type": "IntegrationRuntimeReference"
 		}
 	}
 }
