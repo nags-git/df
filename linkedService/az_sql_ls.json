@@ -4,16 +4,20 @@
 	"properties": {
 		"parameters": {
 			"sql_account_url": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "ssds01d1aeun.database.windows.net"
 			},
 			"sql_database_name": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "sdbds01d1a-inventory"
 			},
 			"sql_username": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "sqlsa"
 			},
 			"sql_password": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "az9h%%eKxS%LxECcYJ%Aw4lDol%8DUEN_0BW0vfqpITkq2qvQzZ8U3D_nrizLUQT"
 			}
 		},
 		"annotations": [],
