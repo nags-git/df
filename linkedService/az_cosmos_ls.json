@@ -5,25 +5,21 @@
 		"parameters": {
 			"cosmos_account_url": {
 				"type": "String",
-				"defaultValue": "https://cmht01d1aeun-metadata.documents.azure.com:443/"
+				"defaultValue": "https://cmds01d1aeun-metadata.documents.azure.com:443/"
 			},
 			"cosmos_account_password": {
 				"type": "String",
-				"defaultValue": "tBQASDdq6YE27fCH95OrB769CnUFq1WGPYdsumKNNO2jxl4jMgbX8vAubXk646nfQQVb8Nfapnfnm1R0N8JDWA=="
+				"defaultValue": "VjvVjiCQLgThH3kC2JucU7rRKxeaqcAxkwmnP3yLN5PC4XVAYFYpDYlgvNc1o7VczTlQm1UoBbHpkG1Pf0ohqw=="
 			},
 			"cosmos_database_name": {
 				"type": "String",
-				"defaultValue": "cmht01d1aeun-metadata-sql"
+				"defaultValue": "cmds01d1aeun-metadata-sql"
 			}
 		},
 		"annotations": [],
 		"type": "CosmosDb",
 		"typeProperties": {
 			"connectionString": "AccountEndpoint=@{linkedService().cosmos_account_url};Database=@{linkedService().cosmos_database_name};AccountKey=@{linkedService().cosmos_account_password}"
-		},
-		"connectVia": {
-			"referenceName": "hcp-Ir",
-			"type": "IntegrationRuntimeReference"
 		}
 	}
 }
