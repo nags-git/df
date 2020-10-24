@@ -35,8 +35,8 @@
 				"value": "HCP c3VkYXJzaGFuag==:f4418a63dfc0dc12abaa30a62a8388c7"
 			},
 			"countofrecordstobeprocessedatonce": {
-				"type": "string",
-				"value": "2"
+				"type": "int",
+				"value": 2
 			}
 		}
 	},
