@@ -5,8 +5,8 @@
 		"annotations": [],
 		"type": "AzureFunction",
 		"typeProperties": {
-			"functionAppUrl": "https://test-capitatfl-pipelinemetadataupdate-func.azurewebsites.net",
-			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIxYTRlNmFjYS1jMWMwLTQyMjEtYWNlOS1hYmQxNGU1ZWIyMDEiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+			"functionAppUrl": "https://fads01d1aeun-metadata-update.ase02d1aeun.appserviceenvironment.net",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJhYmFlYTZhMC05ZmMzLTQ2ZDgtOThiOS04ZGEzNmJkZjA5YWIiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
 		},
 		"connectVia": {
 			"referenceName": "hcp-Ir",
