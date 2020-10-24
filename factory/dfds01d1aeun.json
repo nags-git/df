@@ -12,7 +12,7 @@
 			},
 			"sql_database_name": {
 				"type": "string",
-				"value": "ssds01d1aeun-inventory"
+				"value": "sdbds01d1a-inventory"
 			},
 			"sql_username": {
 				"type": "string",
