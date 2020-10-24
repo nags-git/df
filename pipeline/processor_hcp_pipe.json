@@ -263,7 +263,7 @@
 														"value": "@pipeline().parameters.azurestagecontainer",
 														"type": "Expression"
 													},
-													"container": "@concat('metadata')"
+													"container": "@concat('metadata/')"
 												}
 											}
 										]
