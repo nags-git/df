@@ -260,10 +260,6 @@
 			}
 		],
 		"parameters": {
-			"baseURL": {
-				"type": "string",
-				"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
-			},
 			"azurestagecontainer": {
 				"type": "string",
 				"defaultValue": "hcpstage"
