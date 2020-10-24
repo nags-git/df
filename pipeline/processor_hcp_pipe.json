@@ -258,11 +258,12 @@
 												"referenceName": "az_object_upload_stg_ds",
 												"type": "DatasetReference",
 												"parameters": {
-													"relativeURL": "@concat('metadata/',@item().Container,'/',item().ObjectPath,'.txt')",
+													"relativeURL": "@concat(@item().Container,'/',item().ObjectPath,'.txt')",
 													"stagecontainer": {
 														"value": "@pipeline().parameters.azurestagecontainer",
 														"type": "Expression"
-													}
+													},
+													"container": "metadata"
 												}
 											}
 										]
