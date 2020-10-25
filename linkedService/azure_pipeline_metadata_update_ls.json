@@ -6,7 +6,7 @@
 		"type": "AzureFunction",
 		"typeProperties": {
 			"functionAppUrl": "https://fads01d1aeun-metadata-update.ase02d1aeun.appserviceenvironment.net",
-			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJhYmFlYTZhMC05ZmMzLTQ2ZDgtOThiOS04ZGEzNmJkZjA5YWIiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIxZjRhODUxZC1lZjlhLTQxODktYWExZS05NGU3MTQxNTQxZTYiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
 		},
 		"connectVia": {
 			"referenceName": "hcp-Ir",
