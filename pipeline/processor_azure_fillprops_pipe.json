@@ -160,6 +160,16 @@
 										"type": "String"
 									}
 								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sql_ls",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"sql_account_url": "ssds01d1aeun.database.windows.net",
+									"sql_database_name": "sdbds01d1a-inventory",
+									"sql_username": "sqlsa",
+									"sql_password": "uKvJAFfgYP8sm%yOVsai3aw%84dCrmZTCvjTyn0HteH6w3EKoXDF@5_QH048f9oS"
+								}
 							}
 						},
 						{
@@ -217,6 +227,16 @@
 										"type": "String"
 									}
 								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sql_ls",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"sql_account_url": "ssds01d1aeun.database.windows.net",
+									"sql_database_name": "sdbds01d1a-inventory",
+									"sql_username": "sqlsa",
+									"sql_password": "uKvJAFfgYP8sm%yOVsai3aw%84dCrmZTCvjTyn0HteH6w3EKoXDF@5_QH048f9oS"
+								}
 							}
 						},
 						{
@@ -252,6 +272,16 @@
 										"value": "Create",
 										"type": "String"
 									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "az_sql_ls",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"sql_account_url": "ssds01d1aeun.database.windows.net",
+									"sql_database_name": "sdbds01d1a-inventory",
+									"sql_username": "sqlsa",
+									"sql_password": "uKvJAFfgYP8sm%yOVsai3aw%84dCrmZTCvjTyn0HteH6w3EKoXDF@5_QH048f9oS"
 								}
 							}
 						}
