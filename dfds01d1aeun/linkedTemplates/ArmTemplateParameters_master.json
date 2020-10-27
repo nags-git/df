@@ -30,7 +30,7 @@
 			"value": "https://test-capitatfl-delete-cosmosrecord.azurewebsites.net"
 		},
 		"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
-			"value": "https://test-capitatfl-pipelinemetadataupdate-func.azurewebsites.net"
+			"value": "https://fads01d1aeun-metadata-update.ase02d1aeun.appserviceenvironment.net"
 		},
 		"hcp_http_ls_properties_typeProperties_url": {
 			"value": "@{linkedService().namespaceurl}"

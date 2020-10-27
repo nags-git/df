@@ -152,13 +152,20 @@
 				"parameters": {
 					"namespaceurl": {
 						"type": "string"
+					},
+					"relativeurl": {
+						"type": "string"
 					}
 				},
 				"annotations": [],
 				"type": "Avro",
 				"typeProperties": {
 					"location": {
-						"type": "HttpServerLocation"
+						"type": "HttpServerLocation",
+						"relativeUrl": {
+							"value": "@dataset().relativeurl",
+							"type": "Expression"
+						}
 					}
 				},
 				"schema": {}
@@ -1498,7 +1505,7 @@
 									},
 									"userProperties": [],
 									"typeProperties": {
-										"storedProcedureName": "[[dbo].[USP_UpdateQuery_Status]",
+										"storedProcedureName": "USP_UpdateQuery_Status",
 										"storedProcedureParameters": {
 											"id": {
 												"value": {
@@ -1511,6 +1518,16 @@
 												"value": "Complete",
 												"type": "String"
 											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"sql_account_url": "ssds01d1aeun.database.windows.net",
+											"sql_database_name": "sdbds01d1a-inventory",
+											"sql_username": "sqlsa",
+											"sql_password": "uKvJAFfgYP8sm%yOVsai3aw%84dCrmZTCvjTyn0HteH6w3EKoXDF@5_QH048f9oS"
 										}
 									}
 								},
@@ -1534,7 +1551,7 @@
 									},
 									"userProperties": [],
 									"typeProperties": {
-										"storedProcedureName": "[[dbo].[USP_Insert_ErrorInformation]",
+										"storedProcedureName": "USP_Insert_ErrorInformation",
 										"storedProcedureParameters": {
 											"errorAtStage": {
 												"value": "upload hcp data to sql",
@@ -1568,6 +1585,16 @@
 												},
 												"type": "String"
 											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"sql_account_url": "ssds01d1aeun.database.windows.net",
+											"sql_database_name": "sdbds01d1a-inventory",
+											"sql_username": "sqlsa",
+											"sql_password": "uKvJAFfgYP8sm%yOVsai3aw%84dCrmZTCvjTyn0HteH6w3EKoXDF@5_QH048f9oS"
 										}
 									}
 								}
@@ -1699,13 +1726,6 @@
 								"type": "AzureSqlSource",
 								"sqlReaderStoredProcedureName": "[[dbo].[USP_Get_ObjectsByStatus]",
 								"storedProcedureParameters": {
-									"baseURL": {
-										"type": "String",
-										"value": {
-											"value": "@pipeline().parameters.baseURL",
-											"type": "Expression"
-										}
-									},
 									"currentStatus": {
 										"type": "String",
 										"value": "IntegrityCheckInProgress... "
@@ -1847,6 +1867,16 @@
 												"type": "String"
 											}
 										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"sql_account_url": "ssds01d1aeun.database.windows.net",
+											"sql_database_name": "sdbds01d1a-inventory",
+											"sql_username": "sqlsa",
+											"sql_password": "uKvJAFfgYP8sm%yOVsai3aw%84dCrmZTCvjTyn0HteH6w3EKoXDF@5_QH048f9oS"
+										}
 									}
 								},
 								{
@@ -1904,6 +1934,16 @@
 												"type": "String"
 											}
 										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"sql_account_url": "ssds01d1aeun.database.windows.net",
+											"sql_database_name": "sdbds01d1a-inventory",
+											"sql_username": "sqlsa",
+											"sql_password": "uKvJAFfgYP8sm%yOVsai3aw%84dCrmZTCvjTyn0HteH6w3EKoXDF@5_QH048f9oS"
+										}
 									}
 								},
 								{
@@ -1940,6 +1980,16 @@
 												"type": "String"
 											}
 										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"sql_account_url": "ssds01d1aeun.database.windows.net",
+											"sql_database_name": "sdbds01d1a-inventory",
+											"sql_username": "sqlsa",
+											"sql_password": "uKvJAFfgYP8sm%yOVsai3aw%84dCrmZTCvjTyn0HteH6w3EKoXDF@5_QH048f9oS"
+										}
 									}
 								}
 							]
@@ -1947,10 +1997,6 @@
 					}
 				],
 				"parameters": {
-					"baseURL": {
-						"type": "string",
-						"defaultValue": "https://ns01.tenant01.coe-hcp01.hitachivantara.com/rest/"
-					},
 					"azurestagecontainer": {
 						"type": "string",
 						"defaultValue": "hcpstage"
@@ -2094,7 +2140,7 @@
 											"type": "DatasetReference",
 											"parameters": {
 												"relativeURL": "@item().ObjectPath",
-												"container": "@item().ActualContainer"
+												"container": "@item().Container"
 											}
 										}
 									]
@@ -2132,6 +2178,16 @@
 												"value": "ObjectLoaded",
 												"type": "String"
 											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"sql_account_url": "ssds01d1aeun.database.windows.net",
+											"sql_database_name": "sdbds01d1a-inventory",
+											"sql_username": "sqlsa",
+											"sql_password": "uKvJAFfgYP8sm%yOVsai3aw%84dCrmZTCvjTyn0HteH6w3EKoXDF@5_QH048f9oS"
 										}
 									}
 								},
@@ -2189,6 +2245,16 @@
 												},
 												"type": "String"
 											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"sql_account_url": "ssds01d1aeun.database.windows.net",
+											"sql_database_name": "sdbds01d1a-inventory",
+											"sql_username": "sqlsa",
+											"sql_password": "uKvJAFfgYP8sm%yOVsai3aw%84dCrmZTCvjTyn0HteH6w3EKoXDF@5_QH048f9oS"
 										}
 									}
 								}
@@ -2382,6 +2448,16 @@
 												"type": "String"
 											}
 										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"sql_account_url": "ssds01d1aeun.database.windows.net",
+											"sql_database_name": "sdbds01d1a-inventory",
+											"sql_username": "sqlsa",
+											"sql_password": "uKvJAFfgYP8sm%yOVsai3aw%84dCrmZTCvjTyn0HteH6w3EKoXDF@5_QH048f9oS"
+										}
 									}
 								},
 								{
@@ -2443,7 +2519,8 @@
 														"referenceName": "hcp_metadata_download_ls",
 														"type": "DatasetReference",
 														"parameters": {
-															"namespaceurl": "@concat(item().ObjectFullPath,'?type=custom-metadata&annotation=',item().CustomMetadataAnnotation)"
+															"namespaceurl": "@item().ObjectFullPath",
+															"relativeurl": "?type=custom-metadata&annotation=default"
 														}
 													}
 												],
@@ -2452,12 +2529,12 @@
 														"referenceName": "az_object_upload_stg_ds",
 														"type": "DatasetReference",
 														"parameters": {
-															"relativeURL": "@concat('metadata/',item().ObjectPath,'.txt')",
+															"relativeURL": "@concat(item().Container,'/',item().ObjectPath,'.txt')",
 															"stagecontainer": {
 																"value": "@pipeline().parameters.azurestagecontainer",
 																"type": "Expression"
 															},
-															"container": "@item().Container"
+															"container": "@concat('metadata')"
 														}
 													}
 												]
@@ -2495,6 +2572,16 @@
 															"value": "Metadata Downloaded",
 															"type": "String"
 														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "az_sql_ls",
+													"type": "LinkedServiceReference",
+													"parameters": {
+														"sql_account_url": "ssds01d1aeun.database.windows.net",
+														"sql_database_name": "sdbds01d1a-inventory",
+														"sql_username": "sqlsa",
+														"sql_password": "uKvJAFfgYP8sm%yOVsai3aw%84dCrmZTCvjTyn0HteH6w3EKoXDF@5_QH048f9oS"
 													}
 												}
 											},
@@ -2552,6 +2639,16 @@
 															},
 															"type": "String"
 														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "az_sql_ls",
+													"type": "LinkedServiceReference",
+													"parameters": {
+														"sql_account_url": "ssds01d1aeun.database.windows.net",
+														"sql_database_name": "sdbds01d1a-inventory",
+														"sql_username": "sqlsa",
+														"sql_password": "uKvJAFfgYP8sm%yOVsai3aw%84dCrmZTCvjTyn0HteH6w3EKoXDF@5_QH048f9oS"
 													}
 												}
 											}
@@ -2612,6 +2709,16 @@
 												},
 												"type": "String"
 											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "az_sql_ls",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"sql_account_url": "ssds01d1aeun.database.windows.net",
+											"sql_database_name": "sdbds01d1a-inventory",
+											"sql_username": "sqlsa",
+											"sql_password": "uKvJAFfgYP8sm%yOVsai3aw%84dCrmZTCvjTyn0HteH6w3EKoXDF@5_QH048f9oS"
 										}
 									}
 								}

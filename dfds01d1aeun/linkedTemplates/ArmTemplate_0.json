@@ -49,7 +49,7 @@
 		},
 		"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
 			"type": "string",
-			"defaultValue": "https://test-capitatfl-pipelinemetadataupdate-func.azurewebsites.net"
+			"defaultValue": "https://fads01d1aeun-metadata-update.ase02d1aeun.appserviceenvironment.net"
 		},
 		"hcp_http_ls_properties_typeProperties_url": {
 			"type": "string",
@@ -157,15 +157,15 @@
 				"parameters": {
 					"cosmos_account_url": {
 						"type": "String",
-						"defaultValue": "https://cmht01d1aeun-metadata.documents.azure.com:443/"
+						"defaultValue": "https://cmds01d1aeun-metadata.documents.azure.com:443/"
 					},
 					"cosmos_account_password": {
 						"type": "String",
-						"defaultValue": "tBQASDdq6YE27fCH95OrB769CnUFq1WGPYdsumKNNO2jxl4jMgbX8vAubXk646nfQQVb8Nfapnfnm1R0N8JDWA=="
+						"defaultValue": "VjvVjiCQLgThH3kC2JucU7rRKxeaqcAxkwmnP3yLN5PC4XVAYFYpDYlgvNc1o7VczTlQm1UoBbHpkG1Pf0ohqw=="
 					},
 					"cosmos_database_name": {
 						"type": "String",
-						"defaultValue": "cmht01d1aeun-metadata-sql"
+						"defaultValue": "cmds01d1aeun-metadata-sql"
 					}
 				},
 				"annotations": [],
@@ -231,16 +231,20 @@
 			"properties": {
 				"parameters": {
 					"sql_account_url": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "ssds01d1aeun.database.windows.net"
 					},
 					"sql_database_name": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "sdbds01d1a-inventory"
 					},
 					"sql_username": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "sqlsa"
 					},
 					"sql_password": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "uKvJAFfgYP8sm%yOVsai3aw%84dCrmZTCvjTyn0HteH6w3EKoXDF@5_QH048f9oS"
 					}
 				},
 				"annotations": [],
@@ -538,7 +542,7 @@
 							"type": "Expression"
 						},
 						"folderPath": {
-							"value": "@dataset().stagecontainer",
+							"value": "@dataset().container",
 							"type": "Expression"
 						},
 						"container": {

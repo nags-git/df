@@ -17,7 +17,7 @@
 	},
 	"sql_password": {
 		"type": "string",
-		"value": "az9h%%eKxS%LxECcYJ%Aw4lDol%8DUEN_0BW0vfqpITkq2qvQzZ8U3D_nrizLUQT"
+		"value": "uKvJAFfgYP8sm%yOVsai3aw%84dCrmZTCvjTyn0HteH6w3EKoXDF@5_QH048f9oS"
 	},
 	"azurestagecontainer": {
 		"type": "string",
@@ -32,7 +32,7 @@
 		"value": "HCP c3VkYXJzaGFuag==:f4418a63dfc0dc12abaa30a62a8388c7"
 	},
 	"countofrecordstobeprocessedatonce": {
-		"type": "int",
-		"value": 1
+		"type": "string",
+		"value": "1"
 	}
 }

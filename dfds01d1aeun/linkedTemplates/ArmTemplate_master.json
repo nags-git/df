@@ -41,7 +41,7 @@
 		},
 		"azure_pipeline_metadata_update_ls_properties_typeProperties_functionAppUrl": {
 			"type": "string",
-			"defaultValue": "https://test-capitatfl-pipelinemetadataupdate-func.azurewebsites.net"
+			"defaultValue": "https://fads01d1aeun-metadata-update.ase02d1aeun.appserviceenvironment.net"
 		},
 		"hcp_http_ls_properties_typeProperties_url": {
 			"type": "string",
