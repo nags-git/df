@@ -5,9 +5,9 @@
 			"referenceName": "az_cosmos_ls",
 			"type": "LinkedServiceReference",
 			"parameters": {
-				"cosmos_account_url": "https://test-capitatfl-evidentialcosmosdb.documents.azure.com:443/",
-				"cosmos_account_password": "eUNS4S8vff5KCaESa8RdqsxbPktB8vRCljNUMhodp8PRZRircDtOBMgVAkZlI3ahDzGqUk8UtMbtItUs1USjgQ==",
-				"cosmos_database_name": "test-capitatfl-metadatastore"
+				"cosmos_account_url": "https://cmds01d1aeun-metadata.documents.azure.com:443/",
+				"cosmos_account_password": "VjvVjiCQLgThH3kC2JucU7rRKxeaqcAxkwmnP3yLN5PC4XVAYFYpDYlgvNc1o7VczTlQm1UoBbHpkG1Pf0ohqw==",
+				"cosmos_database_name": "cmds01d1aeun-metadata-sql"
 			}
 		},
 		"annotations": [],
