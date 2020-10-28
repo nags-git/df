@@ -93,14 +93,14 @@
 												"type": "DatasetReference",
 												"parameters": {
 													"relativeURL": {
-														"value": "@concat('metadata\\',item().ObjectPath,'.txt')",
+														"value": "@concat(item().Container,'/',item().ObjectPath,'.txt')",
 														"type": "Expression"
 													},
 													"stagecontainer": {
 														"value": "@pipeline().globalParameters.azurestagecontainer",
 														"type": "Expression"
 													},
-													"container": "@item().Container"
+													"container": "@concat('metadata')"
 												}
 											},
 											"enableLogging": false,
