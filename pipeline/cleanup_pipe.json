@@ -145,7 +145,7 @@
 											"value": "@pipeline().globalParameters.azurestagecontainer",
 											"type": "Expression"
 										},
-										"container": "@item().Container"
+										"container": "test"
 									}
 								},
 								"enableLogging": false,
