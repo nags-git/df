@@ -5,8 +5,8 @@
 		"annotations": [],
 		"type": "AzureFunction",
 		"typeProperties": {
-			"functionAppUrl": "https://test-capitatfl-delete-cosmosrecord.azurewebsites.net",
-			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIxZWZhNThhNi1lYzAwLTQwMmQtOWY1OC00MDg1ZTA5ZjdkM2UiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+			"functionAppUrl": "https://fads01d1aeun-delete-cosmos.ase02d1aeun.appserviceenvironment.net",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJkMGJkMjQwZC1kZmIzLTRjYjYtYjliNy0xMjA0NGQxMTk4OTEiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
 		},
 		"connectVia": {
 			"referenceName": "hcp-Ir",
